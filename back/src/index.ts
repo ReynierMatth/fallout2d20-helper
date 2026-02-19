@@ -7,7 +7,8 @@ import charactersRouter from './routes/characters';
 import perksRouter from './routes/perks';
 import equipmentPacksRouter from './routes/equipmentPacks';
 import sessionsRouter from './routes/sessions';
-import generateRouter from './routes/generate';
+import diseasesRouter from './routes/diseases';
+import generatorsRouter from './routes/generators';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,7 +23,8 @@ app.use('/api/characters', charactersRouter);
 app.use('/api/perks', perksRouter);
 app.use('/api/equipment-packs', equipmentPacksRouter);
 app.use('/api/sessions', sessionsRouter);
-app.use('/api/generate', generateRouter);
+app.use('/api/diseases', diseasesRouter);
+app.use('/api/generate', generatorsRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {

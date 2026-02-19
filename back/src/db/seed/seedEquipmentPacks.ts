@@ -11,7 +11,7 @@ import {
   levelBonusCaps,
 } from '../schema/index';
 
-// Import data from frontend
+// Import data from local seed data
 import {
   EQUIPMENT_PACKS,
   WASTELAND_PACKS,
@@ -19,8 +19,9 @@ import {
   TAG_SKILL_BONUS_ITEMS,
   LEVEL_BONUS_CAPS,
   isEquipmentChoice,
-} from '../../../../front/src/data/equipmentPacks';
-import type { EquipmentPack, EquipmentEntry, OriginId, TagSkillBonusItemEntry } from '../../../../front/src/data/equipmentPacks';
+} from './data/equipmentPacks';
+import type { EquipmentPack, EquipmentEntry } from './data/equipmentPacks';
+import type { OriginId } from './data/characters';
 
 // Map category from equipment packs to item_type enum
 function categoryToItemType(category: string): string | null {
@@ -188,19 +189,37 @@ export async function seedTagSkillBonusItems() {
   let count = 0;
   for (const bonus of TAG_SKILL_BONUS_ITEMS) {
     for (const entry of bonus.items) {
-      const itemId = await getItemIdByNameAndCategory(entry.itemName, entry.category);
+      if (isEquipmentChoice(entry)) {
+        // For choices, insert each option as a separate row
+        for (const option of entry.options) {
+          const itemId = await getItemIdByNameAndCategory(option.itemName, option.category);
 
-      if (itemId) {
-        await db.insert(tagSkillBonusItems).values({
-          skill: bonus.skill,
-          itemId,
-          quantity: entry.quantity ?? 1,
-          quantityCD: entry.quantityCD,
-          choiceGroup: entry.choiceGroup ?? null,
-        });
-        count++;
+          if (itemId) {
+            await db.insert(tagSkillBonusItems).values({
+              skill: bonus.skill,
+              itemId,
+              quantity: option.quantity ?? 1,
+              quantityCD: option.quantityCD,
+            });
+            count++;
+          } else {
+            console.warn(`  Warning: Item not found for tag skill bonus: ${option.itemName} (${option.category})`);
+          }
+        }
       } else {
-        console.warn(`  Warning: Item not found for tag skill bonus: ${entry.itemName} (${entry.category})`);
+        const itemId = await getItemIdByNameAndCategory(entry.itemName, entry.category);
+
+        if (itemId) {
+          await db.insert(tagSkillBonusItems).values({
+            skill: bonus.skill,
+            itemId,
+            quantity: entry.quantity ?? 1,
+            quantityCD: entry.quantityCD,
+          });
+          count++;
+        } else {
+          console.warn(`  Warning: Item not found for tag skill bonus: ${entry.itemName} (${entry.category})`);
+        }
       }
     }
   }

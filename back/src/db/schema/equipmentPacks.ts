@@ -58,9 +58,6 @@ export const tagSkillBonusItems = pgTable('tag_skill_bonus_items', {
   itemId: integer('item_id').references(() => items.id).notNull(),
   quantity: integer('quantity').default(1),
   quantityCD: integer('quantity_cd'),
-  // Items with same skill + same non-null choiceGroup = pick one from that group
-  // Items with null choiceGroup = always given directly
-  choiceGroup: integer('choice_group'),
 });
 
 // Level bonus caps

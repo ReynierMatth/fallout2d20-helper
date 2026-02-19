@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, real, boolean, text } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, real, boolean, text, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import {
   itemTypeEnum,
@@ -93,6 +93,7 @@ export const clothing = pgTable('clothing', {
   drEnergy: integer('dr_energy').default(0),
   drRadiation: integer('dr_radiation').default(0),
   drPoison: integer('dr_poison'),
+  effect: jsonb('effect'), // Structured ItemEffect
 });
 
 // Clothing locations
@@ -122,6 +123,7 @@ export const ammunition = pgTable('ammunition', {
 export const syringerAmmo = pgTable('syringer_ammo', {
   itemId: integer('item_id').primaryKey().references(() => items.id, { onDelete: 'cascade' }),
   effectKey: varchar('effect_key', { length: 100 }).notNull(),
+  effect: jsonb('effect'), // Structured ItemEffect
 });
 
 // ===== CHEMS =====
@@ -131,15 +133,16 @@ export const chems = pgTable('chems', {
   addictive: boolean('addictive').notNull(),
   addictionLevel: integer('addiction_level'),
   effectKey: varchar('effect_key', { length: 100 }).notNull(),
+  effect: jsonb('effect'), // Structured ItemEffect
 });
 
 // ===== FOOD =====
 export const food = pgTable('food', {
   itemId: integer('item_id').primaryKey().references(() => items.id, { onDelete: 'cascade' }),
   foodType: foodTypeEnum('food_type').notNull(),
-  hpHealed: integer('hp_healed').notNull(),
   irradiated: boolean('irradiated').notNull(),
   effectKey: varchar('effect_key', { length: 100 }),
+  effect: jsonb('effect'), // Structured ItemEffect (includes hpHealed)
 });
 
 // ===== GENERAL GOODS =====
@@ -147,6 +150,7 @@ export const generalGoods = pgTable('general_goods', {
   itemId: integer('item_id').primaryKey().references(() => items.id, { onDelete: 'cascade' }),
   goodType: generalGoodTypeEnum('good_type').notNull(),
   effectKey: varchar('effect_key', { length: 100 }),
+  effect: jsonb('effect'), // Structured ItemEffect
 });
 
 // ===== ODDITIES =====
@@ -154,6 +158,22 @@ export const oddities = pgTable('oddities', {
   itemId: integer('item_id').primaryKey().references(() => items.id, { onDelete: 'cascade' }),
   goodType: generalGoodTypeEnum('good_type').notNull(),
   effect: text('effect'),
+});
+
+// ===== MAGAZINES =====
+export const magazines = pgTable('magazines', {
+  itemId: integer('item_id').primaryKey().references(() => items.id, { onDelete: 'cascade' }),
+  perkDescriptionKey: varchar('perk_description_key', { length: 200 }).notNull(),
+});
+
+export const magazineIssues = pgTable('magazine_issues', {
+  id: serial('id').primaryKey(),
+  magazineId: integer('magazine_id').references(() => items.id, { onDelete: 'cascade' }).notNull(),
+  d20Min: integer('d20_min').notNull(),
+  d20Max: integer('d20_max').notNull(),
+  issueName: varchar('issue_name', { length: 200 }).notNull(),
+  issueNameKey: varchar('issue_name_key', { length: 200 }),
+  effectDescriptionKey: varchar('effect_description_key', { length: 200 }).notNull(),
 });
 
 // ===== RELATIONS =====
@@ -203,6 +223,10 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
   oddity: one(oddities, {
     fields: [items.id],
     references: [oddities.itemId],
+  }),
+  magazine: one(magazines, {
+    fields: [items.id],
+    references: [magazines.itemId],
   }),
   // Child tables that have multiple rows
   weaponQualities: many(weaponQualities),
@@ -320,6 +344,27 @@ export const odditiesRelations = relations(oddities, ({ one }) => ({
     references: [items.id],
   }),
 }));
+
+// Magazine relations
+export const magazinesRelations = relations(magazines, ({ one, many }) => ({
+  item: one(items, { fields: [magazines.itemId], references: [items.id] }),
+  issues: many(magazineIssues),
+}));
+
+export const magazineIssuesRelations = relations(magazineIssues, ({ one }) => ({
+  magazine: one(magazines, { fields: [magazineIssues.magazineId], references: [magazines.itemId] }),
+}));
+
+// ===== DISEASES =====
+// Diseases are NOT items - they are conditions/afflictions
+export const diseases = pgTable('diseases', {
+  id: serial('id').primaryKey(),
+  d20Roll: integer('d20_roll').notNull().unique(),
+  name: varchar('name', { length: 100 }).notNull().unique(),
+  nameKey: varchar('name_key', { length: 100 }),
+  effectKey: varchar('effect_key', { length: 100 }).notNull(),
+  duration: integer('duration').notNull(), // Duration in stages
+});
 
 // ===== PERSONAL TRINKETS =====
 // Table for random personal trinkets (roll d20)

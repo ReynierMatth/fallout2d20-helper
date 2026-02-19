@@ -11,8 +11,8 @@ export const weaponSkillEnum = pgEnum('weapon_skill', [
 
 export const weaponQualityEnum = pgEnum('weapon_quality', [
   'accurate', 'blast', 'breaking', 'burst', 'closeQuarters', 'concealed', 'debilitating',
-  'freezing', 'gatling', 'inaccurate', 'mine', 'nightVision', 'parry', 'persistent',
-  'piercing', 'radioactive', 'reliable', 'recon', 'spread', 'stun', 'suppressed',
+  'gatling', 'inaccurate', 'mine', 'nightVision', 'parry', 'persistent',
+  'piercing', 'radioactive', 'reliable', 'recon', 'spread', 'stun',
   'thrown', 'twoHanded', 'unreliable', 'vicious', 'silent'
 ]);
 
@@ -39,7 +39,7 @@ export const robotLocationEnum = pgEnum('robot_location', ['all', 'optic', 'body
 export const itemTypeEnum = pgEnum('item_type', [
   'weapon', 'armor', 'powerArmor', 'robotArmor', 'clothing',
   'ammunition', 'syringerAmmo', 'chem', 'food',
-  'generalGood', 'oddity'
+  'generalGood', 'oddity', 'magazine'
 ]);
 
 export const foodTypeEnum = pgEnum('food_type', ['food', 'drink']);

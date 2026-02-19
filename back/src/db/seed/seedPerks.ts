@@ -8,9 +8,9 @@ import {
   perkRankEffects,
 } from '../schema/index';
 
-// Import data from frontend
-import { PERKS } from '../../../../front/src/data/perks';
-import type { SpecialAttribute, SkillName } from '../../../../front/src/data/characters';
+// Import data from local seed data
+import { PERKS } from './data/perks';
+import type { SpecialAttribute, SkillName } from './data/characters';
 
 export async function seedPerks() {
   console.log('Seeding perks...');

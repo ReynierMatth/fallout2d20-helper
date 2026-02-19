@@ -17,13 +17,15 @@ import {
   food,
   generalGoods,
   oddities,
+  magazines,
+  magazineIssues,
 } from '../db/schema/index';
 
 const router = Router();
 
 // ===== GET ITEM BY ID (Universal) =====
 
-router.get('/:id(\\d+)', async (req: any, res) => {
+router.get('/:id(\\d+)', async (req, res) => {
   try {
     const id = Number(req.params.id);
     const [item] = await db.select().from(items).where(eq(items.id, id));
@@ -103,6 +105,15 @@ router.get('/:id(\\d+)', async (req: any, res) => {
       case 'oddity': {
         const [oddityDetails] = await db.select().from(oddities).where(eq(oddities.itemId, id));
         details = oddityDetails;
+        break;
+      }
+      case 'magazine': {
+        const [magazineDetails] = await db.select().from(magazines).where(eq(magazines.itemId, id));
+        const issues = await db.select().from(magazineIssues).where(eq(magazineIssues.magazineId, id));
+        details = {
+          ...magazineDetails,
+          issues,
+        };
         break;
       }
     }
@@ -488,6 +499,7 @@ router.get('/clothing', async (req, res) => {
         drEnergy: clothing.drEnergy,
         drRadiation: clothing.drRadiation,
         drPoison: clothing.drPoison,
+        effect: clothing.effect,
       })
       .from(items)
       .innerJoin(clothing, eq(items.id, clothing.itemId))
@@ -541,6 +553,7 @@ router.get('/clothing/:id', async (req, res) => {
         drEnergy: clothing.drEnergy,
         drRadiation: clothing.drRadiation,
         drPoison: clothing.drPoison,
+        effect: clothing.effect,
       })
       .from(items)
       .innerJoin(clothing, eq(items.id, clothing.itemId))
@@ -625,6 +638,7 @@ router.get('/syringer-ammo', async (_req, res) => {
         rarity: items.rarity,
         weight: items.weight,
         effectKey: syringerAmmo.effectKey,
+        effect: syringerAmmo.effect,
       })
       .from(items)
       .innerJoin(syringerAmmo, eq(items.id, syringerAmmo.itemId));
@@ -673,6 +687,7 @@ router.get('/chems', async (req, res) => {
         addictive: chems.addictive,
         addictionLevel: chems.addictionLevel,
         effectKey: chems.effectKey,
+        effect: chems.effect,
       })
       .from(items)
       .innerJoin(chems, eq(items.id, chems.itemId))
@@ -705,6 +720,7 @@ router.get('/chems/:id', async (req, res) => {
         addictive: chems.addictive,
         addictionLevel: chems.addictionLevel,
         effectKey: chems.effectKey,
+        effect: chems.effect,
       })
       .from(items)
       .innerJoin(chems, eq(items.id, chems.itemId))
@@ -755,9 +771,9 @@ router.get('/food', async (req, res) => {
         rarity: items.rarity,
         weight: items.weight,
         foodType: food.foodType,
-        hpHealed: food.hpHealed,
         irradiated: food.irradiated,
         effectKey: food.effectKey,
+        effect: food.effect,
       })
       .from(items)
       .innerJoin(food, eq(items.id, food.itemId))
@@ -787,9 +803,9 @@ router.get('/food/:id', async (req, res) => {
         rarity: items.rarity,
         weight: items.weight,
         foodType: food.foodType,
-        hpHealed: food.hpHealed,
         irradiated: food.irradiated,
         effectKey: food.effectKey,
+        effect: food.effect,
       })
       .from(items)
       .innerJoin(food, eq(items.id, food.itemId))
@@ -838,6 +854,7 @@ router.get('/general-goods', async (req, res) => {
         weight: items.weight,
         goodType: generalGoods.goodType,
         effectKey: generalGoods.effectKey,
+        effect: generalGoods.effect,
       })
       .from(items)
       .innerJoin(generalGoods, eq(items.id, generalGoods.itemId))
@@ -996,6 +1013,7 @@ router.get('/', async (req, res) => {
         drEnergy: clothing.drEnergy,
         drRadiation: clothing.drRadiation,
         drPoison: clothing.drPoison,
+        effect: clothing.effect,
       })
       .from(items)
       .innerJoin(clothing, eq(items.id, clothing.itemId));
@@ -1051,6 +1069,7 @@ router.get('/', async (req, res) => {
         addictive: chems.addictive,
         addictionLevel: chems.addictionLevel,
         effectKey: chems.effectKey,
+        effect: chems.effect,
       })
       .from(items)
       .innerJoin(chems, eq(items.id, chems.itemId));
@@ -1065,9 +1084,9 @@ router.get('/', async (req, res) => {
         rarity: items.rarity,
         weight: items.weight,
         foodType: food.foodType,
-        hpHealed: food.hpHealed,
         irradiated: food.irradiated,
         effectKey: food.effectKey,
+        effect: food.effect,
       })
       .from(items)
       .innerJoin(food, eq(items.id, food.itemId));
@@ -1083,9 +1102,85 @@ router.get('/', async (req, res) => {
         weight: items.weight,
         goodType: generalGoods.goodType,
         effectKey: generalGoods.effectKey,
+        effect: generalGoods.effect,
       })
       .from(items)
       .innerJoin(generalGoods, eq(items.id, generalGoods.itemId));
+
+    // Magazines
+    const magazinesResults = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        perkDescriptionKey: magazines.perkDescriptionKey,
+      })
+      .from(items)
+      .innerJoin(magazines, eq(items.id, magazines.itemId));
+
+    const magazinesWithIssues = await Promise.all(
+      magazinesResults.map(async (mag) => {
+        const issues = await db
+          .select()
+          .from(magazineIssues)
+          .where(eq(magazineIssues.magazineId, mag.id));
+        return { ...mag, issues };
+      })
+    );
+
+    // Robot Armors
+    const robotArmorsData = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        drPhysical: robotArmors.drPhysical,
+        drEnergy: robotArmors.drEnergy,
+        isBonus: robotArmors.isBonus,
+        location: robotArmors.location,
+        carryModifier: robotArmors.carryModifier,
+        perkRequired: robotArmors.perkRequired,
+        specialEffectKey: robotArmors.specialEffectKey,
+        specialEffectDescription: robotArmors.specialEffectDescription,
+      })
+      .from(items)
+      .innerJoin(robotArmors, eq(items.id, robotArmors.itemId));
+
+    // Syringer Ammo
+    const syringerAmmoData = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        effectKey: syringerAmmo.effectKey,
+        effect: syringerAmmo.effect,
+      })
+      .from(items)
+      .innerJoin(syringerAmmo, eq(items.id, syringerAmmo.itemId));
+
+    // Oddities
+    const odditiesData = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        goodType: oddities.goodType,
+        effect: oddities.effect,
+      })
+      .from(items)
+      .innerJoin(oddities, eq(items.id, oddities.itemId));
 
     res.json({
       weapons: weaponsData,
@@ -1096,10 +1191,80 @@ router.get('/', async (req, res) => {
       chems: chemsData,
       food: foodData,
       generalGoods: generalGoodsData,
+      magazines: magazinesWithIssues,
+      robotArmors: robotArmorsData,
+      syringerAmmo: syringerAmmoData,
+      oddities: odditiesData,
     });
   } catch (error) {
     console.error('Error fetching all items:', error);
     res.status(500).json({ error: 'Failed to fetch items' });
+  }
+});
+
+// ===== MAGAZINES =====
+router.get('/magazines', async (_req, res) => {
+  try {
+    const results = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        perkDescriptionKey: magazines.perkDescriptionKey,
+      })
+      .from(items)
+      .innerJoin(magazines, eq(items.id, magazines.itemId));
+
+    const magazinesWithIssues = await Promise.all(
+      results.map(async (mag) => {
+        const issues = await db
+          .select()
+          .from(magazineIssues)
+          .where(eq(magazineIssues.magazineId, mag.id));
+        return { ...mag, issues };
+      })
+    );
+
+    res.json(magazinesWithIssues);
+  } catch (error) {
+    console.error('Error fetching magazines:', error);
+    res.status(500).json({ error: 'Failed to fetch magazines' });
+  }
+});
+
+router.get('/magazines/:id(\\d+)', async (req, res) => {
+  try {
+    const id = parseInt(req.params['id(\\d+)'] || req.params.id);
+    const [result] = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        perkDescriptionKey: magazines.perkDescriptionKey,
+      })
+      .from(items)
+      .innerJoin(magazines, eq(items.id, magazines.itemId))
+      .where(eq(items.id, id));
+
+    if (!result) {
+      return res.status(404).json({ error: 'Magazine not found' });
+    }
+
+    const issues = await db
+      .select()
+      .from(magazineIssues)
+      .where(eq(magazineIssues.magazineId, id));
+
+    res.json({ ...result, issues });
+  } catch (error) {
+    console.error('Error fetching magazine:', error);
+    res.status(500).json({ error: 'Failed to fetch magazine' });
   }
 });
 

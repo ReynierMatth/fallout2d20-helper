@@ -15,17 +15,22 @@ import {
   food,
   generalGoods,
   oddities,
+  magazines,
+  magazineIssues,
+  diseases,
   personalTrinkets,
 } from '../schema/index';
 
-// Import data from frontend
-import { weapons as weaponsData } from '../../../../front/src/data/weapons';
-import { armor as armorData, powerArmor as powerArmorData, robotArmor as robotArmorData } from '../../../../front/src/data/armor';
-import { clothing as clothingData } from '../../../../front/src/data/clothing';
-import { ammunition as ammunitionData, syringerAmmo as syringerAmmoData } from '../../../../front/src/data/ammunition';
-import { chems as chemsData } from '../../../../front/src/data/chems';
-import { food as foodData } from '../../../../front/src/data/food';
-import { generalGoods as generalGoodsData, oddities as odditiesData } from '../../../../front/src/data/generalGoods';
+// Import data from local seed data
+import { weapons as weaponsData } from './data/weapons';
+import { armor as armorData, powerArmor as powerArmorData, robotArmor as robotArmorData } from './data/armor';
+import { clothing as clothingData } from './data/clothing';
+import { ammunition as ammunitionData, syringerAmmo as syringerAmmoData } from './data/ammunition';
+import { chems as chemsData } from './data/chems';
+import { food as foodData } from './data/food';
+import { generalGoods as generalGoodsData, oddities as odditiesData } from './data/generalGoods';
+import { magazines as magazinesData, MAGAZINE_VALUE, MAGAZINE_RARITY, MAGAZINE_WEIGHT } from './data/magazines';
+import { diseases as diseasesData } from './data/diseases';
 
 // Map to store item IDs by name and type for later use (e.g., equipment packs)
 export const itemIdMap = new Map<string, number>();
@@ -232,6 +237,7 @@ export async function seedClothing() {
       drEnergy: item.dr?.energy,
       drRadiation: item.dr?.radiation,
       drPoison: item.dr?.poison,
+      effect: item.effect,
     });
 
     // 3. Insert clothing locations
@@ -314,6 +320,7 @@ export async function seedAmmunition() {
     await db.insert(syringerAmmo).values({
       itemId,
       effectKey: ammo.effectKey,
+      effect: ammo.effect ?? null,
     });
   }
 
@@ -347,6 +354,7 @@ export async function seedChems() {
       addictive: chem.addictive,
       addictionLevel: chem.addictionLevel,
       effectKey: chem.effectKey,
+      effect: chem.effect ?? null,
     });
   }
 
@@ -377,9 +385,9 @@ export async function seedFood() {
     await db.insert(food).values({
       itemId,
       foodType: item.type,
-      hpHealed: item.hpHealed,
       irradiated: item.irradiated,
       effectKey: item.effectKey,
+      effect: item.effect,
     });
   }
 
@@ -411,6 +419,7 @@ export async function seedGeneralGoods() {
       itemId,
       goodType: item.type,
       effectKey: item.effectKey,
+      effect: item.effect ?? null,
     });
   }
 
@@ -439,7 +448,7 @@ export async function seedGeneralGoods() {
     await db.insert(oddities).values({
       itemId,
       goodType: item.type,
-      effect: item.effect,
+      effect: item.effectKey,
     });
   }
 
@@ -484,6 +493,66 @@ export async function seedPersonalTrinkets() {
   console.log(`  Inserted ${PERSONAL_TRINKETS.length} personal trinkets`);
 }
 
+export async function seedMagazines() {
+  console.log('Seeding magazines...');
+
+  for (const series of magazinesData) {
+    // 1. Insert into items table
+    const [insertedItem] = await db
+      .insert(items)
+      .values({
+        itemType: 'magazine',
+        name: series.name,
+        nameKey: series.nameKey,
+        value: MAGAZINE_VALUE,
+        rarity: MAGAZINE_RARITY,
+        weight: MAGAZINE_WEIGHT,
+      })
+      .returning({ id: items.id });
+
+    const itemId = insertedItem.id;
+    itemIdMap.set(getItemKey(series.name, 'magazine'), itemId);
+
+    // 2. Insert into magazines table
+    await db.insert(magazines).values({
+      itemId,
+      perkDescriptionKey: series.perkDescriptionKey,
+    });
+
+    // 3. Insert magazine issues
+    if (series.issues.length > 0) {
+      await db.insert(magazineIssues).values(
+        series.issues.map((issue) => ({
+          magazineId: itemId,
+          d20Min: issue.d20Min,
+          d20Max: issue.d20Max,
+          issueName: issue.name,
+          issueNameKey: issue.nameKey,
+          effectDescriptionKey: issue.effectKey,
+        }))
+      );
+    }
+  }
+
+  console.log(`  Inserted ${magazinesData.length} magazine series`);
+}
+
+export async function seedDiseases() {
+  console.log('Seeding diseases...');
+
+  for (const disease of diseasesData) {
+    await db.insert(diseases).values({
+      d20Roll: disease.d20Roll,
+      name: disease.name,
+      nameKey: disease.nameKey,
+      effectKey: disease.effectKey,
+      duration: disease.duration,
+    });
+  }
+
+  console.log(`  Inserted ${diseasesData.length} diseases`);
+}
+
 export async function seedAllItems() {
   await seedWeapons();
   await seedArmors();
@@ -494,5 +563,7 @@ export async function seedAllItems() {
   await seedChems();
   await seedFood();
   await seedGeneralGoods();
+  await seedMagazines();
+  await seedDiseases();
   await seedPersonalTrinkets();
 }

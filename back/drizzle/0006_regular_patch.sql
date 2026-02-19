@@ -1,0 +1,1 @@
+ALTER TABLE "food" DROP COLUMN "hp_healed";

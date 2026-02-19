@@ -1,6 +1,6 @@
 {
-  "id": "afe3e9e3-954d-424a-a247-fbb207811d16",
-  "prevId": "80490de1-a6b8-46a9-94ae-280d67b65eed",
+  "id": "dac26393-db90-4dfd-8e7c-88866549a65f",
+  "prevId": "c7b22082-5dc5-48c6-91cb-895f4205e031",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -232,6 +232,12 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "effect": {
+          "name": "effect",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -365,6 +371,70 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.diseases": {
+      "name": "diseases",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "d20_roll": {
+          "name": "d20_roll",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effect_key": {
+          "name": "effect_key",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "diseases_d20_roll_unique": {
+          "name": "diseases_d20_roll_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "d20_roll"
+          ]
+        },
+        "diseases_name_unique": {
+          "name": "diseases_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.food": {
       "name": "food",
       "schema": "",
@@ -379,12 +449,6 @@
           "name": "food_type",
           "type": "food_type",
           "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "hp_healed": {
-          "name": "hp_healed",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -543,6 +607,114 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.magazine_issues": {
+      "name": "magazine_issues",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "magazine_id": {
+          "name": "magazine_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "d20_min": {
+          "name": "d20_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "d20_max": {
+          "name": "d20_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_name": {
+          "name": "issue_name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_name_key": {
+          "name": "issue_name_key",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effect_description_key": {
+          "name": "effect_description_key",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "magazine_issues_magazine_id_items_id_fk": {
+          "name": "magazine_issues_magazine_id_items_id_fk",
+          "tableFrom": "magazine_issues",
+          "tableTo": "items",
+          "columnsFrom": [
+            "magazine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.magazines": {
+      "name": "magazines",
+      "schema": "",
+      "columns": {
+        "item_id": {
+          "name": "item_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "perk_description_key": {
+          "name": "perk_description_key",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "magazines_item_id_items_id_fk": {
+          "name": "magazines_item_id_items_id_fk",
+          "tableFrom": "magazines",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -2836,7 +3008,8 @@
         "chem",
         "food",
         "generalGood",
-        "oddity"
+        "oddity",
+        "magazine"
       ]
     },
     "public.location_choice": {

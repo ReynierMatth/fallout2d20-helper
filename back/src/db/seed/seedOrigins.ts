@@ -7,9 +7,9 @@ import {
   survivorTraits,
 } from '../schema/index';
 
-// Import data from frontend
-import { ORIGINS, SURVIVOR_TRAITS } from '../../../../front/src/data/characters';
-import type { SpecialAttribute, SkillName } from '../../../../front/src/data/characters';
+// Import data from local seed data
+import { ORIGINS, SURVIVOR_TRAITS } from './data/characters';
+import type { SpecialAttribute, SkillName } from './data/characters';
 
 export async function seedOrigins() {
   console.log('Seeding origins...');

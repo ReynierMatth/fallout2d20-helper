@@ -3,7 +3,6 @@ import { db } from '../db/index';
 import { eq } from 'drizzle-orm';
 import {
   items,
-  weapons,
   equipmentPacks,
   originEquipmentPacks,
   equipmentPackItems,
@@ -68,18 +67,6 @@ async function getFullPack(packId: string) {
           .from(items)
           .where(eq(items.id, item.itemId));
 
-        // If it's a weapon, get the ammo type
-        let ammoType: string | undefined;
-        if (itemDetails?.itemType === 'weapon') {
-          const [weaponDetails] = await db
-            .select({ ammo: weapons.ammo })
-            .from(weapons)
-            .where(eq(weapons.itemId, item.itemId));
-          if (weaponDetails?.ammo && weaponDetails.ammo !== 'none') {
-            ammoType = weaponDetails.ammo;
-          }
-        }
-
         return {
           itemId: item.itemId,
           itemName: itemDetails?.name,
@@ -88,7 +75,6 @@ async function getFullPack(packId: string) {
           quantity: item.quantity,
           quantityCD: item.quantityCD,
           location: item.location,
-          ...(ammoType ? { ammoType } : {}),
         };
       }
 
@@ -137,6 +123,23 @@ router.get('/origin/:originId', async (req, res) => {
   }
 });
 
+// GET single equipment pack
+router.get('/:id', async (req, res) => {
+  try {
+    const packId = req.params.id;
+    const pack = await getFullPack(packId);
+
+    if (!pack) {
+      return res.status(404).json({ error: 'Equipment pack not found' });
+    }
+
+    res.json(pack);
+  } catch (error) {
+    console.error('Error fetching equipment pack:', error);
+    res.status(500).json({ error: 'Failed to fetch equipment pack' });
+  }
+});
+
 // ===== ROBOT ARM ATTACHMENTS =====
 
 router.get('/robot-arms', async (_req, res) => {
@@ -160,7 +163,6 @@ router.get('/tag-skill-bonuses', async (_req, res) => {
         itemId: tagSkillBonusItems.itemId,
         quantity: tagSkillBonusItems.quantity,
         quantityCD: tagSkillBonusItems.quantityCD,
-        choiceGroup: tagSkillBonusItems.choiceGroup,
         // Item details
         itemName: items.name,
         itemType: items.itemType,
@@ -169,55 +171,20 @@ router.get('/tag-skill-bonuses', async (_req, res) => {
       .from(tagSkillBonusItems)
       .innerJoin(items, eq(tagSkillBonusItems.itemId, items.id));
 
-    // Group by skill, then handle choice groups
-    const bySkill: Record<string, typeof bonuses> = {};
-    for (const bonus of bonuses) {
-      if (!bySkill[bonus.skill]) {
-        bySkill[bonus.skill] = [];
-      }
-      bySkill[bonus.skill].push(bonus);
-    }
-
+    // Group by skill
     const grouped: Record<string, any[]> = {};
-    for (const [skill, skillBonuses] of Object.entries(bySkill)) {
-      const entries: any[] = [];
-      const choiceGroups: Record<number, typeof bonuses> = {};
-
-      for (const bonus of skillBonuses) {
-        if (bonus.choiceGroup != null) {
-          if (!choiceGroups[bonus.choiceGroup]) {
-            choiceGroups[bonus.choiceGroup] = [];
-          }
-          choiceGroups[bonus.choiceGroup].push(bonus);
-        } else {
-          // Direct item
-          entries.push({
-            itemId: bonus.itemId,
-            itemName: bonus.itemName,
-            itemType: bonus.itemType,
-            itemNameKey: bonus.itemNameKey,
-            quantity: bonus.quantity,
-            quantityCD: bonus.quantityCD,
-          });
-        }
+    for (const bonus of bonuses) {
+      if (!grouped[bonus.skill]) {
+        grouped[bonus.skill] = [];
       }
-
-      // Convert choice groups to isChoice entries
-      for (const groupItems of Object.values(choiceGroups)) {
-        entries.push({
-          isChoice: true,
-          options: groupItems.map((item) => ({
-            itemId: item.itemId,
-            itemName: item.itemName,
-            itemType: item.itemType,
-            itemNameKey: item.itemNameKey,
-            quantity: item.quantity,
-            quantityCD: item.quantityCD,
-          })),
-        });
-      }
-
-      grouped[skill] = entries;
+      grouped[bonus.skill].push({
+        itemId: bonus.itemId,
+        itemName: bonus.itemName,
+        itemType: bonus.itemType,
+        itemNameKey: bonus.itemNameKey,
+        quantity: bonus.quantity,
+        quantityCD: bonus.quantityCD,
+      });
     }
 
     res.json(grouped);
@@ -288,23 +255,6 @@ router.get('/level-bonuses/:level', async (req, res) => {
   } catch (error) {
     console.error('Error fetching level bonus:', error);
     res.status(500).json({ error: 'Failed to fetch level bonus' });
-  }
-});
-
-// GET single equipment pack — MUST be last (/:id would catch named routes like /tag-skill-bonuses)
-router.get('/:id', async (req, res) => {
-  try {
-    const packId = req.params.id;
-    const pack = await getFullPack(packId);
-
-    if (!pack) {
-      return res.status(404).json({ error: 'Equipment pack not found' });
-    }
-
-    res.json(pack);
-  } catch (error) {
-    console.error('Error fetching equipment pack:', error);
-    res.status(500).json({ error: 'Failed to fetch equipment pack' });
   }
 });
 
