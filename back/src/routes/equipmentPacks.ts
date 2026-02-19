@@ -123,23 +123,6 @@ router.get('/origin/:originId', async (req, res) => {
   }
 });
 
-// GET single equipment pack
-router.get('/:id', async (req, res) => {
-  try {
-    const packId = req.params.id;
-    const pack = await getFullPack(packId);
-
-    if (!pack) {
-      return res.status(404).json({ error: 'Equipment pack not found' });
-    }
-
-    res.json(pack);
-  } catch (error) {
-    console.error('Error fetching equipment pack:', error);
-    res.status(500).json({ error: 'Failed to fetch equipment pack' });
-  }
-});
-
 // ===== ROBOT ARM ATTACHMENTS =====
 
 router.get('/robot-arms', async (_req, res) => {
@@ -255,6 +238,23 @@ router.get('/level-bonuses/:level', async (req, res) => {
   } catch (error) {
     console.error('Error fetching level bonus:', error);
     res.status(500).json({ error: 'Failed to fetch level bonus' });
+  }
+});
+
+// GET single equipment pack — MUST be last (/:id would catch named routes above)
+router.get('/:id', async (req, res) => {
+  try {
+    const packId = req.params.id;
+    const pack = await getFullPack(packId);
+
+    if (!pack) {
+      return res.status(404).json({ error: 'Equipment pack not found' });
+    }
+
+    res.json(pack);
+  } catch (error) {
+    console.error('Error fetching equipment pack:', error);
+    res.status(500).json({ error: 'Failed to fetch equipment pack' });
   }
 });
 

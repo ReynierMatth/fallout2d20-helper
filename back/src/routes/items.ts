@@ -25,7 +25,7 @@ const router = Router();
 
 // ===== GET ITEM BY ID (Universal) =====
 
-router.get('/:id(\\d+)', async (req, res) => {
+router.get('/:id(\\d+)', async (req: any, res) => {
   try {
     const id = Number(req.params.id);
     const [item] = await db.select().from(items).where(eq(items.id, id));
@@ -1235,9 +1235,9 @@ router.get('/magazines', async (_req, res) => {
   }
 });
 
-router.get('/magazines/:id(\\d+)', async (req, res) => {
+router.get('/magazines/:id(\\d+)', async (req: any, res) => {
   try {
-    const id = parseInt(req.params['id(\\d+)'] || req.params.id);
+    const id = parseInt(req.params.id);
     const [result] = await db
       .select({
         id: items.id,
