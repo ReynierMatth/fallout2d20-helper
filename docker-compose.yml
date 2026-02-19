@@ -1,0 +1,33 @@
+services:
+  app:
+    image: ghcr.io/reyniermatth/fallout2d20-helper:latest
+    # To build from source instead of pulling the image, comment `image` above and uncomment:
+    # build: .
+    ports:
+      - "3000:80"
+    environment:
+      DATABASE_URL: postgresql://fallout:fallout2d20@db:5432/fallout2d20
+      PORT: 3001
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fallout
+      POSTGRES_PASSWORD: fallout2d20
+      POSTGRES_DB: fallout2d20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fallout -d fallout2d20"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

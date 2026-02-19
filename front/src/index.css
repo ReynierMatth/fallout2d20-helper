@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --color-vault-blue: #1e3a5f;
+  --color-vault-blue-dark: #0f172a;
+  --color-vault-blue-light: #3b5998;
+  --color-vault-yellow: #f4d03f;
+  --color-vault-yellow-dark: #c9a227;
+  --color-vault-yellow-light: #f9e076;
+  --color-vault-danger: #c0392b;
+  --color-vault-success: #27ae60;
+  --color-vault-gray: #2c3e50;
+  --color-vault-gray-light: #34495e;
+
+  --font-family-fallout: 'Share Tech Mono', 'Courier New', monospace;
+}
+
+@font-face {
+  font-family: 'Share Tech Mono';
+  src: url('https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRBEqV98dVQztYldFcLowEF.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-fallout);
+  background-color: var(--color-vault-blue-dark);
+  color: var(--color-vault-yellow);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-vault-blue-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-vault-yellow-dark);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-vault-yellow);
+}
+
+/* Custom animations */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+.scanline-effect::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(transparent, rgba(244, 208, 63, 0.1), transparent);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.terminal-flicker {
+  animation: flicker 0.1s infinite;
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,11 @@
+node_modules
+front/node_modules
+back/node_modules
+front/dist
+back/dist
+.git
+*.md
+.env
+back/.env
+front/.env
+back/docker-compose.yml
