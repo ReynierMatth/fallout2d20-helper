@@ -1,4 +1,5 @@
 import { db } from '../index';
+import { eq } from 'drizzle-orm';
 import {
   items,
   weapons,
@@ -47,8 +48,7 @@ export async function seedWeapons() {
   console.log('Seeding weapons...');
 
   for (const weapon of weaponsData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'weapon',
@@ -58,25 +58,43 @@ export async function seedWeapons() {
         rarity: weapon.rarity,
         weight: weapon.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: weapon.nameKey, value: weapon.value, rarity: weapon.rarity, weight: weapon.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(weapon.name, 'weapon'), itemId);
 
-    // 2. Insert into weapons table with itemId
-    await db.insert(weapons).values({
-      itemId,
-      skill: weapon.skill,
-      damage: weapon.damage,
-      damageType: weapon.damageType,
-      damageBonus: weapon.damageBonus,
-      fireRate: weapon.fireRate,
-      range: weapon.range,
-      ammo: weapon.ammo,
-      ammoPerShot: weapon.ammoPerShot,
-    });
+    await db
+      .insert(weapons)
+      .values({
+        itemId,
+        skill: weapon.skill,
+        damage: weapon.damage,
+        damageType: weapon.damageType,
+        damageBonus: weapon.damageBonus,
+        fireRate: weapon.fireRate,
+        range: weapon.range,
+        ammo: weapon.ammo,
+        ammoPerShot: weapon.ammoPerShot,
+      })
+      .onConflictDoUpdate({
+        target: weapons.itemId,
+        set: {
+          skill: weapon.skill,
+          damage: weapon.damage,
+          damageType: weapon.damageType,
+          damageBonus: weapon.damageBonus,
+          fireRate: weapon.fireRate,
+          range: weapon.range,
+          ammo: weapon.ammo,
+          ammoPerShot: weapon.ammoPerShot,
+        },
+      });
 
-    // 3. Insert weapon qualities
+    await db.delete(weaponQualities).where(eq(weaponQualities.itemId, itemId));
     if (weapon.qualities && weapon.qualities.length > 0) {
       await db.insert(weaponQualities).values(
         weapon.qualities.map((q) => ({
@@ -88,15 +106,14 @@ export async function seedWeapons() {
     }
   }
 
-  console.log(`  Inserted ${weaponsData.length} weapons`);
+  console.log(`  Upserted ${weaponsData.length} weapons`);
 }
 
 export async function seedArmors() {
   console.log('Seeding armors...');
 
   for (const armor of armorData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'armor',
@@ -106,34 +123,51 @@ export async function seedArmors() {
         rarity: armor.rarity,
         weight: armor.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: armor.nameKey, value: armor.value, rarity: armor.rarity, weight: armor.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(armor.name, 'armor'), itemId);
 
-    // 2. Insert into armors table with itemId
-    await db.insert(armors).values({
-      itemId,
-      location: armor.location,
-      drPhysical: armor.dr.physical,
-      drEnergy: armor.dr.energy,
-      drRadiation: armor.dr.radiation,
-      drPoison: armor.dr.poison,
-      type: armor.type,
-      set: armor.set,
-      hp: armor.hp,
-    });
+    await db
+      .insert(armors)
+      .values({
+        itemId,
+        location: armor.location,
+        drPhysical: armor.dr.physical,
+        drEnergy: armor.dr.energy,
+        drRadiation: armor.dr.radiation,
+        drPoison: armor.dr.poison,
+        type: armor.type,
+        set: armor.set,
+        hp: armor.hp,
+      })
+      .onConflictDoUpdate({
+        target: armors.itemId,
+        set: {
+          location: armor.location,
+          drPhysical: armor.dr.physical,
+          drEnergy: armor.dr.energy,
+          drRadiation: armor.dr.radiation,
+          drPoison: armor.dr.poison,
+          type: armor.type,
+          set: armor.set,
+          hp: armor.hp,
+        },
+      });
   }
 
-  console.log(`  Inserted ${armorData.length} armors`);
+  console.log(`  Upserted ${armorData.length} armors`);
 }
 
 export async function seedPowerArmors() {
   console.log('Seeding power armors...');
 
   for (const pa of powerArmorData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'powerArmor',
@@ -143,13 +177,15 @@ export async function seedPowerArmors() {
         rarity: pa.rarity,
         weight: pa.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: pa.nameKey, value: pa.value, rarity: pa.rarity, weight: pa.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(pa.name, 'powerArmor'), itemId);
 
-    // 2. Insert into power_armors table with itemId
-    // Map set names to enum values
     const setMap: Record<string, 'frame' | 'raiderPower' | 't45' | 't51' | 't60' | 'x01'> = {
       frame: 'frame',
       raiderPower: 'raiderPower',
@@ -159,63 +195,92 @@ export async function seedPowerArmors() {
       x01: 'x01',
     };
 
-    await db.insert(powerArmors).values({
-      itemId,
-      set: setMap[pa.set!] || 'frame',
-      location: pa.location,
-      drPhysical: pa.dr.physical,
-      drEnergy: pa.dr.energy,
-      drRadiation: pa.dr.radiation,
-      hp: pa.hp ?? 0,
-    });
+    await db
+      .insert(powerArmors)
+      .values({
+        itemId,
+        set: setMap[pa.set!] || 'frame',
+        location: pa.location,
+        drPhysical: pa.dr.physical,
+        drEnergy: pa.dr.energy,
+        drRadiation: pa.dr.radiation,
+        hp: pa.hp ?? 0,
+      })
+      .onConflictDoUpdate({
+        target: powerArmors.itemId,
+        set: {
+          set: setMap[pa.set!] || 'frame',
+          location: pa.location,
+          drPhysical: pa.dr.physical,
+          drEnergy: pa.dr.energy,
+          drRadiation: pa.dr.radiation,
+          hp: pa.hp ?? 0,
+        },
+      });
   }
 
-  console.log(`  Inserted ${powerArmorData.length} power armors`);
+  console.log(`  Upserted ${powerArmorData.length} power armors`);
 }
 
 export async function seedRobotArmors() {
   console.log('Seeding robot armors...');
 
   for (const robotArmor of robotArmorData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'robotArmor',
         name: robotArmor.name,
         nameKey: robotArmor.nameKey,
         value: robotArmor.value,
-        rarity: 0, // Robot armors don't have rarity in source data
-        weight: 0, // Robot armors don't have weight in source data
+        rarity: 0,
+        weight: 0,
+      })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: robotArmor.nameKey, value: robotArmor.value },
       })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(robotArmor.name, 'robotArmor'), itemId);
 
-    // 2. Insert into robot_armors table with itemId
-    await db.insert(robotArmors).values({
-      itemId,
-      drPhysical: robotArmor.drPhysical,
-      drEnergy: robotArmor.drEnergy,
-      isBonus: robotArmor.isBonus,
-      location: robotArmor.location,
-      carryModifier: robotArmor.carryModifier,
-      perkRequired: robotArmor.perkRequired,
-      specialEffectKey: robotArmor.specialEffect?.descriptionKey,
-      specialEffectDescription: robotArmor.specialEffect?.description,
-    });
+    await db
+      .insert(robotArmors)
+      .values({
+        itemId,
+        drPhysical: robotArmor.drPhysical,
+        drEnergy: robotArmor.drEnergy,
+        isBonus: robotArmor.isBonus,
+        location: robotArmor.location,
+        carryModifier: robotArmor.carryModifier,
+        perkRequired: robotArmor.perkRequired,
+        specialEffectKey: robotArmor.specialEffect?.descriptionKey,
+        specialEffectDescription: robotArmor.specialEffect?.description,
+      })
+      .onConflictDoUpdate({
+        target: robotArmors.itemId,
+        set: {
+          drPhysical: robotArmor.drPhysical,
+          drEnergy: robotArmor.drEnergy,
+          isBonus: robotArmor.isBonus,
+          location: robotArmor.location,
+          carryModifier: robotArmor.carryModifier,
+          perkRequired: robotArmor.perkRequired,
+          specialEffectKey: robotArmor.specialEffect?.descriptionKey,
+          specialEffectDescription: robotArmor.specialEffect?.description,
+        },
+      });
   }
 
-  console.log(`  Inserted ${robotArmorData.length} robot armors`);
+  console.log(`  Upserted ${robotArmorData.length} robot armors`);
 }
 
 export async function seedClothing() {
   console.log('Seeding clothing...');
 
   for (const item of clothingData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'clothing',
@@ -225,32 +290,44 @@ export async function seedClothing() {
         rarity: item.rarity,
         weight: item.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: item.nameKey, value: item.value, rarity: item.rarity, weight: item.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(item.name, 'clothing'), itemId);
 
-    // 2. Insert into clothing table with itemId
-    await db.insert(clothing).values({
-      itemId,
-      drPhysical: item.dr?.physical,
-      drEnergy: item.dr?.energy,
-      drRadiation: item.dr?.radiation,
-      drPoison: item.dr?.poison,
-      effect: item.effect,
-    });
+    await db
+      .insert(clothing)
+      .values({
+        itemId,
+        drPhysical: item.dr?.physical,
+        drEnergy: item.dr?.energy,
+        drRadiation: item.dr?.radiation,
+        drPoison: item.dr?.poison,
+        effect: item.effect,
+      })
+      .onConflictDoUpdate({
+        target: clothing.itemId,
+        set: {
+          drPhysical: item.dr?.physical,
+          drEnergy: item.dr?.energy,
+          drRadiation: item.dr?.radiation,
+          drPoison: item.dr?.poison,
+          effect: item.effect,
+        },
+      });
 
-    // 3. Insert clothing locations
+    await db.delete(clothingLocations).where(eq(clothingLocations.itemId, itemId));
     if (item.locations && item.locations.length > 0) {
       await db.insert(clothingLocations).values(
-        item.locations.map((loc) => ({
-          itemId,
-          location: loc,
-        }))
+        item.locations.map((loc) => ({ itemId, location: loc }))
       );
     }
 
-    // 4. Insert clothing effects
+    await db.delete(clothingEffects).where(eq(clothingEffects.itemId, itemId));
     if (item.effects && item.effects.length > 0) {
       await db.insert(clothingEffects).values(
         item.effects.map((effect) => ({
@@ -264,15 +341,14 @@ export async function seedClothing() {
     }
   }
 
-  console.log(`  Inserted ${clothingData.length} clothing items`);
+  console.log(`  Upserted ${clothingData.length} clothing items`);
 }
 
 export async function seedAmmunition() {
   console.log('Seeding ammunition...');
 
   for (const ammo of ammunitionData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'ammunition',
@@ -282,124 +358,158 @@ export async function seedAmmunition() {
         rarity: ammo.rarity,
         weight: ammo.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: ammo.nameKey, value: ammo.value, rarity: ammo.rarity, weight: ammo.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(ammo.name, 'ammunition'), itemId);
 
-    // 2. Insert into ammunition table with itemId
-    await db.insert(ammunition).values({
-      itemId,
-      flatAmount: ammo.flatAmount,
-      randomAmount: ammo.randomAmount,
-    });
+    await db
+      .insert(ammunition)
+      .values({ itemId, flatAmount: ammo.flatAmount, randomAmount: ammo.randomAmount })
+      .onConflictDoUpdate({
+        target: ammunition.itemId,
+        set: { flatAmount: ammo.flatAmount, randomAmount: ammo.randomAmount },
+      });
   }
 
-  console.log(`  Inserted ${ammunitionData.length} ammunition types`);
+  console.log(`  Upserted ${ammunitionData.length} ammunition types`);
 
-  // Seed syringer ammo
   console.log('Seeding syringer ammo...');
   for (const ammo of syringerAmmoData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'syringerAmmo',
         name: ammo.name,
         nameKey: ammo.nameKey,
         value: ammo.value,
-        rarity: 2, // Syringer ammo rarity 2 (same as base syringer ammo)
-        weight: 0, // Syringer ammo has no weight
+        rarity: 2,
+        weight: 0,
+      })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: ammo.nameKey, value: ammo.value },
       })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(ammo.name, 'syringerAmmo'), itemId);
 
-    // 2. Insert into syringer_ammo table with itemId
-    await db.insert(syringerAmmo).values({
-      itemId,
-      effectKey: ammo.effectKey,
-      effect: ammo.effect ?? null,
-    });
+    await db
+      .insert(syringerAmmo)
+      .values({ itemId, effectKey: ammo.effectKey, effect: ammo.effect ?? null })
+      .onConflictDoUpdate({
+        target: syringerAmmo.itemId,
+        set: { effectKey: ammo.effectKey, effect: ammo.effect ?? null },
+      });
   }
 
-  console.log(`  Inserted ${syringerAmmoData.length} syringer ammo types`);
+  console.log(`  Upserted ${syringerAmmoData.length} syringer ammo types`);
 }
 
 export async function seedChems() {
   console.log('Seeding chems...');
 
   for (const chem of chemsData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'chem',
         name: chem.name,
-        nameKey: undefined, // Chems don't have nameKey in source
+        nameKey: undefined,
         value: chem.value,
         rarity: chem.rarity,
         weight: chem.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { value: chem.value, rarity: chem.rarity, weight: chem.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(chem.name, 'chem'), itemId);
 
-    // 2. Insert into chems table with itemId
-    await db.insert(chems).values({
-      itemId,
-      duration: chem.duration,
-      addictive: chem.addictive,
-      addictionLevel: chem.addictionLevel,
-      effectKey: chem.effectKey,
-      effect: chem.effect ?? null,
-    });
+    await db
+      .insert(chems)
+      .values({
+        itemId,
+        duration: chem.duration,
+        addictive: chem.addictive,
+        addictionLevel: chem.addictionLevel,
+        effectKey: chem.effectKey,
+        effect: chem.effect ?? null,
+      })
+      .onConflictDoUpdate({
+        target: chems.itemId,
+        set: {
+          duration: chem.duration,
+          addictive: chem.addictive,
+          addictionLevel: chem.addictionLevel,
+          effectKey: chem.effectKey,
+          effect: chem.effect ?? null,
+        },
+      });
   }
 
-  console.log(`  Inserted ${chemsData.length} chems`);
+  console.log(`  Upserted ${chemsData.length} chems`);
 }
 
 export async function seedFood() {
   console.log('Seeding food...');
 
   for (const item of foodData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'food',
         name: item.name,
-        nameKey: undefined, // Food doesn't have nameKey in source
+        nameKey: undefined,
         value: item.value,
         rarity: item.rarity,
         weight: item.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { value: item.value, rarity: item.rarity, weight: item.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(item.name, 'food'), itemId);
 
-    // 2. Insert into food table with itemId
-    await db.insert(food).values({
-      itemId,
-      foodType: item.type,
-      irradiated: item.irradiated,
-      effectKey: item.effectKey,
-      effect: item.effect,
-    });
+    await db
+      .insert(food)
+      .values({
+        itemId,
+        foodType: item.type,
+        irradiated: item.irradiated,
+        effectKey: item.effectKey,
+        effect: item.effect,
+      })
+      .onConflictDoUpdate({
+        target: food.itemId,
+        set: {
+          foodType: item.type,
+          irradiated: item.irradiated,
+          effectKey: item.effectKey,
+          effect: item.effect,
+        },
+      });
   }
 
-  console.log(`  Inserted ${foodData.length} food items`);
+  console.log(`  Upserted ${foodData.length} food items`);
 }
 
 export async function seedGeneralGoods() {
   console.log('Seeding general goods...');
 
   for (const item of generalGoodsData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'generalGood',
@@ -409,27 +519,29 @@ export async function seedGeneralGoods() {
         rarity: item.rarity,
         weight: item.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: item.nameKey, value: item.value, rarity: item.rarity, weight: item.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(item.name, 'generalGood'), itemId);
 
-    // 2. Insert into general_goods table with itemId
-    await db.insert(generalGoods).values({
-      itemId,
-      goodType: item.type,
-      effectKey: item.effectKey,
-      effect: item.effect ?? null,
-    });
+    await db
+      .insert(generalGoods)
+      .values({ itemId, goodType: item.type, effectKey: item.effectKey, effect: item.effect ?? null })
+      .onConflictDoUpdate({
+        target: generalGoods.itemId,
+        set: { goodType: item.type, effectKey: item.effectKey, effect: item.effect ?? null },
+      });
   }
 
-  console.log(`  Inserted ${generalGoodsData.length} general goods`);
+  console.log(`  Upserted ${generalGoodsData.length} general goods`);
 
-  // Seed oddities
   console.log('Seeding oddities...');
   for (const item of odditiesData) {
-    // 1. Insert into items table first
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'oddity',
@@ -439,23 +551,27 @@ export async function seedGeneralGoods() {
         rarity: item.rarity,
         weight: item.weight,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: item.nameKey, value: item.value, rarity: item.rarity, weight: item.weight },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(item.name, 'oddity'), itemId);
 
-    // 2. Insert into oddities table with itemId
-    await db.insert(oddities).values({
-      itemId,
-      goodType: item.type,
-      effect: item.effectKey,
-    });
+    await db
+      .insert(oddities)
+      .values({ itemId, goodType: item.type, effect: item.effectKey })
+      .onConflictDoUpdate({
+        target: oddities.itemId,
+        set: { goodType: item.type, effect: item.effectKey },
+      });
   }
 
-  console.log(`  Inserted ${odditiesData.length} oddities`);
+  console.log(`  Upserted ${odditiesData.length} oddities`);
 }
 
-// Personal trinkets data (from Fallout 2d20 book - d20 table)
 const PERSONAL_TRINKETS = [
   { roll: 1, nameKey: 'trinkets.goldPocketWatch' },
   { roll: 2, nameKey: 'trinkets.corruptedHolodisk' },
@@ -479,26 +595,29 @@ const PERSONAL_TRINKETS = [
   { roll: 20, nameKey: 'trinkets.preWarTie' },
 ];
 
+const TRINKET_EFFECT = 'Once per quest, outside of combat, you can spend a few moments looking at it and thinking about what it represents to you. You regain 1 Luck Point.';
+
 export async function seedPersonalTrinkets() {
   console.log('Seeding personal trinkets...');
 
   for (const trinket of PERSONAL_TRINKETS) {
-    await db.insert(personalTrinkets).values({
-      roll: trinket.roll,
-      nameKey: trinket.nameKey,
-      effect: 'Once per quest, outside of combat, you can spend a few moments looking at it and thinking about what it represents to you. You regain 1 Luck Point.',
-    });
+    await db
+      .insert(personalTrinkets)
+      .values({ roll: trinket.roll, nameKey: trinket.nameKey, effect: TRINKET_EFFECT })
+      .onConflictDoUpdate({
+        target: personalTrinkets.roll,
+        set: { nameKey: trinket.nameKey, effect: TRINKET_EFFECT },
+      });
   }
 
-  console.log(`  Inserted ${PERSONAL_TRINKETS.length} personal trinkets`);
+  console.log(`  Upserted ${PERSONAL_TRINKETS.length} personal trinkets`);
 }
 
 export async function seedMagazines() {
   console.log('Seeding magazines...');
 
   for (const series of magazinesData) {
-    // 1. Insert into items table
-    const [insertedItem] = await db
+    const [upsertedItem] = await db
       .insert(items)
       .values({
         itemType: 'magazine',
@@ -508,18 +627,24 @@ export async function seedMagazines() {
         rarity: MAGAZINE_RARITY,
         weight: MAGAZINE_WEIGHT,
       })
+      .onConflictDoUpdate({
+        target: items.name,
+        set: { nameKey: series.nameKey, value: MAGAZINE_VALUE, rarity: MAGAZINE_RARITY, weight: MAGAZINE_WEIGHT },
+      })
       .returning({ id: items.id });
 
-    const itemId = insertedItem.id;
+    const itemId = upsertedItem.id;
     itemIdMap.set(getItemKey(series.name, 'magazine'), itemId);
 
-    // 2. Insert into magazines table
-    await db.insert(magazines).values({
-      itemId,
-      perkDescriptionKey: series.perkDescriptionKey,
-    });
+    await db
+      .insert(magazines)
+      .values({ itemId, perkDescriptionKey: series.perkDescriptionKey })
+      .onConflictDoUpdate({
+        target: magazines.itemId,
+        set: { perkDescriptionKey: series.perkDescriptionKey },
+      });
 
-    // 3. Insert magazine issues
+    await db.delete(magazineIssues).where(eq(magazineIssues.magazineId, itemId));
     if (series.issues.length > 0) {
       await db.insert(magazineIssues).values(
         series.issues.map((issue) => ({
@@ -534,23 +659,34 @@ export async function seedMagazines() {
     }
   }
 
-  console.log(`  Inserted ${magazinesData.length} magazine series`);
+  console.log(`  Upserted ${magazinesData.length} magazine series`);
 }
 
 export async function seedDiseases() {
   console.log('Seeding diseases...');
 
   for (const disease of diseasesData) {
-    await db.insert(diseases).values({
-      d20Roll: disease.d20Roll,
-      name: disease.name,
-      nameKey: disease.nameKey,
-      effectKey: disease.effectKey,
-      duration: disease.duration,
-    });
+    await db
+      .insert(diseases)
+      .values({
+        d20Roll: disease.d20Roll,
+        name: disease.name,
+        nameKey: disease.nameKey,
+        effectKey: disease.effectKey,
+        duration: disease.duration,
+      })
+      .onConflictDoUpdate({
+        target: diseases.d20Roll,
+        set: {
+          name: disease.name,
+          nameKey: disease.nameKey,
+          effectKey: disease.effectKey,
+          duration: disease.duration,
+        },
+      });
   }
 
-  console.log(`  Inserted ${diseasesData.length} diseases`);
+  console.log(`  Upserted ${diseasesData.length} diseases`);
 }
 
 export async function seedAllItems() {

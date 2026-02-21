@@ -18,141 +18,141 @@ export const diseases: Disease[] = [
   {
     d20Roll: 1,
     name: 'Needles',
+    nameKey: 'diseases.names.needles',
     effectKey: 'diseases.needles',
     duration: 1,
-    // -10 carry capacity
   },
   {
     d20Roll: 2,
     name: 'Lock Joint',
+    nameKey: 'diseases.names.lockJoint',
     effectKey: 'diseases.lockJoint',
     duration: 1,
-    // Must spend 1 AP to perform a melee attack
   },
   {
     d20Roll: 3,
     name: 'Heat Flashes',
+    nameKey: 'diseases.names.heatFlashes',
     effectKey: 'diseases.heatFlashes',
     duration: 3,
-    // END tests gain +1 difficulty
   },
   {
     d20Roll: 4,
     name: 'Headache',
+    nameKey: 'diseases.names.headache',
     effectKey: 'diseases.headache',
     duration: 4,
-    // INT tests gain +1 difficulty
   },
   {
     d20Roll: 5,
     name: 'Swamp Itch',
+    nameKey: 'diseases.names.swampItch',
     effectKey: 'diseases.swampItch',
     duration: 1,
-    // AGI tests gain +1 difficulty
   },
   {
     d20Roll: 6,
     name: 'Wobbly Skins',
+    nameKey: 'diseases.names.wobblySkins',
     effectKey: 'diseases.wobblySkins',
     duration: 1,
-    // Must spend 1 AP to perform a ranged attack
   },
   {
     d20Roll: 7,
     name: 'Dysentery',
+    nameKey: 'diseases.names.dysentery',
     effectKey: 'diseases.dysentery',
     duration: 1,
-    // Halves hours between thirst stat stages
   },
   {
     d20Roll: 8,
     name: 'Flatulence',
+    nameKey: 'diseases.names.flatulence',
     effectKey: 'diseases.flatulence',
     duration: 1,
-    // Must spend twice as many Luck points to get an Effect
   },
   {
     d20Roll: 9,
     name: 'Swamp Gas',
+    nameKey: 'diseases.names.swampGas',
     effectKey: 'diseases.swampGas',
     duration: 1,
-    // CHA tests gain +1 difficulty
   },
   {
     d20Roll: 10,
     name: 'Weeping Sores',
+    nameKey: 'diseases.names.weepingSores',
     effectKey: 'diseases.weepingSores',
     duration: 3,
-    // When taking physical damage, take +1 physical damage at start of next turn. Ignore DR.
   },
   {
     d20Roll: 11,
     name: 'Shaking Hands',
+    nameKey: 'diseases.names.shakingHands',
     effectKey: 'diseases.shakingHands',
     duration: 1,
-    // Ranged attacks deal 2 CD less damage
   },
   {
     d20Roll: 12,
     name: 'Jittery Limb',
+    nameKey: 'diseases.names.jitteryLimb',
     effectKey: 'diseases.jitteryLimb',
     duration: 4,
-    // STR tests gain +1 difficulty
   },
   {
     d20Roll: 13,
     name: 'Dripping Ear',
+    nameKey: 'diseases.names.drippingEar',
     effectKey: 'diseases.drippingEar',
     duration: 1,
-    // PER tests gain +1 difficulty
   },
   {
     d20Roll: 14,
     name: 'Parasites',
+    nameKey: 'diseases.names.parasites',
     effectKey: 'diseases.parasites',
     duration: 1,
-    // Halves hours between hunger stat stages
   },
   {
     d20Roll: 15,
     name: 'Tarry Lungs',
+    nameKey: 'diseases.names.tarryLungs',
     effectKey: 'diseases.tarryLungs',
     duration: 4,
-    // Take 1 Fatigue. Cannot donate AP to group reserve unless it has 3 or fewer.
   },
   {
     d20Roll: 16,
     name: 'Shell Shock',
+    nameKey: 'diseases.names.shellShock',
     effectKey: 'diseases.shellShock',
     duration: 3,
-    // When taking an injury, lose 1 AP from group reserve (if possible)
   },
   {
     d20Roll: 17,
     name: 'Glowing Pustules',
+    nameKey: 'diseases.names.glowingPustules',
     effectKey: 'diseases.glowingPustules',
     duration: 1,
-    // When you take an injury, everyone at Close range takes 1 CD radiation damage
   },
   {
     d20Roll: 18,
     name: 'Rad Worms',
+    nameKey: 'diseases.names.radWorms',
     effectKey: 'diseases.radWorms',
     duration: 1,
-    // When taking radiation damage, add +2 to the total
   },
   {
     d20Roll: 19,
     name: 'Bone Worms',
+    nameKey: 'diseases.names.boneWorms',
     effectKey: 'diseases.boneWorms',
     duration: 1,
-    // Attacks targeting your arms or legs deal +4 CD damage
   },
   {
     d20Roll: 20,
     name: 'Blood Worms',
+    nameKey: 'diseases.names.bloodWorms',
     effectKey: 'diseases.bloodWorms',
     duration: 1,
-    // Attacks targeting you deal +2 CD damage
   },
 ];

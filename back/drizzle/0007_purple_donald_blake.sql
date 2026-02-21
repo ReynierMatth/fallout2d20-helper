@@ -1,0 +1,4 @@
+ALTER TABLE "public"."weapon_qualities" ALTER COLUMN "quality" SET DATA TYPE text;--> statement-breakpoint
+DROP TYPE "public"."weapon_quality";--> statement-breakpoint
+CREATE TYPE "public"."weapon_quality" AS ENUM('accurate', 'blast', 'breaking', 'burst', 'closeQuarters', 'concealed', 'debilitating', 'gatling', 'inaccurate', 'mine', 'nightVision', 'parry', 'persistent', 'piercing', 'radioactive', 'reliable', 'recon', 'spread', 'stun', 'thrown', 'twoHanded', 'unreliable', 'vicious', 'silent');--> statement-breakpoint
+ALTER TABLE "public"."weapon_qualities" ALTER COLUMN "quality" SET DATA TYPE "public"."weapon_quality" USING "quality"::"public"."weapon_quality";
