@@ -4,6 +4,8 @@ A companion web app for the **Fallout 2d20 TTRPG** (by Modiphius Entertainment),
 
 > Built with React + Vite (frontend) and Express + Drizzle ORM + PostgreSQL (backend). Installable as a PWA from the browser.
 
+![Home](public/home.png)
+
 ---
 
 ## Features
@@ -18,7 +20,6 @@ A companion web app for the **Fallout 2d20 TTRPG** (by Modiphius Entertainment),
 - **Bilingual** — French and English UI
 
 ---
-
 
 ## Quick Start (Docker — recommended)
 
@@ -100,6 +101,31 @@ npm run dev
 ## License
 
 [MIT](LICENSE)
+
+---
+
+## Screenshots
+
+### Character creation
+![Character creation](public/createpj.png)
+
+### PC / NPC list
+![PC/NPC list](public/listpcnpc.png)
+
+### Loot generator
+![Loot generator](public/loot.png)
+
+### Merchant generator
+![Merchant](public/merch.png)
+
+### Encyclopedia
+![Encyclopedia](public/encyclo.png)
+
+### Item details
+![Item details](public/itemdetails.png)
+
+### Session manager
+![Session manager](public/session.png)
 
 ---
 
