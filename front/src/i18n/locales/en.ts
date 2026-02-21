@@ -65,45 +65,23 @@ export default {
 
   home: {
     title: 'FALLOUT 2D20 HELPER',
-    subtitle: 'Essential tools for Fallout 2d20 Game Masters by Modiphius. Generate loot, merchants, and roll dice in one click.',
+    subtitle: 'Tools for Fallout 2d20 Game Masters.',
     features: {
-      loot: {
-        title: 'Loot Generator',
-        description: 'Generate random loot based on the type and size of the explored area. Perfect for scavenging sessions.',
-      },
-      merchant: {
-        title: 'Merchant Generator',
-        description: 'Instantly create a merchant inventory based on wealth level and type (settled or traveling).',
-      },
-      dice: {
-        title: '2d20 Dice Roller',
-        description: 'Roll your skill checks with automatic calculation of successes, complications, and criticals.',
+      characters: {
+        title: 'Characters',
+        description: 'Create and manage your characters: origin, SPECIAL, skills, perks and starting equipment.',
       },
       encyclopedia: {
         title: 'Encyclopedia',
-        description: 'Browse the complete item database: weapons, armor, chems, food, and equipment with their stats.',
+        description: 'Browse weapons, armor, chems, diseases, perks and all equipment with their full stats.',
       },
-    },
-    stats: {
-      title: 'Toolkit Statistics',
-      weapons: 'Weapons',
-      armor: 'Armor',
-      chems: 'Chems',
-      zones: 'Zone types',
-    },
-    howTo: {
-      title: 'How to use',
+      sessions: {
+        title: 'Sessions',
+        description: 'Organize your game sessions, track notes and manage campaign information.',
+      },
       loot: {
-        title: 'Loot',
-        description: 'Select the zone type (residential, commercial, military...) and its size. Click "Generate" to get a random loot list.',
-      },
-      merchant: {
-        title: 'Merchant',
-        description: 'Set the merchant wealth level and select available item categories. The system generates a coherent inventory.',
-      },
-      dice: {
-        title: 'Dice',
-        description: 'Enter the target number and roll your 2d20. The system automatically calculates successes, complications, and criticals.',
+        title: 'Scavenging',
+        description: 'Generate random loot based on zone type and size, and simulate merchant inventories.',
       },
     },
   },
