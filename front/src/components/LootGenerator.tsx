@@ -9,6 +9,7 @@ import type { TableItem } from './ItemTable';
 import { ItemDetailModal } from './ItemDetailModal';
 import { generatorsApi } from '../services/api';
 import type { LootResultApi, ItemType, LootCategory } from '../services/api';
+import { useCharactersApi } from '../hooks/useCharactersApi';
 import {
   areaTypes,
   areaSizes,
@@ -30,6 +31,7 @@ interface LootGeneratorProps {
 
 export function LootGenerator({ showZoneDescriptions = true }: LootGeneratorProps) {
   const { t } = useTranslation();
+  const { pcs, addToInventory } = useCharactersApi();
   const [step, setStep] = useState<Step>('config');
   const [loading, setLoading] = useState(false);
 
@@ -117,6 +119,11 @@ export function LootGenerator({ showZoneDescriptions = true }: LootGeneratorProp
     if (tableItem.itemId && tableItem.itemType) {
       setSelectedItem({ id: tableItem.itemId, itemType: tableItem.itemType as ItemType });
     }
+  };
+
+  const handleAddToCharacter = async (characterId: string, item: TableItem) => {
+    if (!item.itemId) return;
+    await addToInventory(characterId, { itemId: item.itemId, quantity: item.quantity });
   };
 
   const areaTypeOptions = areaTypes.map(type => ({
@@ -375,7 +382,12 @@ export function LootGenerator({ showZoneDescriptions = true }: LootGeneratorProp
           </div>
 
           {tableItems.length > 0 ? (
-            <ItemTable items={tableItems} onItemClick={handleItemClick} />
+            <ItemTable
+              items={tableItems}
+              onItemClick={handleItemClick}
+              pcs={pcs}
+              onAddToCharacter={handleAddToCharacter}
+            />
           ) : (
             <div className="text-center py-8 text-vault-yellow-dark">{t('loot.noItems')}</div>
           )}

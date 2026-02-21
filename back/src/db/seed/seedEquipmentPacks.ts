@@ -1,5 +1,5 @@
 import { db } from '../index';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import {
   items,
   equipmentPacks,
@@ -11,7 +11,6 @@ import {
   levelBonusCaps,
 } from '../schema/index';
 
-// Import data from local seed data
 import {
   EQUIPMENT_PACKS,
   WASTELAND_PACKS,
@@ -23,33 +22,21 @@ import {
 import type { EquipmentPack, EquipmentEntry } from './data/equipmentPacks';
 import type { OriginId } from './data/characters';
 
-// Map category from equipment packs to item_type enum
 function categoryToItemType(category: string): string | null {
   switch (category) {
-    case 'weapon':
-      return 'weapon';
-    case 'armor':
-      return 'armor';
-    case 'robotArmor':
-      return 'robotArmor';
-    case 'clothing':
-      return 'clothing';
-    case 'ammo':
-      return 'ammunition';
-    case 'chem':
-      return 'chem';
-    case 'food':
-      return 'food';
-    case 'misc':
-      return 'generalGood';
-    case 'caps':
-      return null; // Caps are not items
-    default:
-      return null;
+    case 'weapon': return 'weapon';
+    case 'armor': return 'armor';
+    case 'robotArmor': return 'robotArmor';
+    case 'clothing': return 'clothing';
+    case 'ammo': return 'ammunition';
+    case 'chem': return 'chem';
+    case 'food': return 'food';
+    case 'misc': return 'generalGood';
+    case 'caps': return null;
+    default: return null;
   }
 }
 
-// Helper to lookup item ID by name and category
 async function getItemIdByNameAndCategory(itemName: string, category: string): Promise<number | null> {
   const itemType = categoryToItemType(category);
   if (!itemType) return null;
@@ -65,50 +52,57 @@ async function getItemIdByNameAndCategory(itemName: string, category: string): P
 export async function seedEquipmentPacks() {
   console.log('Seeding equipment packs...');
 
-  // First, insert all packs (including wasteland packs)
   const allPacks: EquipmentPack[] = [...WASTELAND_PACKS];
-
-  // Collect packs from each origin
   for (const originPacks of EQUIPMENT_PACKS) {
     for (const pack of originPacks.packs) {
       allPacks.push(pack);
     }
   }
 
-  // Insert unique packs
   const insertedPackIds = new Set<string>();
   for (const pack of allPacks) {
     if (insertedPackIds.has(pack.id)) continue;
     insertedPackIds.add(pack.id);
 
-    await db.insert(equipmentPacks).values({
-      id: pack.id,
-      nameKey: pack.nameKey,
-      descriptionKey: pack.descriptionKey,
-    });
+    await db
+      .insert(equipmentPacks)
+      .values({ id: pack.id, nameKey: pack.nameKey, descriptionKey: pack.descriptionKey })
+      .onConflictDoUpdate({
+        target: equipmentPacks.id,
+        set: { nameKey: pack.nameKey, descriptionKey: pack.descriptionKey },
+      });
 
-    // Insert pack items
+    // Delete existing pack items (choice options cascade manually since no DB cascade)
+    const existingItems = await db
+      .select({ id: equipmentPackItems.id })
+      .from(equipmentPackItems)
+      .where(eq(equipmentPackItems.packId, pack.id));
+
+    if (existingItems.length > 0) {
+      const existingItemIds = existingItems.map((i) => i.id);
+      await db.delete(equipmentPackChoiceOptions).where(inArray(equipmentPackChoiceOptions.parentItemId, existingItemIds));
+      await db.delete(equipmentPackItems).where(eq(equipmentPackItems.packId, pack.id));
+    }
+
     let sortOrder = 0;
     for (const entry of pack.items) {
       await insertEquipmentEntry(pack.id, entry, sortOrder++);
     }
   }
 
-  console.log(`  Inserted ${insertedPackIds.size} equipment packs`);
+  console.log(`  Upserted ${insertedPackIds.size} equipment packs`);
 
-  // Link origins to packs
+  // Re-link origins to packs
   let linkCount = 0;
   for (const originPacks of EQUIPMENT_PACKS) {
     const originId = originPacks.originId as OriginId;
     const packsToLink = originPacks.packs.length > 0 ? originPacks.packs : WASTELAND_PACKS;
 
+    await db.delete(originEquipmentPacks).where(eq(originEquipmentPacks.originId, originId as any));
+
     let sortOrder = 0;
     for (const pack of packsToLink) {
-      await db.insert(originEquipmentPacks).values({
-        originId,
-        packId: pack.id,
-        sortOrder: sortOrder++,
-      });
+      await db.insert(originEquipmentPacks).values({ originId, packId: pack.id, sortOrder: sortOrder++ });
       linkCount++;
     }
   }
@@ -118,21 +112,13 @@ export async function seedEquipmentPacks() {
 
 async function insertEquipmentEntry(packId: string, entry: EquipmentEntry, sortOrder: number) {
   if (isEquipmentChoice(entry)) {
-    // Insert as choice group
     const [choiceGroup] = await db
       .insert(equipmentPackItems)
-      .values({
-        packId,
-        sortOrder,
-        isChoiceGroup: true,
-        choiceCount: entry.choiceCount ?? 1,
-      })
+      .values({ packId, sortOrder, isChoiceGroup: true, choiceCount: entry.choiceCount ?? 1 })
       .returning({ id: equipmentPackItems.id });
 
-    // Insert choice options
     for (const option of entry.options) {
       const itemId = await getItemIdByNameAndCategory(option.itemName, option.category);
-
       if (itemId) {
         await db.insert(equipmentPackChoiceOptions).values({
           parentItemId: choiceGroup.id,
@@ -146,14 +132,9 @@ async function insertEquipmentEntry(packId: string, entry: EquipmentEntry, sortO
       }
     }
   } else {
-    // Insert as direct item
-    // Skip caps entries as they're not items
-    if (entry.category === 'caps') {
-      return;
-    }
+    if (entry.category === 'caps') return;
 
     const itemId = await getItemIdByNameAndCategory(entry.itemName, entry.category);
-
     if (itemId) {
       await db.insert(equipmentPackItems).values({
         packId,
@@ -174,26 +155,30 @@ export async function seedRobotArmAttachments() {
   console.log('Seeding robot arm attachments...');
 
   for (const attachment of ROBOT_ARM_ATTACHMENTS) {
-    await db.insert(robotArmAttachments).values({
-      id: attachment.id,
-      nameKey: attachment.nameKey,
-    });
+    await db
+      .insert(robotArmAttachments)
+      .values({ id: attachment.id, nameKey: attachment.nameKey })
+      .onConflictDoUpdate({
+        target: robotArmAttachments.id,
+        set: { nameKey: attachment.nameKey },
+      });
   }
 
-  console.log(`  Inserted ${ROBOT_ARM_ATTACHMENTS.length} robot arm attachments`);
+  console.log(`  Upserted ${ROBOT_ARM_ATTACHMENTS.length} robot arm attachments`);
 }
 
 export async function seedTagSkillBonusItems() {
   console.log('Seeding tag skill bonus items...');
 
+  // Delete all and re-insert (no natural unique key per entry)
+  await db.delete(tagSkillBonusItems);
+
   let count = 0;
   for (const bonus of TAG_SKILL_BONUS_ITEMS) {
     for (const entry of bonus.items) {
       if (isEquipmentChoice(entry)) {
-        // For choices, insert each option as a separate row
         for (const option of entry.options) {
           const itemId = await getItemIdByNameAndCategory(option.itemName, option.category);
-
           if (itemId) {
             await db.insert(tagSkillBonusItems).values({
               skill: bonus.skill,
@@ -208,7 +193,6 @@ export async function seedTagSkillBonusItems() {
         }
       } else {
         const itemId = await getItemIdByNameAndCategory(entry.itemName, entry.category);
-
         if (itemId) {
           await db.insert(tagSkillBonusItems).values({
             skill: bonus.skill,
@@ -224,11 +208,14 @@ export async function seedTagSkillBonusItems() {
     }
   }
 
-  console.log(`  Inserted ${count} tag skill bonus items`);
+  console.log(`  Upserted ${count} tag skill bonus items`);
 }
 
 export async function seedLevelBonusCaps() {
   console.log('Seeding level bonus caps...');
+
+  // Delete all and re-insert (no unique constraint on minLevel)
+  await db.delete(levelBonusCaps);
 
   for (const bonus of LEVEL_BONUS_CAPS) {
     await db.insert(levelBonusCaps).values({
@@ -240,7 +227,7 @@ export async function seedLevelBonusCaps() {
     });
   }
 
-  console.log(`  Inserted ${LEVEL_BONUS_CAPS.length} level bonus caps entries`);
+  console.log(`  Upserted ${LEVEL_BONUS_CAPS.length} level bonus caps entries`);
 }
 
 export async function seedAllEquipmentPacks() {

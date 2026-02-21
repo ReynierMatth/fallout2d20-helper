@@ -50,6 +50,9 @@ export default {
     error: 'Erreur',
     clickToExpand: 'Cliquer pour ouvrir',
     collapse: 'Réduire',
+    addToInventory: 'Ajouter à l\'inventaire',
+    selectPc: 'Choisir un PJ...',
+    noPcs: 'Aucun PJ disponible',
   },
 
   nav: {
@@ -65,45 +68,23 @@ export default {
 
   home: {
     title: 'FALLOUT 2D20 HELPER',
-    subtitle: 'Outils essentiels pour les Maîtres de Jeu du système Fallout 2d20 de Modiphius. Générez du loot, des marchands et lancez vos dés en un clic.',
+    subtitle: 'Outils pour Maîtres de Jeu du système Fallout 2d20.',
     features: {
-      loot: {
-        title: 'Générateur de Fouille',
-        description: 'Générez du loot aléatoire basé sur le type et la taille de la zone explorée. Parfait pour les sessions de scavenging.',
-      },
-      merchant: {
-        title: 'Générateur de Marchand',
-        description: "Créez l'inventaire d'un marchand instantanément selon son niveau de richesse et son type (sédentaire ou itinérant).",
-      },
-      dice: {
-        title: 'Lanceur de Dés 2d20',
-        description: 'Lancez vos jets de compétence avec calcul automatique des succès, complications et critiques.',
+      characters: {
+        title: 'Personnages',
+        description: 'Créez et gérez vos personnages : origine, SPECIAL, compétences, aptitudes et équipement de départ.',
       },
       encyclopedia: {
         title: 'Encyclopédie',
-        description: 'Consultez la base de données complète des items : armes, armures, chems, nourriture et équipement avec leurs stats.',
+        description: 'Consultez armes, armures, chems, maladies, aptitudes et tout l\'équipement avec leurs statistiques.',
       },
-    },
-    stats: {
-      title: 'Statistiques du Toolkit',
-      weapons: 'Armes',
-      armor: 'Armures',
-      chems: 'Chems',
-      zones: 'Types de zones',
-    },
-    howTo: {
-      title: 'Comment utiliser',
+      sessions: {
+        title: 'Sessions',
+        description: 'Organisez vos sessions de jeu, suivez les notes et gérez les informations de campagne.',
+      },
       loot: {
         title: 'Fouille',
-        description: 'Sélectionnez le type de zone (résidentiel, commercial, militaire...) et sa taille. Cliquez sur "Générer" pour obtenir une liste de loot aléatoire.',
-      },
-      merchant: {
-        title: 'Marchand',
-        description: "Définissez le niveau de richesse du marchand et sélectionnez les catégories d'objets disponibles. Le système génère un inventaire cohérent.",
-      },
-      dice: {
-        title: 'Dés',
-        description: 'Entrez le seuil de réussite et lancez vos 2d20. Le système calcule automatiquement les succès, complications et critiques.',
+        description: 'Générez du butin aléatoire selon le type et la taille de la zone, et simulez des marchands.',
       },
     },
   },
