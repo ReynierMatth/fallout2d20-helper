@@ -50,6 +50,9 @@ export default {
     error: 'Error',
     clickToExpand: 'Click to expand',
     collapse: 'Collapse',
+    addToInventory: 'Add to inventory',
+    selectPc: 'Select PC...',
+    noPcs: 'No PC available',
   },
 
   nav: {

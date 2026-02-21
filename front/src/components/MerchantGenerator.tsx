@@ -10,6 +10,7 @@ import type { TableItem } from './ItemTable';
 import { ItemDetailModal } from './ItemDetailModal';
 import { generatorsApi } from '../services/api';
 import type { MerchantResultApi, MerchantCategory, ItemType } from '../services/api';
+import { useCharactersApi } from '../hooks/useCharactersApi';
 import { formatCaps } from '../generators/utils';
 
 const merchantCategories: MerchantCategory[] = [
@@ -24,6 +25,7 @@ interface MerchantGeneratorProps {
 
 export function MerchantGenerator({ showWealthDescriptions = true, compact = false }: MerchantGeneratorProps) {
   const { t } = useTranslation();
+  const { pcs, addToInventory } = useCharactersApi();
   const [wealthRating, setWealthRating] = useState(2);
   const [isTraveling, setIsTraveling] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<MerchantCategory[]>([]);
@@ -59,6 +61,11 @@ export function MerchantGenerator({ showWealthDescriptions = true, compact = fal
     if (tableItem.itemId && tableItem.itemType) {
       setSelectedItem({ id: tableItem.itemId, itemType: tableItem.itemType as ItemType });
     }
+  };
+
+  const handleAddToCharacter = async (characterId: string, item: TableItem) => {
+    if (!item.itemId) return;
+    await addToInventory(characterId, { itemId: item.itemId, quantity: item.quantity });
   };
 
   const wealthOptions = [1, 2, 3, 4, 5].map(level => ({
@@ -165,7 +172,12 @@ export function MerchantGenerator({ showWealthDescriptions = true, compact = fal
 
           {/* Inventory */}
           <h3 className="text-vault-yellow font-bold mb-4">{t('merchant.inventory')}</h3>
-          <ItemTable items={tableItems} onItemClick={handleItemClick} />
+          <ItemTable
+            items={tableItems}
+            onItemClick={handleItemClick}
+            pcs={pcs}
+            onAddToCharacter={handleAddToCharacter}
+          />
         </Card>
       )}
 

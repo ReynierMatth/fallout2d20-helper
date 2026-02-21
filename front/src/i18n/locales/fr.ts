@@ -50,6 +50,9 @@ export default {
     error: 'Erreur',
     clickToExpand: 'Cliquer pour ouvrir',
     collapse: 'Réduire',
+    addToInventory: 'Ajouter à l\'inventaire',
+    selectPc: 'Choisir un PJ...',
+    noPcs: 'Aucun PJ disponible',
   },
 
   nav: {

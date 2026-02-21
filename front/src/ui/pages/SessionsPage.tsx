@@ -127,12 +127,6 @@ export function SessionsPage() {
                   ? t('sessions.noSessions')
                   : t('common.noResults')}
               </p>
-              {filterStatus === 'all' && (
-                <Button className="mt-4" onClick={handleCreate}>
-                  <Plus size={18} />
-                  {t('sessions.createSession')}
-                </Button>
-              )}
             </div>
           </Card>
         ) : (
