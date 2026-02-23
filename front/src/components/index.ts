@@ -33,3 +33,4 @@ export * from './BodyResistanceMap';
 export * from './StepWizard';
 export * from './StepIndicator';
 export * from './StickyCharacterHeader';
+export * from './SwipeableTabs';

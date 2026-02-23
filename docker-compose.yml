@@ -1,8 +1,8 @@
 services:
   app:
-    image: ghcr.io/reyniermatth/fallout2d20-helper:latest
+    #image: ghcr.io/reyniermatth/fallout2d20-helper:latest
     # To build from source instead of pulling the image, comment `image` above and uncomment:
-    # build: .
+    build: .
     ports:
       - "3000:80"
     environment:
@@ -16,6 +16,8 @@ services:
 
   db:
     image: postgres:16-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: fallout
       POSTGRES_PASSWORD: fallout2d20
