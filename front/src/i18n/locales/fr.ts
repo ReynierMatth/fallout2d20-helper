@@ -498,6 +498,15 @@ export default {
     exerciseDesc: 'Choisissez l\'attribut S.P.E.C.I.A.L. à augmenter de 1 point.',
     exerciseBonus: 'Exercice: +{{count}} point(s)',
     drFromPerks: 'DR des aptitudes',
+    validation: {
+      nameRequired: 'Le nom est requis',
+      specialRemaining: 'point(s) SPECIAL restant(s) à distribuer',
+      specialOver: 'point(s) SPECIAL en dépassement',
+      skillsRemaining: 'point(s) de compétence restant(s) à distribuer',
+      skillsOver: 'point(s) de compétence en dépassement',
+      tagSkillsRemaining: '{{count}} atout(s) personnel(s) restant(s) à choisir',
+      traitsRemaining: '{{count}} trait(s) restant(s) à choisir',
+    },
   },
 
   origins: {

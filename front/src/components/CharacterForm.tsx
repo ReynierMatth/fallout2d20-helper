@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Plus, Star, Sparkles, Dumbbell, Package, Check, User, BookOpen, ScrollText } from 'lucide-react';
+import { X, Plus, Star, Sparkles, Dumbbell, Package, Check, User, BookOpen, ScrollText, AlertTriangle } from 'lucide-react';
 import type {
   Character,
   SpecialAttribute,
@@ -87,6 +87,25 @@ const SPECIAL_SHORT: Record<SpecialAttribute, string> = {
   strength: 'F', perception: 'P', endurance: 'E',
   charisma: 'C', intelligence: 'I', agility: 'A', luck: 'L',
 };
+
+function StepValidation({ warnings, errors }: { warnings?: string[]; errors?: string[] }) {
+  return (
+    <>
+      {errors?.map((msg, i) => (
+        <div key={i} className="flex items-center gap-2 p-2 bg-red-900/30 border border-red-600/50 rounded text-red-400 text-sm">
+          <AlertTriangle size={14} className="shrink-0" />
+          {msg}
+        </div>
+      ))}
+      {warnings?.map((msg, i) => (
+        <div key={i} className="flex items-center gap-2 p-2 bg-yellow-900/20 border border-yellow-600/40 rounded text-yellow-400 text-sm">
+          <AlertTriangle size={14} className="shrink-0" />
+          {msg}
+        </div>
+      ))}
+    </>
+  );
+}
 
 export function CharacterForm({
   character,
@@ -331,7 +350,13 @@ export function CharacterForm({
   // === Wizard steps configuration ===
   const wizardSteps = useMemo(() => {
     const steps: WizardStep[] = [
-      { id: 'basic', labelKey: 'characters.basicInfo', icon: <User size={16} /> },
+      {
+        id: 'basic',
+        labelKey: 'characters.basicInfo',
+        icon: <User size={16} />,
+        badge: !name.trim() ? '!' : undefined,
+        badgeColor: !name.trim() ? 'warning' : 'success',
+      },
     ];
 
     // Conditional: Survivor Traits (PC + origin survivor)
@@ -340,7 +365,7 @@ export function CharacterForm({
         id: 'traits',
         labelKey: 'characters.survivorTraits',
         badge: `${survivorTraits.length}/2`,
-        badgeColor: survivorTraits.length === 2 ? 'success' : 'default',
+        badgeColor: survivorTraits.length === 2 ? 'success' : survivorTraits.length > 0 ? 'default' : 'warning',
       });
     }
 
@@ -383,7 +408,7 @@ export function CharacterForm({
     });
 
     return steps;
-  }, [type, origin, survivorTraits.length, specialPointsRemaining, skillPointsRemaining, perks.length, currentPerkChoices, maxPerkChoices, isCreateMode, selectedPack]);
+  }, [name, type, origin, survivorTraits.length, specialPointsRemaining, skillPointsRemaining, perks.length, currentPerkChoices, maxPerkChoices, isCreateMode, selectedPack]);
 
   // Clamp currentStep when steps change
   useEffect(() => {
@@ -747,6 +772,9 @@ export function CharacterForm({
     // Step: Basic Info
     panels.push(
       <div key="basic" className="space-y-4">
+        <StepValidation
+          warnings={!name.trim() ? [t('characters.validation.nameRequired')] : []}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm text-gray-400 mb-1">
@@ -820,6 +848,9 @@ export function CharacterForm({
     if (type === 'PC' && origin === 'survivor') {
       panels.push(
         <div key="traits" className="space-y-4">
+          <StepValidation
+            warnings={survivorTraits.length < 2 ? [t('characters.validation.traitsRemaining', { count: 2 - survivorTraits.length })] : []}
+          />
           <p className="text-xs text-gray-400">{t('characters.survivorTraitsDesc')}</p>
           <div className="grid grid-cols-1 gap-3">
             {SURVIVOR_TRAITS.map((trait) => (
@@ -860,6 +891,11 @@ export function CharacterForm({
             {t('characters.pointsRemaining')}: {specialPointsRemaining}
           </span>
         </div>
+
+        <StepValidation
+          warnings={specialPointsRemaining > 0 ? [`${specialPointsRemaining} ${t('characters.validation.specialRemaining')}`] : []}
+          errors={specialPointsRemaining < 0 ? [`${Math.abs(specialPointsRemaining)} ${t('characters.validation.specialOver')}`] : []}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {SPECIAL_ATTRIBUTES.map((attr) => {
@@ -1010,6 +1046,14 @@ export function CharacterForm({
             {t('characters.skillPointsRemaining')}: {skillPointsRemaining}
           </span>
         </div>
+
+        <StepValidation
+          warnings={[
+            ...(skillPointsRemaining > 0 ? [`${skillPointsRemaining} ${t('characters.validation.skillsRemaining')}`] : []),
+            ...(tagSkills.length < tagSkillsCount ? [t('characters.validation.tagSkillsRemaining', { count: tagSkillsCount - tagSkills.length })] : []),
+          ]}
+          errors={skillPointsRemaining < 0 ? [`${Math.abs(skillPointsRemaining)} ${t('characters.validation.skillsOver')}`] : []}
+        />
 
         <p className="text-xs text-gray-400">
           {t('characters.skillsDesc', { points: baseSkillPoints, maxRank: maxSkillRank })}
@@ -1597,7 +1641,6 @@ export function CharacterForm({
                 <Button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={specialPointsRemaining < 0 || skillPointsRemaining < 0}
                   className="min-h-[44px]"
                 >
                   {character ? t('common.save') : t('common.create')}

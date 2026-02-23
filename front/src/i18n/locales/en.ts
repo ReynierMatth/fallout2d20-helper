@@ -499,6 +499,15 @@ export default {
     exerciseDesc: 'Choose the S.P.E.C.I.A.L. attribute to increase by 1 point.',
     exerciseBonus: 'Intense Training: +{{count}} point(s)',
     drFromPerks: 'DR from perks',
+    validation: {
+      nameRequired: 'Name is required',
+      specialRemaining: 'SPECIAL point(s) left to distribute',
+      specialOver: 'SPECIAL point(s) over budget',
+      skillsRemaining: 'skill point(s) left to distribute',
+      skillsOver: 'skill point(s) over budget',
+      tagSkillsRemaining: '{{count}} tag skill(s) left to select',
+      traitsRemaining: '{{count}} trait(s) left to select',
+    },
   },
 
   origins: {
