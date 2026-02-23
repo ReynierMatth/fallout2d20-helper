@@ -15,18 +15,34 @@ interface SwipeableTabsProps {
 
 export function SwipeableTabs({ tabs, defaultTab = 0 }: SwipeableTabsProps) {
   const [activeIndex, setActiveIndex] = useState(defaultTab);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const bind = useDrag(
-    ({ last, movement: [mx], velocity: [vx], direction: [dx] }) => {
-      if (!last) return;
+    ({ dragging, last, movement: [mx], velocity: [vx], direction: [dx] }) => {
+      if (dragging) {
+        setIsDragging(true);
+        // Bloquer le drag au-delà des bords
+        const canGoLeft = activeIndex < tabs.length - 1;
+        const canGoRight = activeIndex > 0;
+        if ((mx < 0 && canGoLeft) || (mx > 0 && canGoRight)) {
+          setDragOffset(mx);
+        }
+        return;
+      }
 
-      const swipeLeft = dx < 0 && (Math.abs(mx) > 50 || vx > 0.3);
-      const swipeRight = dx > 0 && (Math.abs(mx) > 50 || vx > 0.3);
+      if (last) {
+        setIsDragging(false);
+        setDragOffset(0);
 
-      if (swipeLeft && activeIndex < tabs.length - 1) {
-        setActiveIndex(prev => prev + 1);
-      } else if (swipeRight && activeIndex > 0) {
-        setActiveIndex(prev => prev - 1);
+        const swipeLeft = dx < 0 && (Math.abs(mx) > 50 || vx > 0.3);
+        const swipeRight = dx > 0 && (Math.abs(mx) > 50 || vx > 0.3);
+
+        if (swipeLeft && activeIndex < tabs.length - 1) {
+          setActiveIndex(prev => prev + 1);
+        } else if (swipeRight && activeIndex > 0) {
+          setActiveIndex(prev => prev - 1);
+        }
       }
     },
     { axis: 'x', filterTaps: true }
@@ -56,8 +72,11 @@ export function SwipeableTabs({ tabs, defaultTab = 0 }: SwipeableTabsProps) {
       {/* Sliding content */}
       <div className="overflow-hidden" {...bind()}>
         <div
-          className="flex transition-transform duration-300 ease-in-out"
-          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+          className="flex"
+          style={{
+            transform: `translateX(calc(-${activeIndex * 100}% + ${dragOffset}px))`,
+            transition: isDragging ? 'none' : 'transform 300ms ease-in-out',
+          }}
         >
           {tabs.map((tab) => (
             <div key={tab.id} className="w-full flex-shrink-0 min-w-full">
