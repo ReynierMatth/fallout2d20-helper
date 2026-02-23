@@ -1,4 +1,4 @@
-import { Edit2, Copy, Trash2, Swords } from 'lucide-react';
+import { Edit2, Copy, Trash2, Swords, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Character } from '../data/characters';
 import { ORIGINS } from '../data/characters';
@@ -83,6 +83,15 @@ export function CharacterCard({
             )}
           </p>
         </div>
+        {onClick && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            className="flex-shrink-0 p-1.5 rounded-full bg-vault-yellow/10 text-vault-yellow hover:bg-vault-yellow hover:text-vault-blue transition-colors cursor-pointer"
+          >
+            <Eye size={16} />
+          </button>
+        )}
       </div>
 
       {/* Body */}

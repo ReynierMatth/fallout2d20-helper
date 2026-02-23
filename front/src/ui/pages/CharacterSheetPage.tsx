@@ -23,6 +23,7 @@ export function CharacterSheetPage() {
 
   const [character, setCharacter] = useState<Character | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   // Get the "from" location from state, or default to characters list
   const locationState = location.state as LocationState;
@@ -113,39 +114,55 @@ export function CharacterSheetPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleBack}
-              className="p-2 text-vault-yellow hover:bg-vault-blue rounded transition-colors cursor-pointer"
-            >
-              <ArrowLeft size={24} />
-            </button>
-            <OriginIcon originId={character.origin} type={character.type} size="lg" />
-            <div>
-              <h1 className="text-2xl font-bold text-vault-yellow">
-                {character.name || t('characters.unnamed')}
-              </h1>
-              <p className="text-gray-400">
-                {character.type === 'PC' ? t('characters.pc') : t('characters.npc')} - {t('characters.level')} {character.level}
-                {origin && (
-                  <span className="ml-2 text-vault-yellow-dark">({t(origin.nameKey)})</span>
-                )}
-              </p>
-            </div>
+      {/* Header — sticky compact avec onglets intégrés */}
+      <div className="sticky top-14 lg:top-16 z-30 bg-vault-blue-dark pb-2">
+        <div className="flex items-center gap-2 bg-vault-gray border-2 border-vault-yellow-dark rounded-lg px-3 py-2">
+          <button
+            onClick={handleBack}
+            className="p-1.5 text-vault-yellow hover:bg-vault-blue rounded transition-colors cursor-pointer flex-shrink-0"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <OriginIcon originId={character.origin} type={character.type} size="sm" className="flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <h1 className="text-sm font-bold text-vault-yellow leading-tight truncate">
+              {character.name || t('characters.unnamed')}
+            </h1>
+            <p className="text-xs text-gray-400 truncate">
+              {character.type === 'PC' ? t('characters.pc') : t('characters.npc')} · {t('characters.level')} {character.level}
+              {origin && <span className="ml-1 text-vault-yellow-dark">({t(origin.nameKey)})</span>}
+            </p>
           </div>
-          <Button onClick={() => setIsFormOpen(true)}>
-            <Edit2 size={18} className="mr-2" />
-            {t('characterSheet.editCharacter')}
-          </Button>
+          {/* Tab buttons */}
+          <div className="flex gap-1 flex-shrink-0">
+            {[t('characterSheet.tabStats'), t('characterSheet.tabEquipment')].map((label, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => setActiveTab(index)}
+                className={`px-2 py-0.5 rounded text-xs font-medium transition-colors cursor-pointer ${
+                  activeTab === index
+                    ? 'bg-vault-yellow text-vault-blue font-bold'
+                    : 'border border-vault-yellow-dark text-vault-yellow-dark hover:border-vault-yellow hover:text-vault-yellow'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setIsFormOpen(true)}
+            className="p-1.5 text-vault-yellow hover:bg-vault-blue rounded transition-colors cursor-pointer flex-shrink-0"
+          >
+            <Edit2 size={18} />
+          </button>
         </div>
-      </Card>
+      </div>
 
       {/* Main content — swipeable tabs */}
       <SwipeableTabs
-        defaultTab={0}
+        activeIndex={activeTab}
+        onTabChange={setActiveTab}
         tabs={[
           {
             id: 'stats',
