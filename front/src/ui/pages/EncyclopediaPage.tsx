@@ -375,7 +375,7 @@ export function EncyclopediaPage() {
     setGroupSorts(prev => {
       const current = prev[categoryKey];
       let newDirection: SortDirection;
-      if (!current || current.field !== field) {
+      if (!current || current.field !== field || current.direction === null) {
         newDirection = 'asc';
       } else if (current.direction === 'asc') {
         newDirection = 'desc';

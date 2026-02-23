@@ -10,7 +10,7 @@ export default {
       effect: 'Rank 1: Immune to radiation damage in irradiated water, hold breath 2x longer. Rank 2: +2 difficulty to spot you underwater.',
     },
     radResistant: {
-      name: 'Rad Resistant',
+      name: 'Rad Resistance',
       effect: 'Your radiation damage resistance increases by +1 per rank.',
     },
     armorer: {
@@ -23,12 +23,12 @@ export default {
       effect: 'Your Strength affects your ballistic DR. STR 7-8: +1, STR 9-10: +2, STR 11+: +3. Doesn\'t work in power armor.',
     },
     gunFu: {
-      name: 'Gun Fu',
+      name: 'Center of Mass',
       effect: 'When making a ranged attack, you can target the Torso without increasing difficulty. You can reroll 1d20 of your attack.',
     },
     silverTongue: {
-      name: 'Silver Tongue',
-      effect: 'You can reroll 1d20 on any Barter or Speech opposed test.',
+      name: 'Smooth Talker',
+      effect: 'Re-roll 1d20 on opposed tests involving Barter or Speech.',
     },
     blitz: {
       name: 'Blitz',
@@ -84,7 +84,7 @@ export default {
       effect: 'After using a magazine bonus, roll 1 CD. On Effect, use it one more time.',
     },
     canOpener: {
-      name: 'Can Opener',
+      name: 'Can Do!',
       effect: 'When scavenging a location with food, you find one additional food item for free.',
     },
     betterCriticals: {
@@ -139,7 +139,7 @@ export default {
       effect: 'When you find ammo: Rank 1: +3 CD, Rank 2: +6 CD, Rank 3: +10 CD (same type as found).',
     },
     pharmaFarmer: {
-      name: 'Pharma Farmer',
+      name: 'Pharma Farma',
       effect: 'When scavenging a location with medicine/drugs, you find one additional item for free.',
     },
     partyBoy: {
@@ -151,7 +151,7 @@ export default {
       effect: 'Once per combat, reroll all CD of a damage roll without spending a luck point.',
     },
     heavyHitter: {
-      name: 'Heavy Hitter',
+      name: 'Big Leagues',
       effect: 'Two-handed melee attacks gain the Brutal effect.',
     },
     blacksmith: {
@@ -172,11 +172,11 @@ export default {
     },
     // G
     fastHealer: {
-      name: 'Fast Healer',
+      name: 'Faster Healing',
       effect: 'On END+Survival test to heal yourself, the first extra d20 is free.',
     },
     medic: {
-      name: 'Medic',
+      name: 'Healer',
       effect: 'When you heal with First Aid, +1 HP healed per rank.',
     },
     // H
@@ -194,8 +194,8 @@ export default {
       effect: 'Reroll 1d20 on any Lockpick test for a door or container.',
     },
     nurse: {
-      name: 'Nurse',
-      effect: 'When you use First Aid to heal, you can reroll 1d20.',
+      name: 'Medic',
+      effect: 'Re-roll 1d20 on First Aid actions.',
     },
     // L
     sizeMatters: {
@@ -203,8 +203,8 @@ export default {
       effect: 'With a heavy weapon, +1 CD damage per rank.',
     },
     bullRush: {
-      name: 'Bull Rush',
-      effect: 'Major action: charge in power armor or as super mutant. STR+Athletics test difficulty 2. Success: unarmed damage + knockdown.',
+      name: 'Pain Train',
+      effect: 'Rank 1: Gain Charge major action to damage and knock prone enemies with a Str + Athletics test. Rank 2: Add 1d6 and Stun damage effect.',
     },
     // M
     quickHands: {
@@ -216,7 +216,7 @@ export default {
       effect: 'On tests to pick locks or pick pockets, +1 difficulty for others to spot you.',
     },
     sandman: {
-      name: 'Sandman',
+      name: 'Mister Sandman',
       effect: 'On sneak attack with silenced weapon, +2 CD damage. Doesn\'t work in power armor.',
     },
     fastMetabolism: {
@@ -282,7 +282,7 @@ export default {
       effect: 'When your HP is not at maximum, consider STR = 10 for tests and melee attacks.',
     },
     intimidation: {
-      name: 'Intimidation',
+      name: 'Terrifying Presence',
       effect: 'Rank 1: Reroll 1d20 to threaten/frighten. Rank 2: Major action to threaten, STR+Speech test difficulty 2.',
     },
     pyromaniac: {
@@ -352,8 +352,8 @@ export default {
       effect: 'The damage required to inflict a critical hit on you increases by your ranks in this perk.',
     },
     educated: {
-      name: 'Educated',
-      effect: 'Increase two skills by 1 rank, or one skill by 2 ranks (max 6).',
+      name: 'Skilled',
+      effect: 'Add +1 to two skills or +2 to any skill as long as it does not go above 6.',
     },
     // T
     concentratedFire: {
@@ -361,11 +361,11 @@ export default {
       effect: 'On ranged attack with extra ammo, reroll up to 3 damage CD.',
     },
     slacker: {
-      name: 'Slacker',
+      name: 'Dodger',
       effect: 'Rank 1: On Defend action, -1 difficulty to test. Rank 2: Improving defense costs only 1 AP.',
     },
     triggerRush: {
-      name: 'Trigger Rush',
+      name: 'Gun Fu',
       effect: 'On successful ranged attack, spend 1 AP and 1 ammo to hit an additional target at short range. +1 target per rank.',
     },
     slayer: {
@@ -373,7 +373,7 @@ export default {
       effect: 'On unarmed or melee attack with at least 1 damage, spend 1 luck point to inflict a critical hit.',
     },
     killer: {
-      name: 'Killer',
+      name: "Grim Reaper's Sprint",
       effect: 'When you kill an enemy, roll 1 CD. On Effect, +2 AP to group pool.',
     },
     // V
@@ -390,7 +390,7 @@ export default {
       effect: 'When Aiming, reroll 2d20 of your first attack this turn OR reroll 1d20 of all your attacks this turn.',
     },
     lifeGiver: {
-      name: 'Life Giver',
+      name: 'Lifegiver',
       effect: 'Add your Endurance value to your maximum hit points.',
     },
   },
