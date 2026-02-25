@@ -128,6 +128,7 @@ export function CharacterForm({
   const [name, setName] = useState('');
   const [type, setType] = useState<'PC' | 'NPC'>(defaultType);
   const [level, setLevel] = useState(1);
+  const [levelInput, setLevelInput] = useState('1');
   const [origin, setOrigin] = useState<OriginId>('survivor');
   const [survivorTraits, setSurvivorTraits] = useState<SurvivorTraitId[]>([]);
 
@@ -251,8 +252,12 @@ export function CharacterForm({
 
   const specialPointsRemaining = SPECIAL_POINTS_TO_DISTRIBUTE - specialPointsSpent;
 
-  // Get max skill rank (can be limited by origin)
-  const maxSkillRank = currentOrigin?.skillMaxOverride ?? MAX_SKILL_RANK;
+  // Get max skill rank (can be limited by origin; during creation at level < 3, capped at 3)
+  const maxSkillRank = (() => {
+    const originMax = currentOrigin?.skillMaxOverride ?? MAX_SKILL_RANK;
+    if (isCreateMode && level < 3) return Math.min(3, originMax);
+    return originMax;
+  })();
 
   // Calculate skill points
   const baseSkillPoints = calculateSkillPoints(special.intelligence, level);
@@ -441,6 +446,7 @@ export function CharacterForm({
         setName(character.name);
         setType(character.type);
         setLevel(character.level);
+        setLevelInput(String(character.level));
         setOrigin(character.origin ?? 'survivor');
         setSurvivorTraits(character.survivorTraits ?? []);
         // Restore gifted and exercise bonuses from character
@@ -489,6 +495,7 @@ export function CharacterForm({
         setName('');
         setType(defaultType);
         setLevel(1);
+        setLevelInput('1');
         setOrigin('survivor');
         setSurvivorTraits([]);
         setGiftedBonusAttributes([]);
@@ -927,10 +934,16 @@ export function CharacterForm({
             </label>
             <input
               type="number"
-              value={level}
-              onChange={(e) => setLevel(Math.max(1, parseInt(e.target.value) || 1))}
+              value={levelInput}
+              onChange={(e) => setLevelInput(e.target.value)}
+              onBlur={(e) => {
+                const parsed = Math.max(1, Math.min(50, parseInt(e.target.value) || 1));
+                setLevel(parsed);
+                setLevelInput(String(parsed));
+              }}
               min={1}
               max={50}
+              inputMode="numeric"
               className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
             />
           </div>
