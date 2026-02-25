@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Plus, Star, Sparkles, Dumbbell, Package, Check, User, BookOpen, ScrollText, AlertTriangle } from 'lucide-react';
+import { X, Plus, Star, Sparkles, Dumbbell, Package, Check, User, BookOpen, ScrollText, AlertTriangle, Lock } from 'lucide-react';
 import type {
   Character,
   SpecialAttribute,
@@ -128,6 +128,7 @@ export function CharacterForm({
   const [name, setName] = useState('');
   const [type, setType] = useState<'PC' | 'NPC'>(defaultType);
   const [level, setLevel] = useState(1);
+  const [levelInput, setLevelInput] = useState('1');
   const [origin, setOrigin] = useState<OriginId>('survivor');
   const [survivorTraits, setSurvivorTraits] = useState<SurvivorTraitId[]>([]);
 
@@ -162,6 +163,8 @@ export function CharacterForm({
   const [exerciseBonuses, setExerciseBonuses] = useState<SpecialAttribute[]>([]); // one entry per rank
   const [pendingTagPerk, setPendingTagPerk] = useState(false);
   const [tagPerkSkill, setTagPerkSkill] = useState<SkillName | null>(null);
+  // Origin constrained bonus tag skill (e.g. Brotherhood → one of energyWeapons/science/repair)
+  const [originOptionTagSkill, setOriginOptionTagSkill] = useState<SkillName | null>(null);
   const [notes, setNotes] = useState('');
 
   // Equipment Pack
@@ -194,9 +197,19 @@ export function CharacterForm({
   const hasSmallFrame = survivorTraits.includes('smallFrame');
   const hasHeavyHanded = survivorTraits.includes('heavyHanded');
 
-  // Dynamic tag skills count (Educated gives +1, Tag! perk gives +1)
+  // Origin bonus tag skills — locked (auto-applied fixed ones + user-chosen constrained option)
+  const originBonusTagSkills: SkillName[] = [
+    ...((currentOrigin?.bonusTagSkills ?? []) as SkillName[]),
+    ...(originOptionTagSkill ? [originOptionTagSkill] : []),
+  ];
+
+  // Dynamic tag skills count (Educated gives +1, Tag! perk gives +1, some origins give extra slots)
   const hasTagPerk = perks.some(p => p.perkId === 'tag');
-  const tagSkillsCount = BASE_TAG_SKILLS_COUNT + (hasEducated ? 1 : 0) + (hasTagPerk ? 1 : 0);
+  const originBonusTagSlots = currentOrigin?.bonusTagSkillSlots ?? 0;
+  const tagSkillsCount = BASE_TAG_SKILLS_COUNT + (hasEducated ? 1 : 0) + (hasTagPerk ? 1 : 0) + originBonusTagSlots;
+
+  // User-selected tag skills only (excluding origin bonus ones)
+  const userTagSkills = tagSkills.filter(s => !originBonusTagSkills.includes(s));
 
   // Calculate final SPECIAL with origin modifiers, Gifted bonuses, and Exercice bonuses applied
   const special = useMemo(() => {
@@ -239,11 +252,15 @@ export function CharacterForm({
 
   const specialPointsRemaining = SPECIAL_POINTS_TO_DISTRIBUTE - specialPointsSpent;
 
-  // Get max skill rank (can be limited by origin)
-  const maxSkillRank = currentOrigin?.skillMaxOverride ?? MAX_SKILL_RANK;
+  // Get max skill rank (can be limited by origin; during creation at level < 3, capped at 3)
+  const maxSkillRank = (() => {
+    const originMax = currentOrigin?.skillMaxOverride ?? MAX_SKILL_RANK;
+    if (isCreateMode && level < 3) return Math.min(3, originMax);
+    return originMax;
+  })();
 
   // Calculate skill points
-  const baseSkillPoints = calculateSkillPoints(special.intelligence);
+  const baseSkillPoints = calculateSkillPoints(special.intelligence, level);
   const skillPointsSpent = useMemo(() => {
     let spent = 0;
     SKILL_NAMES.forEach((skill) => {
@@ -429,6 +446,7 @@ export function CharacterForm({
         setName(character.name);
         setType(character.type);
         setLevel(character.level);
+        setLevelInput(String(character.level));
         setOrigin(character.origin ?? 'survivor');
         setSurvivorTraits(character.survivorTraits ?? []);
         // Restore gifted and exercise bonuses from character
@@ -465,6 +483,10 @@ export function CharacterForm({
         });
         setSkills(loadedSkills);
         setTagSkills(character.tagSkills ?? []);
+        // Detect origin option tag skill (e.g. Brotherhood: which of energyWeapons/science/repair was chosen)
+        const charOriginOptions = (charOrigin?.bonusTagSkillOptions ?? []) as SkillName[];
+        const detectedOption = character.tagSkills?.find(s => charOriginOptions.includes(s as SkillName)) as SkillName | null;
+        setOriginOptionTagSkill(detectedOption ?? null);
         setPerks(character.perks);
         setNotes(character.notes);
         setSelectedPackId(null);
@@ -473,11 +495,13 @@ export function CharacterForm({
         setName('');
         setType(defaultType);
         setLevel(1);
+        setLevelInput('1');
         setOrigin('survivor');
         setSurvivorTraits([]);
         setGiftedBonusAttributes([]);
         setExerciseBonuses([]);
         setPendingExercisePerk(null);
+        setOriginOptionTagSkill(null);
         setSelectedPackId(null);
         setEquipmentChoices({});
         setTagSkillBonusChoices({});
@@ -516,6 +540,19 @@ export function CharacterForm({
     setSelectedPackId(null);
     setEquipmentChoices({});
   }, [origin]);
+
+  // Auto-apply/remove origin bonus tag skills when origin changes
+  useEffect(() => {
+    const bonusSkills = (ORIGINS.find(o => o.id === origin)?.bonusTagSkills ?? []) as SkillName[];
+    // All fixed bonus skills + all possible constrained options from all origins
+    const allFixedBonus = ORIGINS.flatMap(o => (o.bonusTagSkills ?? []) as SkillName[]);
+    const allOptions = ORIGINS.flatMap(o => (o.bonusTagSkillOptions ?? []) as SkillName[]);
+    setOriginOptionTagSkill(null);
+    setTagSkills(prev => {
+      const filtered = prev.filter(s => !allFixedBonus.includes(s) && !allOptions.includes(s));
+      return [...filtered, ...bonusSkills];
+    });
+  }, [origin]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset equipment choices when pack changes
   useEffect(() => {
@@ -591,6 +628,9 @@ export function CharacterForm({
   };
 
   const handleTagSkillToggle = (skill: SkillName) => {
+    // Origin bonus tag skills are locked (auto-applied by origin)
+    if (originBonusTagSkills.includes(skill)) return;
+
     setTagSkills((prev) => {
       if (prev.includes(skill)) {
         const newTags = prev.filter((s) => s !== skill);
@@ -598,7 +638,10 @@ export function CharacterForm({
           setSkills((prevSkills) => ({ ...prevSkills, [skill]: 0 }));
         }
         return newTags;
-      } else if (prev.length < tagSkillsCount) {
+      }
+      // Count only user-selected tag skills (excluding origin bonus ones)
+      const prevUserTagCount = prev.filter(s => !originBonusTagSkills.includes(s)).length;
+      if (prevUserTagCount < tagSkillsCount) {
         setSkills((prevSkills) => ({
           ...prevSkills,
           [skill]: Math.max(prevSkills[skill], TAG_SKILL_STARTING_RANK),
@@ -691,6 +734,31 @@ export function CharacterForm({
 
   const handleCancelTag = () => {
     setPendingTagPerk(false);
+  };
+
+  const handleOriginOptionSelect = (skill: SkillName) => {
+    const prev = originOptionTagSkill;
+    if (prev === skill) {
+      // Deselect
+      setOriginOptionTagSkill(null);
+      setTagSkills(tags => tags.filter(s => s !== skill));
+      setSkills(prevSkills => ({
+        ...prevSkills,
+        [skill]: prevSkills[skill] === TAG_SKILL_STARTING_RANK ? 0 : prevSkills[skill],
+      }));
+    } else {
+      // Select (replacing previous option if any)
+      setOriginOptionTagSkill(skill);
+      setTagSkills(tags => {
+        const withoutPrev = prev ? tags.filter(s => s !== prev) : tags;
+        return withoutPrev.includes(skill) ? withoutPrev : [...withoutPrev, skill];
+      });
+      setSkills(prevSkills => {
+        const updated = { ...prevSkills, [skill]: Math.max(prevSkills[skill], TAG_SKILL_STARTING_RANK) };
+        if (prev && prevSkills[prev] === TAG_SKILL_STARTING_RANK) updated[prev] = 0;
+        return updated;
+      });
+    }
   };
 
   const handleRemovePerk = (perkId: string) => {
@@ -866,10 +934,16 @@ export function CharacterForm({
             </label>
             <input
               type="number"
-              value={level}
-              onChange={(e) => setLevel(Math.max(1, parseInt(e.target.value) || 1))}
+              value={levelInput}
+              onChange={(e) => setLevelInput(e.target.value)}
+              onBlur={(e) => {
+                const parsed = Math.max(1, Math.min(50, parseInt(e.target.value) || 1));
+                setLevel(parsed);
+                setLevelInput(String(parsed));
+              }}
               min={1}
               max={50}
+              inputMode="numeric"
               className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
             />
           </div>
@@ -1073,7 +1147,9 @@ export function CharacterForm({
         <div className="flex items-center gap-4 mb-3">
           <span className="text-sm text-gray-400">
             <Star size={12} className="inline text-vault-yellow mr-1" />
-            {t('characters.tagSkills')}: {tagSkills.length}/{tagSkillsCount}
+            {t('characters.tagSkills')}: {userTagSkills.length}/{tagSkillsCount}
+            {originBonusTagSkills.length > 0 && <span className="text-xs text-vault-yellow-dark ml-1">(+{originBonusTagSkills.length} <Lock size={10} className="inline" />)</span>}
+            {originBonusTagSlots > 0 && <span className="text-xs text-vault-yellow ml-1">(+{originBonusTagSlots} {t('characters.originBonus')})</span>}
             {hasEducated && <span className="text-xs text-green-400 ml-1">(+1 Educated)</span>}
             {hasTagPerk && <span className="text-xs text-vault-yellow ml-1">(+1 Tag!)</span>}
           </span>
@@ -1085,10 +1161,48 @@ export function CharacterForm({
         <StepValidation
           warnings={[
             ...(skillPointsRemaining > 0 ? [`${skillPointsRemaining} ${t('characters.validation.skillsRemaining')}`] : []),
-            ...(tagSkills.length < tagSkillsCount ? [t('characters.validation.tagSkillsRemaining', { count: tagSkillsCount - tagSkills.length })] : []),
+            ...(userTagSkills.length < tagSkillsCount ? [t('characters.validation.tagSkillsRemaining', { count: tagSkillsCount - userTagSkills.length })] : []),
+            ...(type === 'PC' && currentOrigin?.bonusTagSkillOptions && !originOptionTagSkill
+              ? [t('characters.validation.originBonusSkillRequired')]
+              : []),
           ]}
           errors={skillPointsRemaining < 0 ? [`${Math.abs(skillPointsRemaining)} ${t('characters.validation.skillsOver')}`] : []}
         />
+
+        {/* Origin constrained bonus tag skill selector (e.g. Brotherhood) */}
+        {type === 'PC' && currentOrigin?.bonusTagSkillOptions && (
+          <div className="p-3 bg-vault-blue rounded border border-vault-yellow-dark">
+            <p className="text-xs text-gray-300 mb-2">
+              <Lock size={11} className="inline mr-1 text-vault-yellow" />
+              {t('characters.originBonusSkillChoice')}
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              {currentOrigin.bonusTagSkillOptions.map(skill => {
+                const isSelected = originOptionTagSkill === skill;
+                const isAlreadyRegularTag = userTagSkills.includes(skill as SkillName);
+                return (
+                  <button
+                    key={skill}
+                    type="button"
+                    onClick={() => !isAlreadyRegularTag && handleOriginOptionSelect(skill as SkillName)}
+                    disabled={isAlreadyRegularTag}
+                    className={`px-3 py-1.5 rounded text-sm border transition-colors ${
+                      isSelected
+                        ? 'bg-vault-yellow text-vault-blue font-bold border-vault-yellow'
+                        : isAlreadyRegularTag
+                        ? 'border-gray-600 text-gray-600 cursor-not-allowed'
+                        : 'border-vault-yellow-dark text-vault-yellow hover:border-vault-yellow'
+                    }`}
+                    title={isAlreadyRegularTag ? t('characters.alreadyRegularTag') : undefined}
+                  >
+                    {t(`skills.${skill}`)}
+                    {isSelected && <Check size={12} className="inline ml-1" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <p className="text-xs text-gray-400">
           {t('characters.skillsDesc', { points: baseSkillPoints, maxRank: maxSkillRank })}
@@ -1109,7 +1223,8 @@ export function CharacterForm({
               return b.tn - a.tn;
             })
             .map(({ skill, linkedAttr, currentRank, isTag, tn }) => {
-            const canAddTag = tagSkills.length < tagSkillsCount;
+            const isOriginBonus = originBonusTagSkills.includes(skill);
+            const canAddTag = userTagSkills.length < tagSkillsCount;
 
             return (
               <div
@@ -1121,17 +1236,22 @@ export function CharacterForm({
                 <button
                   type="button"
                   onClick={() => handleTagSkillToggle(skill)}
-                  disabled={!isTag && !canAddTag}
+                  disabled={isOriginBonus || (!isTag && !canAddTag)}
                   className={`p-2 rounded transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
-                    isTag
+                    isOriginBonus
+                      ? 'text-vault-yellow opacity-60 cursor-not-allowed'
+                      : isTag
                       ? 'text-vault-yellow'
                       : canAddTag
                       ? 'text-gray-500 hover:text-gray-300'
                       : 'text-gray-700 cursor-not-allowed'
                   }`}
-                  title={isTag ? t('characters.removeTag') : t('characters.addTag')}
+                  title={isOriginBonus ? t('characters.originBonusTag') : isTag ? t('characters.removeTag') : t('characters.addTag')}
                 >
-                  <Star size={16} fill={isTag ? 'currentColor' : 'none'} />
+                  {isOriginBonus
+                    ? <Lock size={16} />
+                    : <Star size={16} fill={isTag ? 'currentColor' : 'none'} />
+                  }
                 </button>
 
                 <div className="flex-1 min-w-0">
