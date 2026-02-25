@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { SessionParticipantApi, CombatantStatus } from '../services/api';
 import { HPBar } from './HPBar';
 import { OriginIcon } from './OriginIcon';
+import { SPECIAL_COLORS } from '../data/specialColors';
 
 interface ParticipantRowProps {
   participant: SessionParticipantApi;
@@ -103,7 +104,7 @@ export function ParticipantRow({
         <div className="hidden md:flex gap-1">
           {specialLetters.map((letter, i) => (
             <div key={letter} className="text-center w-5">
-              <span className="text-[10px] text-vault-yellow-dark block">{letter}</span>
+              <span className="text-[10px] font-bold block" style={{ color: SPECIAL_COLORS[specialKeys[i]] }}>{letter}</span>
               <span className="text-xs text-white font-mono">{character.special?.[specialKeys[i]] ?? 5}</span>
             </div>
           ))}

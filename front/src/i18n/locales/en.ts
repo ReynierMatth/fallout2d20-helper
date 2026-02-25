@@ -497,6 +497,8 @@ export default {
     levelShort: 'Lvl.',
     selectExerciseAttribute: 'Intense Training: choose attribute',
     exerciseDesc: 'Choose the S.P.E.C.I.A.L. attribute to increase by 1 point.',
+    selectTagSkill: 'Tag!: choose an additional tag skill',
+    tagPerkDesc: 'Choose a skill to mark as a tag skill. It will be set to at least rank 2.',
     exerciseBonus: 'Intense Training: +{{count}} point(s)',
     drFromPerks: 'DR from perks',
     validation: {

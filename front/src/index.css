@@ -12,6 +12,15 @@
   --color-vault-gray: #2c3e50;
   --color-vault-gray-light: #34495e;
 
+  /* S.P.E.C.I.A.L. attribute colors (from Fallout 2d20 rulebook) */
+  --color-special-strength: #E8823A;
+  --color-special-perception: #7AB648;
+  --color-special-endurance: #4DBDB8;
+  --color-special-charisma: #E8C33A;
+  --color-special-intelligence: #5BA3D9;
+  --color-special-agility: #E8706A;
+  --color-special-luck: #9B8FD9;
+
   --font-family-fallout: 'Share Tech Mono', 'Courier New', monospace;
 }
 

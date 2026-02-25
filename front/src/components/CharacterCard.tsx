@@ -2,6 +2,7 @@ import { Edit2, Copy, Trash2, Swords, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Character } from '../data/characters';
 import { ORIGINS } from '../data/characters';
+import { SPECIAL_COLORS } from '../data/specialColors';
 import { OriginIcon } from './OriginIcon';
 
 interface CharacterCardProps {
@@ -108,10 +109,12 @@ export function CharacterCard({
               'agility',
               'luck',
             ] as const;
-            const value = character.special[attrs[i]];
+            const attr = attrs[i];
+            const value = character.special[attr];
+            const color = SPECIAL_COLORS[attr];
             return (
               <div key={letter} className="flex flex-col items-center">
-                <span className="text-xs text-vault-yellow font-bold">{letter}</span>
+                <span className="text-xs font-bold" style={{ color }}>{letter}</span>
                 <span className="text-sm text-white font-mono">{value}</span>
               </div>
             );
