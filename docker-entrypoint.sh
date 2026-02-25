@@ -3,6 +3,11 @@ set -e
 
 cd /app/back
 
+# Start nginx immediately so the container port is open and static files are served.
+# The /api/ proxy will return 502 until the backend is ready — expected during startup.
+echo "Starting nginx..."
+nginx
+
 # Wait for postgres to be ready
 echo "Waiting for PostgreSQL..."
 until node -e "
@@ -22,10 +27,6 @@ npx drizzle-kit migrate 2>&1 || echo "Migration warning (may already be applied)
 # Always run seed (idempotent upserts — safe to run on existing data)
 echo "Running seed..."
 npx tsx src/db/seed/index.ts || echo "WARNING: Seed failed, you may need to seed manually"
-
-# Start nginx in background
-echo "Starting nginx..."
-nginx
 
 # Start backend with tsx (handles TypeScript directly)
 echo "Starting backend on port ${PORT:-3001}..."

@@ -1,5 +1,5 @@
 import { db } from '../index';
-import { eq } from 'drizzle-orm';
+import { sql, inArray } from 'drizzle-orm';
 import {
   perks,
   perkSpecialPrerequisites,
@@ -15,68 +15,70 @@ import type { SpecialAttribute, SkillName } from './data/characters';
 export async function seedPerks() {
   console.log('Seeding perks...');
 
-  for (const perk of PERKS) {
-    await db
-      .insert(perks)
-      .values({
-        id: perk.id,
-        nameKey: perk.nameKey,
-        effectKey: perk.effectKey,
-        maxRanks: perk.maxRanks,
-        levelRequired: perk.prerequisites.level,
-        levelIncreasePerRank: perk.prerequisites.levelIncreasePerRank,
-        notForRobots: perk.prerequisites.notForRobots ?? false,
-      })
-      .onConflictDoUpdate({
-        target: perks.id,
-        set: {
-          nameKey: perk.nameKey,
-          effectKey: perk.effectKey,
-          maxRanks: perk.maxRanks,
-          levelRequired: perk.prerequisites.level,
-          levelIncreasePerRank: perk.prerequisites.levelIncreasePerRank,
-          notForRobots: perk.prerequisites.notForRobots ?? false,
-        },
-      });
+  const perkIds = PERKS.map(p => p.id);
 
-    // Delete and re-insert child rows
-    await db.delete(perkSpecialPrerequisites).where(eq(perkSpecialPrerequisites.perkId, perk.id));
-    if (perk.prerequisites.special) {
-      const specialEntries = Object.entries(perk.prerequisites.special) as [SpecialAttribute, number][];
-      for (const [attribute, minValue] of specialEntries) {
-        await db.insert(perkSpecialPrerequisites).values({ perkId: perk.id, attribute, minValue });
-      }
-    }
+  // Batch upsert all perks in one query
+  await db
+    .insert(perks)
+    .values(PERKS.map(perk => ({
+      id: perk.id,
+      nameKey: perk.nameKey,
+      effectKey: perk.effectKey,
+      maxRanks: perk.maxRanks,
+      levelRequired: perk.prerequisites.level,
+      levelIncreasePerRank: perk.prerequisites.levelIncreasePerRank,
+      notForRobots: perk.prerequisites.notForRobots ?? false,
+    })))
+    .onConflictDoUpdate({
+      target: perks.id,
+      set: {
+        nameKey: sql`excluded.name_key`,
+        effectKey: sql`excluded.effect_key`,
+        maxRanks: sql`excluded.max_ranks`,
+        levelRequired: sql`excluded.level_required`,
+        levelIncreasePerRank: sql`excluded.level_increase_per_rank`,
+        notForRobots: sql`excluded.not_for_robots`,
+      },
+    });
 
-    await db.delete(perkSkillPrerequisites).where(eq(perkSkillPrerequisites.perkId, perk.id));
-    if (perk.prerequisites.skills) {
-      const skillEntries = Object.entries(perk.prerequisites.skills) as [SkillName, number][];
-      for (const [skill, minRank] of skillEntries) {
-        await db.insert(perkSkillPrerequisites).values({ perkId: perk.id, skill, minRank });
-      }
-    }
+  // Batch replace SPECIAL prerequisites
+  await db.delete(perkSpecialPrerequisites).where(inArray(perkSpecialPrerequisites.perkId, perkIds));
+  const allSpecial = PERKS.flatMap(perk => {
+    if (!perk.prerequisites.special) return [];
+    return (Object.entries(perk.prerequisites.special) as [SpecialAttribute, number][])
+      .map(([attribute, minValue]) => ({ perkId: perk.id, attribute, minValue }));
+  });
+  if (allSpecial.length > 0) await db.insert(perkSpecialPrerequisites).values(allSpecial);
 
-    await db.delete(perkRequiredPerks).where(eq(perkRequiredPerks.perkId, perk.id));
-    if (perk.prerequisites.perks) {
-      for (const requiredPerkId of perk.prerequisites.perks) {
-        await db.insert(perkRequiredPerks).values({ perkId: perk.id, requiredPerkId });
-      }
-    }
+  // Batch replace skill prerequisites
+  await db.delete(perkSkillPrerequisites).where(inArray(perkSkillPrerequisites.perkId, perkIds));
+  const allSkills = PERKS.flatMap(perk => {
+    if (!perk.prerequisites.skills) return [];
+    return (Object.entries(perk.prerequisites.skills) as [SkillName, number][])
+      .map(([skill, minRank]) => ({ perkId: perk.id, skill, minRank }));
+  });
+  if (allSkills.length > 0) await db.insert(perkSkillPrerequisites).values(allSkills);
 
-    await db.delete(perkExcludedPerks).where(eq(perkExcludedPerks.perkId, perk.id));
-    if (perk.prerequisites.excludedPerks) {
-      for (const excludedPerkId of perk.prerequisites.excludedPerks) {
-        await db.insert(perkExcludedPerks).values({ perkId: perk.id, excludedPerkId });
-      }
-    }
+  // Batch replace required perks
+  await db.delete(perkRequiredPerks).where(inArray(perkRequiredPerks.perkId, perkIds));
+  const allRequired = PERKS.flatMap(perk =>
+    (perk.prerequisites.perks ?? []).map(requiredPerkId => ({ perkId: perk.id, requiredPerkId }))
+  );
+  if (allRequired.length > 0) await db.insert(perkRequiredPerks).values(allRequired);
 
-    await db.delete(perkRankEffects).where(eq(perkRankEffects.perkId, perk.id));
-    if (perk.rankEffects) {
-      for (const rankEffect of perk.rankEffects) {
-        await db.insert(perkRankEffects).values({ perkId: perk.id, rank: rankEffect.rank, effectKey: rankEffect.effect });
-      }
-    }
-  }
+  // Batch replace excluded perks
+  await db.delete(perkExcludedPerks).where(inArray(perkExcludedPerks.perkId, perkIds));
+  const allExcluded = PERKS.flatMap(perk =>
+    (perk.prerequisites.excludedPerks ?? []).map(excludedPerkId => ({ perkId: perk.id, excludedPerkId }))
+  );
+  if (allExcluded.length > 0) await db.insert(perkExcludedPerks).values(allExcluded);
+
+  // Batch replace rank effects
+  await db.delete(perkRankEffects).where(inArray(perkRankEffects.perkId, perkIds));
+  const allRankEffects = PERKS.flatMap(perk =>
+    (perk.rankEffects ?? []).map(re => ({ perkId: perk.id, rank: re.rank, effectKey: re.effect }))
+  );
+  if (allRankEffects.length > 0) await db.insert(perkRankEffects).values(allRankEffects);
 
   console.log(`  Upserted ${PERKS.length} perks`);
 }
