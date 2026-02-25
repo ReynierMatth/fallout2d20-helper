@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { SpecialAttribute } from '../data/characters';
 import { SPECIAL_ATTRIBUTES } from '../data/characters';
+import { SPECIAL_COLORS } from '../data/specialColors';
 
 interface StickyCharacterHeaderProps {
   name: string;
@@ -33,8 +34,13 @@ export function StickyCharacterHeader({ name, special }: StickyCharacterHeaderPr
           {SPECIAL_ATTRIBUTES.map((attr) => (
             <span
               key={attr}
-              className="text-xs px-1.5 py-0.5 rounded bg-vault-blue border border-vault-yellow-dark/50 text-vault-yellow font-mono"
+              className="text-xs px-1.5 py-0.5 rounded font-mono font-bold border"
               title={t(`special.${attr}`)}
+              style={{
+                color: SPECIAL_COLORS[attr],
+                borderColor: `${SPECIAL_COLORS[attr]}55`,
+                backgroundColor: `${SPECIAL_COLORS[attr]}18`,
+              }}
             >
               {SPECIAL_SHORT[attr]}:{special[attr]}
             </span>

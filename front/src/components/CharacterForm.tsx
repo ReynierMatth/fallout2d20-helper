@@ -23,6 +23,7 @@ import {
   calculateSkillPoints,
 } from '../data/characters';
 import { PERKS, getAvailablePerks, getRequiredLevelForRank } from '../data/perks';
+import { SPECIAL_COLORS } from '../data/specialColors';
 import { getPerkHPBonus, getPerkDRBonuses, getPerkCarryCapacityBonus, PERK_EFFECTS } from '../data/effects';
 import { useEquipmentPacksForOrigin, useTagSkillBonuses, useLevelBonus } from '../hooks/useEquipmentPacks';
 import type { EquipmentPackApi, EquipmentPackItemApi, TagSkillBonusEntryApi, TagSkillBonusDirectApi, ItemType } from '../services/api';
@@ -159,6 +160,8 @@ export function CharacterForm({
   const [showPerkSelector, setShowPerkSelector] = useState(false);
   const [pendingExercisePerk, setPendingExercisePerk] = useState<number | null>(null); // rank to add
   const [exerciseBonuses, setExerciseBonuses] = useState<SpecialAttribute[]>([]); // one entry per rank
+  const [pendingTagPerk, setPendingTagPerk] = useState(false);
+  const [tagPerkSkill, setTagPerkSkill] = useState<SkillName | null>(null);
   const [notes, setNotes] = useState('');
 
   // Equipment Pack
@@ -191,8 +194,9 @@ export function CharacterForm({
   const hasSmallFrame = survivorTraits.includes('smallFrame');
   const hasHeavyHanded = survivorTraits.includes('heavyHanded');
 
-  // Dynamic tag skills count (Educated gives +1)
-  const tagSkillsCount = hasEducated ? BASE_TAG_SKILLS_COUNT + 1 : BASE_TAG_SKILLS_COUNT;
+  // Dynamic tag skills count (Educated gives +1, Tag! perk gives +1)
+  const hasTagPerk = perks.some(p => p.perkId === 'tag');
+  const tagSkillsCount = BASE_TAG_SKILLS_COUNT + (hasEducated ? 1 : 0) + (hasTagPerk ? 1 : 0);
 
   // Calculate final SPECIAL with origin modifiers, Gifted bonuses, and Exercice bonuses applied
   const special = useMemo(() => {
@@ -634,6 +638,12 @@ export function CharacterForm({
       return;
     }
 
+    if (perkId === 'tag') {
+      setPendingTagPerk(true);
+      setShowPerkSelector(false);
+      return;
+    }
+
     setPerks((prev) => {
       const existingIndex = prev.findIndex((p) => p.perkId === perkId);
       if (existingIndex >= 0) {
@@ -668,9 +678,32 @@ export function CharacterForm({
     setPendingExercisePerk(null);
   };
 
+  const handleConfirmTag = (skill: SkillName) => {
+    setTagPerkSkill(skill);
+    setTagSkills((prev) => [...prev, skill]);
+    setSkills((prev) => ({ ...prev, [skill]: Math.max(prev[skill], TAG_SKILL_STARTING_RANK) }));
+    setPerks((prev) => {
+      if (prev.some((p) => p.perkId === 'tag')) return prev;
+      return [...prev, { perkId: 'tag', rank: 1 }];
+    });
+    setPendingTagPerk(false);
+  };
+
+  const handleCancelTag = () => {
+    setPendingTagPerk(false);
+  };
+
   const handleRemovePerk = (perkId: string) => {
     if (perkId === 'intenseTraining') {
       setExerciseBonuses([]);
+    }
+    if (perkId === 'tag' && tagPerkSkill) {
+      setTagSkills((prev) => prev.filter((s) => s !== tagPerkSkill));
+      setSkills((prev) => ({
+        ...prev,
+        [tagPerkSkill]: prev[tagPerkSkill] === TAG_SKILL_STARTING_RANK ? 0 : prev[tagPerkSkill],
+      }));
+      setTagPerkSkill(null);
     }
     setPerks((prev) => prev.filter((p) => p.perkId !== perkId));
   };
@@ -918,6 +951,7 @@ export function CharacterForm({
                   onChange={(value) => handleBaseSpecialChange(attr, value)}
                   min={4}
                   max={Math.min(10, maxBase)}
+                  color={SPECIAL_COLORS[attr]}
                 />
                 {hasGifted && (
                   <button
@@ -1040,7 +1074,8 @@ export function CharacterForm({
           <span className="text-sm text-gray-400">
             <Star size={12} className="inline text-vault-yellow mr-1" />
             {t('characters.tagSkills')}: {tagSkills.length}/{tagSkillsCount}
-            {hasEducated && <span className="text-xs text-green-400 ml-1">(+1)</span>}
+            {hasEducated && <span className="text-xs text-green-400 ml-1">(+1 Educated)</span>}
+            {hasTagPerk && <span className="text-xs text-vault-yellow ml-1">(+1 Tag!)</span>}
           </span>
           <span className={`text-sm font-mono ${skillPointsRemaining === 0 ? 'text-green-400' : skillPointsRemaining > 0 ? 'text-vault-yellow' : 'text-red-400'}`}>
             {t('characters.skillPointsRemaining')}: {skillPointsRemaining}
@@ -1347,6 +1382,44 @@ export function CharacterForm({
             </div>
           )}
 
+          {/* Tag! perk skill selector */}
+          {pendingTagPerk && (
+            <div className="mt-3 border border-vault-yellow-dark rounded bg-gray-800 p-3">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-vault-yellow font-bold">
+                  {t('characters.selectTagSkill')}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCancelTag}
+                  className="text-gray-400 hover:text-white p-2"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mb-3">
+                {t('characters.tagPerkDesc')}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {SKILL_NAMES.filter((skill) => !tagSkills.includes(skill)).map((skill) => (
+                  <button
+                    key={skill}
+                    type="button"
+                    onClick={() => handleConfirmTag(skill)}
+                    className="p-2 rounded border border-gray-600 hover:border-vault-yellow hover:bg-vault-blue text-left transition-colors min-h-[44px]"
+                  >
+                    <span className="text-vault-yellow font-bold text-sm">
+                      {t(`skills.${skill}`)}
+                    </span>
+                    <span className="text-xs text-gray-400 ml-2">
+                      {skills[skill]} → {Math.max(skills[skill], TAG_SKILL_STARTING_RANK)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Exercice (Intense Training) attribute selector */}
           {pendingExercisePerk !== null && (
             <div className="mt-3 border border-green-600 rounded bg-gray-800 p-3">
@@ -1383,7 +1456,7 @@ export function CharacterForm({
                           : 'border-gray-700 opacity-50 cursor-not-allowed'
                       }`}
                     >
-                      <span className="text-vault-yellow font-bold text-sm">
+                      <span className="font-bold text-sm" style={{ color: SPECIAL_COLORS[attr] }}>
                         {t(`special.${attr}`)}
                       </span>
                       <span className="text-xs text-gray-400 ml-2">

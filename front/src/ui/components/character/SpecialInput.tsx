@@ -8,6 +8,7 @@ interface SpecialInputProps {
   max?: number;
   disabled?: boolean;
   className?: string;
+  color?: string;
 }
 
 export function SpecialInput({
@@ -18,6 +19,7 @@ export function SpecialInput({
   max = 10,
   disabled = false,
   className = '',
+  color,
 }: SpecialInputProps) {
   const handleDecrement = () => {
     if (value > min) {
@@ -40,7 +42,10 @@ export function SpecialInput({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <span className="text-vault-yellow font-bold text-sm uppercase w-24 truncate">
+      <span
+        className="font-bold text-sm uppercase w-24 truncate"
+        style={{ color: color ?? 'var(--color-vault-yellow)' }}
+      >
         {label}
       </span>
       <div className="flex items-center gap-1">

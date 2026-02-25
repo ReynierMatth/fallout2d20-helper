@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Edit2, Loader2, Star, Swords, Shield, Heart, Zap, Package, Sparkles, Dumbbell } from 'lucide-react';
+import { ArrowLeft, Edit2, Loader2, Star, Swords, Shield, Heart, Zap, Package, Sparkles, Dumbbell, Dice6 } from 'lucide-react';
 import { Card, Button, CharacterForm, InventoryManager, OriginIcon, BodyResistanceMap, SwipeableTabs } from '../../components';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
 import type { Character } from '../../data/characters';
 import { SPECIAL_ATTRIBUTES, SKILL_NAMES, SKILL_ATTRIBUTES, ORIGINS, SURVIVOR_TRAITS } from '../../data/characters';
+import { SPECIAL_COLORS } from '../../data/specialColors';
 import { PERKS } from '../../data/perks';
 import type { InventoryItemApi } from '../../services/api';
 
@@ -181,8 +182,8 @@ export function CharacterSheetPage() {
                         const exerciseCount = character.exerciseBonuses?.filter(a => a === attr).length ?? 0;
 
                         return (
-                          <div key={attr} className="flex flex-col items-center p-2 bg-gray-800 rounded">
-                            <span className="text-xs text-vault-yellow font-bold">{letter}</span>
+                          <div key={attr} className="flex flex-col items-center p-2 bg-gray-800 rounded" style={{ borderBottom: `2px solid ${SPECIAL_COLORS[attr]}` }}>
+                            <span className="text-xs font-bold" style={{ color: SPECIAL_COLORS[attr] }}>{letter}</span>
                             <span className="text-2xl text-white font-mono font-bold">{value}</span>
                             <span className="text-xs text-gray-500">{t(`special.${attr}`)}</span>
                             <div className="flex gap-0.5 mt-1">
@@ -216,6 +217,7 @@ export function CharacterSheetPage() {
                         const attrValue = character.special[linkedAttr];
                         const tn = attrValue + rank;
                         const isTag = character.tagSkills?.includes(skill);
+                        const color = SPECIAL_COLORS[linkedAttr] ?? '#6b7280';
 
                         return (
                           <div
@@ -228,9 +230,15 @@ export function CharacterSheetPage() {
                             <span className={`flex-1 text-sm ${isTag ? 'text-vault-yellow font-bold' : 'text-white'}`}>
                               {t(`skills.${skill}`)}
                             </span>
-                            <span className="text-xs text-gray-500 w-6 text-center">{rank}</span>
-                            <span className="text-xs text-gray-400">/</span>
-                            <span className="text-sm text-vault-yellow font-mono w-6 text-center">{tn}</span>
+                            <span
+                              className="text-xs font-bold font-mono uppercase w-7 text-center flex-shrink-0 rounded px-0.5"
+                              style={{ color, backgroundColor: `${color}22` }}
+                            >
+                              {linkedAttr.substring(0, 3)}
+                            </span>
+                            <span className="text-xs text-gray-500 w-4 text-center flex-shrink-0">{rank}</span>
+                            <Dice6 size={12} className="text-gray-500 flex-shrink-0" />
+                            <span className="text-sm text-vault-yellow font-mono w-6 text-center flex-shrink-0">{tn}</span>
                           </div>
                         );
                       })}

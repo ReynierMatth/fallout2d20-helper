@@ -496,6 +496,8 @@ export default {
     levelShort: 'Niv.',
     selectExerciseAttribute: 'Exercice: choisir l\'attribut',
     exerciseDesc: 'Choisissez l\'attribut S.P.E.C.I.A.L. à augmenter de 1 point.',
+    selectTagSkill: 'Tag! : choisir une compétence tag supplémentaire',
+    tagPerkDesc: 'Choisissez une compétence à marquer comme tag skill. Elle sera portée à au moins le rang 2.',
     exerciseBonus: 'Exercice: +{{count}} point(s)',
     drFromPerks: 'DR des aptitudes',
     validation: {
