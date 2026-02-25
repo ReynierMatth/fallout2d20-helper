@@ -702,7 +702,7 @@ export default {
   qualities: {
     // === DAMAGE EFFECTS ===
     vicious: {
-      name: 'Brutal',
+      name: 'Vicious',
       description: '+1 damage per Effect rolled on the damage dice',
     },
     spread: {

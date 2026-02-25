@@ -6,14 +6,14 @@ export const magazinesEn = {
     gunsAndBullets: {
       perk: 'Check the issue found for the specific perk.',
       1: 'Attack vs Robot: +2 CD damage.',
-      2: "Laser weapon attack gains Brutal quality if it didn't have it.",
-      3: "Small Guns weapon attack gains Brutal quality if it didn't have it.",
+      2: "Laser weapon attack gains Vicious quality if it didn't have it.",
+      3: "Small Guns weapon attack gains Vicious quality if it didn't have it.",
       4: 'Gain 2 AP after a successful attack; must be spent immediately.',
       5: 'When you recover a weapon, gain 2 AP (extra component recovery only).',
       6: '+2 DR ballistic or energy vs one attack at night.',
       7: 'Aimed ranged attack with non-Accurate weapon: +2 CD damage.',
       8: 'Attack vs Yao Guai: +3 CD damage.',
-      9: "Plasma weapon attack gains Brutal quality if it didn't have it.",
+      9: "Plasma weapon attack gains Vicious quality if it didn't have it.",
       10: 'Attack vs enemy of lower level than you: +2 CD damage.',
     },
     meetingPeople: {
