@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useLayoutEffect, ReactNode } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import type { ReactNode } from 'react';
 import { useDrag } from '@use-gesture/react';
 
 interface Tab {
