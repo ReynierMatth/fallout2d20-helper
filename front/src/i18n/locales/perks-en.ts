@@ -23,7 +23,7 @@ export default {
       effect: 'Your Strength affects your ballistic DR. STR 7-8: +1, STR 9-10: +2, STR 11+: +3. Doesn\'t work in power armor.',
     },
     gunFu: {
-      name: 'Center of Mass',
+      name: 'Center Mass',
       effect: 'When making a ranged attack, you can target the Torso without increasing difficulty. You can reroll 1d20 of your attack.',
     },
     silverTongue: {
@@ -53,7 +53,7 @@ export default {
     },
     hunter: {
       name: 'Hunter',
-      effect: 'Your attacks against Mammals, Lizards, Insects and Mutants gain the Brutal effect if they don\'t already have it.',
+      effect: 'Your attacks against Mammals, Lizards, Insects and Mutants gain the Vicious effect if they don\'t already have it.',
     },
     chemist: {
       name: 'Chemist',
@@ -69,15 +69,15 @@ export default {
     },
     basher: {
       name: 'Basher',
-      effect: 'When you make a melee attack by bashing with your firearm, the attack gains the Brutal effect.',
+      effect: 'When you make a melee attack by bashing with your firearm, the attack gains the Vicious effect.',
     },
     laserCommander: {
       name: 'Laser Commander',
-      effect: 'With an energy weapon, +1 CD damage per rank.',
+      effect: 'With a ranged energy weapon, +1 CD damage per rank.',
     },
     commando: {
       name: 'Commando',
-      effect: 'With a weapon with fire rate ≥3 (except heavy weapons), +1 CD damage per rank.',
+      effect: 'With a ranged weapon with fire rate ≥3 (except heavy weapons), +1 CD damage per rank.',
     },
     comprehension: {
       name: 'Comprehension',
@@ -103,7 +103,7 @@ export default {
     // E
     solarPowered: {
       name: 'Solar Powered',
-      effect: 'You eliminate 1 radiation damage per hour in direct sunlight.',
+      effect: 'You heal 1 radiation damage per hour in direct sunlight.',
     },
     entomologist: {
       name: 'Entomologist',
@@ -115,7 +115,7 @@ export default {
     },
     demolitionExpert: {
       name: 'Demolition Expert',
-      effect: 'Attacks with Blast gain Brutal. You unlock explosive recipes.',
+      effect: 'Attacks with Blast gain Vicious. You unlock explosive recipes.',
     },
     roboticsExpert: {
       name: 'Robotics Expert',
@@ -140,7 +140,7 @@ export default {
     },
     pharmaFarmer: {
       name: 'Pharma Farma',
-      effect: 'When scavenging a location with medicine/drugs, you find one additional item for free.',
+      effect: 'When scavenging a location with medicine/chems, you find one additional item for free.',
     },
     partyBoy: {
       name: 'Party Boy/Girl',
@@ -152,7 +152,7 @@ export default {
     },
     heavyHitter: {
       name: 'Big Leagues',
-      effect: 'Two-handed melee attacks gain the Brutal effect.',
+      effect: 'Two-handed melee attacks gain the Vicious effect.',
     },
     blacksmith: {
       name: 'Blacksmith',
@@ -182,7 +182,7 @@ export default {
     // H
     heaveHo: {
       name: 'Heave Ho!',
-      effect: 'With a thrown ranged attack, spend 1 AP to increase range by one level.',
+      effect: 'With a thrown ranged attack, spend 1 AP to increase range by one step.',
     },
     actionBoy: {
       name: 'Action Boy/Girl',
@@ -200,11 +200,11 @@ export default {
     // L
     sizeMatters: {
       name: 'Size Matters',
-      effect: 'With a heavy weapon, +1 CD damage per rank.',
+      effect: 'Ranged attack with a heavy weapon, +1 CD damage per rank.',
     },
     bullRush: {
       name: 'Pain Train',
-      effect: 'Rank 1: Gain Charge major action to damage and knock prone enemies with a Str + Athletics test. Rank 2: Add 1d6 and Stun damage effect.',
+      effect: 'Rank 1: Gain Charge major action to damage and knock prone enemies with a Str + Athletics test. Rank 2: +1 CD damage and Stun damage effect.',
     },
     // M
     quickHands: {
@@ -271,11 +271,11 @@ export default {
     },
     gunslinger: {
       name: 'Gunslinger',
-      effect: 'With a one-handed weapon with fire rate ≤2, +1 CD per rank. Reroll the location die.',
+      effect: 'With a one-handed ranged weapon with fire rate ≤2, +1 CD per rank. Reroll the location die.',
     },
     ironFist: {
       name: 'Iron Fist',
-      effect: 'Rank 1: +1 CD to unarmed attacks. Rank 2: +Brutal effect.',
+      effect: 'Rank 1: +1 CD to unarmed attacks. Rank 2: +Vicious effect.',
     },
     adrenalineRush: {
       name: 'Adrenaline Rush',
@@ -292,7 +292,7 @@ export default {
     // R
     nerdRage: {
       name: 'Nerd Rage!',
-      effect: 'When below 1/4 max HP, +ballistic and energy DR and +CD damage per rank.',
+      effect: 'When below 1/4 max HP, +1 ballistic and energy DR and +1 CD damage per rank.',
     },
     snakeater: {
       name: 'Snakeater',
