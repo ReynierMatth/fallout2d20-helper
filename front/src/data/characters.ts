@@ -422,8 +422,8 @@ export function calculateCarryCapacity(strength: number, hasSmallFrame: boolean 
  * Calculate available skill points at character creation
  * Skill Points = 9 + Intelligence
  */
-export function calculateSkillPoints(intelligence: number): number {
-  return 9 + intelligence;
+export function calculateSkillPoints(intelligence: number, level: number = 1): number {
+  return 9 + intelligence + Math.max(0, level - 1);
 }
 
 /**

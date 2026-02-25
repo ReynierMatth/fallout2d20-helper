@@ -468,6 +468,7 @@ export default {
     skillsDesc: 'Répartissez {{points}} points (9+INT). Rang max: {{maxRank}}. Cliquez sur l\'étoile pour marquer un atout personnel.',
     addTag: 'Marquer comme atout personnel',
     removeTag: 'Retirer l\'atout personnel',
+    originBonusTag: 'Atout personnel accordé par l\'origine (verrouillé)',
     perks: 'Aptitudes',
     addPerk: 'Ajouter une aptitude...',
     notes: 'Notes',

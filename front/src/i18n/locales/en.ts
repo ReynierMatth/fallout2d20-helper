@@ -469,6 +469,7 @@ export default {
     skillsDesc: 'Distribute {{points}} points (9+INT). Max rank: {{maxRank}}. Click the star to mark a tag skill.',
     addTag: 'Mark as tag skill',
     removeTag: 'Remove tag skill',
+    originBonusTag: 'Tag skill granted by origin (locked)',
     perks: 'Perks',
     addPerk: 'Add a perk...',
     notes: 'Notes',
