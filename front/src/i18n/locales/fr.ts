@@ -893,6 +893,8 @@ export default {
     traitsAndPerks: 'Traits et Aptitudes',
     notes: 'Notes',
     noNotes: 'Aucune note',
+    tabStats: 'Stats',
+    tabEquipment: 'Équipement',
   },
 
   sessions: {

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Minus, Trash2, Check, X, Package, Coins, AlertTriangle, Sword, Shield, Shirt, Pill, Apple, Wrench } from 'lucide-react';
-import { Button } from './Button';
 import { ItemSelector } from './ItemSelector';
 import { ItemDetailModal } from './ItemDetailModal';
 import { useCharactersApi } from '../hooks/useCharactersApi';
@@ -166,8 +165,9 @@ export function InventoryManager({
 
   return (
     <div className="space-y-4">
-      {/* Summary header */}
-      <div className="flex flex-wrap gap-4 items-center justify-between bg-gray-800 p-3 rounded">
+      {/* Summary header + add button */}
+      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap gap-4 items-center justify-between bg-gray-800 p-3 rounded flex-1">
         <div className="flex items-center gap-6">
           {/* Weight */}
           <div className="flex items-center gap-2">
@@ -232,11 +232,16 @@ export function InventoryManager({
         </div>
       </div>
 
-      {/* Add item button */}
-      <Button type="button" onClick={() => setIsItemSelectorOpen(true)} className="w-full">
-        <Plus size={18} className="mr-2" />
-        {t('inventory.addItem')}
-      </Button>
+      {/* Add item button — next to summary */}
+      <button
+        type="button"
+        onClick={() => setIsItemSelectorOpen(true)}
+        className="w-11 h-11 flex items-center justify-center bg-vault-yellow text-vault-blue rounded font-bold hover:bg-vault-yellow-light transition-colors cursor-pointer"
+        title={t('inventory.addItem')}
+      >
+        <Plus size={18} />
+      </button>
+      </div>
 
       {/* Inventory list */}
       {inventory.length === 0 ? (
