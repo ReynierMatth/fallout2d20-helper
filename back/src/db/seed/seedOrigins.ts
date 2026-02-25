@@ -1,5 +1,5 @@
 import { db } from '../index';
-import { eq } from 'drizzle-orm';
+import { sql, inArray } from 'drizzle-orm';
 import {
   origins,
   originSpecialModifiers,
@@ -9,58 +9,61 @@ import {
 } from '../schema/index';
 
 import { ORIGINS, SURVIVOR_TRAITS } from './data/characters';
-import type { SpecialAttribute, SkillName } from './data/characters';
+import type { SpecialAttribute } from './data/characters';
 
 export async function seedOrigins() {
   console.log('Seeding origins...');
 
-  for (const origin of ORIGINS) {
-    await db
-      .insert(origins)
-      .values({
-        id: origin.id,
-        nameKey: origin.nameKey,
-        descriptionKey: origin.descriptionKey,
-        traitNameKey: origin.trait.nameKey,
-        traitDescriptionKey: origin.trait.descriptionKey,
-        skillMaxOverride: origin.skillMaxOverride,
-        isRobot: origin.isRobot ?? false,
-      })
-      .onConflictDoUpdate({
-        target: origins.id,
-        set: {
-          nameKey: origin.nameKey,
-          descriptionKey: origin.descriptionKey,
-          traitNameKey: origin.trait.nameKey,
-          traitDescriptionKey: origin.trait.descriptionKey,
-          skillMaxOverride: origin.skillMaxOverride,
-          isRobot: origin.isRobot ?? false,
-        },
-      });
+  const originIds = ORIGINS.map(o => o.id);
 
-    await db.delete(originSpecialModifiers).where(eq(originSpecialModifiers.originId, origin.id));
-    if (origin.specialModifiers) {
-      const modifierEntries = Object.entries(origin.specialModifiers) as [SpecialAttribute, number][];
-      for (const [attribute, modifier] of modifierEntries) {
-        await db.insert(originSpecialModifiers).values({ originId: origin.id, attribute, modifier });
-      }
-    }
+  // Batch upsert all origins in one query
+  await db
+    .insert(origins)
+    .values(ORIGINS.map(origin => ({
+      id: origin.id,
+      nameKey: origin.nameKey,
+      descriptionKey: origin.descriptionKey,
+      traitNameKey: origin.trait.nameKey,
+      traitDescriptionKey: origin.trait.descriptionKey,
+      skillMaxOverride: origin.skillMaxOverride,
+      isRobot: origin.isRobot ?? false,
+    })))
+    .onConflictDoUpdate({
+      target: origins.id,
+      set: {
+        nameKey: sql`excluded.name_key`,
+        descriptionKey: sql`excluded.description_key`,
+        traitNameKey: sql`excluded.trait_name_key`,
+        traitDescriptionKey: sql`excluded.trait_description_key`,
+        skillMaxOverride: sql`excluded.skill_max_override`,
+        isRobot: sql`excluded.is_robot`,
+      },
+    });
 
-    await db.delete(originSpecialMaxOverrides).where(eq(originSpecialMaxOverrides.originId, origin.id));
-    if (origin.specialMaxOverrides) {
-      const maxOverrideEntries = Object.entries(origin.specialMaxOverrides) as [SpecialAttribute, number][];
-      for (const [attribute, maxValue] of maxOverrideEntries) {
-        await db.insert(originSpecialMaxOverrides).values({ originId: origin.id, attribute, maxValue });
-      }
-    }
+  // Batch replace SPECIAL modifiers
+  await db.delete(originSpecialModifiers).where(inArray(originSpecialModifiers.originId, originIds));
+  const allModifiers = ORIGINS.flatMap(origin => {
+    if (!origin.specialModifiers) return [];
+    return (Object.entries(origin.specialModifiers) as [SpecialAttribute, number][])
+      .map(([attribute, modifier]) => ({ originId: origin.id, attribute, modifier }));
+  });
+  if (allModifiers.length > 0) await db.insert(originSpecialModifiers).values(allModifiers);
 
-    await db.delete(originBonusTagSkills).where(eq(originBonusTagSkills.originId, origin.id));
-    if (origin.bonusTagSkills) {
-      for (const skill of origin.bonusTagSkills) {
-        await db.insert(originBonusTagSkills).values({ originId: origin.id, skill });
-      }
-    }
-  }
+  // Batch replace SPECIAL max overrides
+  await db.delete(originSpecialMaxOverrides).where(inArray(originSpecialMaxOverrides.originId, originIds));
+  const allMaxOverrides = ORIGINS.flatMap(origin => {
+    if (!origin.specialMaxOverrides) return [];
+    return (Object.entries(origin.specialMaxOverrides) as [SpecialAttribute, number][])
+      .map(([attribute, maxValue]) => ({ originId: origin.id, attribute, maxValue }));
+  });
+  if (allMaxOverrides.length > 0) await db.insert(originSpecialMaxOverrides).values(allMaxOverrides);
+
+  // Batch replace bonus tag skills
+  await db.delete(originBonusTagSkills).where(inArray(originBonusTagSkills.originId, originIds));
+  const allBonusTagSkills = ORIGINS.flatMap(origin =>
+    (origin.bonusTagSkills ?? []).map(skill => ({ originId: origin.id, skill }))
+  );
+  if (allBonusTagSkills.length > 0) await db.insert(originBonusTagSkills).values(allBonusTagSkills);
 
   console.log(`  Upserted ${ORIGINS.length} origins`);
 }
@@ -68,24 +71,22 @@ export async function seedOrigins() {
 export async function seedSurvivorTraits() {
   console.log('Seeding survivor traits...');
 
-  for (const trait of SURVIVOR_TRAITS) {
-    await db
-      .insert(survivorTraits)
-      .values({
-        id: trait.id,
-        nameKey: trait.nameKey,
-        benefitKey: trait.benefitKey,
-        drawbackKey: trait.drawbackKey,
-      })
-      .onConflictDoUpdate({
-        target: survivorTraits.id,
-        set: {
-          nameKey: trait.nameKey,
-          benefitKey: trait.benefitKey,
-          drawbackKey: trait.drawbackKey,
-        },
-      });
-  }
+  await db
+    .insert(survivorTraits)
+    .values(SURVIVOR_TRAITS.map(trait => ({
+      id: trait.id,
+      nameKey: trait.nameKey,
+      benefitKey: trait.benefitKey,
+      drawbackKey: trait.drawbackKey,
+    })))
+    .onConflictDoUpdate({
+      target: survivorTraits.id,
+      set: {
+        nameKey: sql`excluded.name_key`,
+        benefitKey: sql`excluded.benefit_key`,
+        drawbackKey: sql`excluded.drawback_key`,
+      },
+    });
 
   console.log(`  Upserted ${SURVIVOR_TRAITS.length} survivor traits`);
 }
