@@ -106,8 +106,12 @@ export interface Origin {
   // Modifications to SPECIAL (e.g., Super Mutant: STR+2, END+2, INT max 6, CHR max 6)
   specialModifiers?: Partial<Record<SpecialAttribute, number>>;
   specialMaxOverrides?: Partial<Record<SpecialAttribute, number>>;
-  // Skills that become tag skills at rank 2
+  // Skills that become tag skills at rank 2 (auto-applied, locked — e.g. Ghoul → Survival)
   bonusTagSkills?: SkillName[];
+  // Extra free-choice tag skill slots granted by the trait (e.g. Vault Dweller → +1)
+  bonusTagSkillSlots?: number;
+  // Constrained choice: player picks ONE tag skill from this list (e.g. Brotherhood → energyWeapons|science|repair)
+  bonusTagSkillOptions?: SkillName[];
   // Skill rank limits (e.g., Super Mutant max 4)
   skillMaxOverride?: number;
   // Is this a robot? (different damage locations)
@@ -124,6 +128,7 @@ export const ORIGINS: Origin[] = [
       descriptionKey: 'origins.brotherhood.trait.description',
     },
     // Chain of Cohesion: One bonus tag skill at rank 2 (Energy Weapons, Science, or Repair)
+    bonusTagSkillOptions: ['energyWeapons', 'science', 'repair'],
   },
   {
     id: 'ghoul',
@@ -179,6 +184,7 @@ export const ORIGINS: Origin[] = [
       descriptionKey: 'origins.vaultDweller.trait.description',
     },
     // Born in the Vault: -1 difficulty to END tests vs disease, +1 bonus tag skill at rank 2
+    bonusTagSkillSlots: 1,
   },
 ];
 
