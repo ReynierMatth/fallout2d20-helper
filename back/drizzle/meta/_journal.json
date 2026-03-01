@@ -64,6 +64,20 @@
       "when": 1772000000000,
       "tag": "0008_tag_skill_choice_group",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772100000000,
+      "tag": "0009_mods_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1772200000000,
+      "tag": "0010_mods_unique_constraints",
+      "breakpoints": true
     }
   ]
 }

@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import { Modal } from './Modal';
 import { getRarityColor } from '../generators/utils';
-import { itemsApi, type ItemType, type ItemEffect, type WeaponApi, type ArmorApi, type PowerArmorApi, type ClothingApi, type ChemApi, type FoodApi, type AmmunitionApi, type GeneralGoodApi, type RobotArmorApi, type SyringerAmmoApi, type MagazineApi, type DiseaseApi, type PerkApi } from '../services/api';
+import { itemsApi, type ItemType, type ItemEffect, type WeaponApi, type ArmorApi, type PowerArmorApi, type ClothingApi, type ChemApi, type FoodApi, type AmmunitionApi, type GeneralGoodApi, type RobotArmorApi, type SyringerAmmoApi, type MagazineApi, type DiseaseApi, type PerkApi, type ModApi } from '../services/api';
 import { EffectDisplay } from './EffectDisplay';
 
-type AnyItemApi = WeaponApi | ArmorApi | PowerArmorApi | RobotArmorApi | ClothingApi | AmmunitionApi | SyringerAmmoApi | ChemApi | FoodApi | GeneralGoodApi | MagazineApi;
+type AnyItemApi = WeaponApi | ArmorApi | PowerArmorApi | RobotArmorApi | ClothingApi | AmmunitionApi | SyringerAmmoApi | ChemApi | FoodApi | GeneralGoodApi | MagazineApi | ModApi;
 
 // Wrapper type for encyclopedia entries that can be items, diseases, perks, or weapon qualities
 export type EncyclopediaEntry =
@@ -91,6 +91,7 @@ export function ItemDetailModal({ isOpen, onClose, itemId, itemType, entry }: It
       : type === 'ammunition' ? 'ammunition'
       : type === 'syringerAmmo' ? 'ammunition'
       : type === 'magazine' ? 'magazines'
+      : type === 'mod' ? 'mods'
       : 'general';
     const translated = t(`items.${categoryKey}.${itemData.name}`);
     if (translated !== `items.${categoryKey}.${itemData.name}`) return translated;
@@ -167,6 +168,7 @@ export function ItemDetailModal({ isOpen, onClose, itemId, itemType, entry }: It
           {effectiveItemType === 'food' && <FoodDetails item={effectiveItem as FoodApi} />}
           {(effectiveItemType === 'generalGood' || effectiveItemType === 'oddity') && <GeneralGoodDetails item={effectiveItem as GeneralGoodApi} />}
           {effectiveItemType === 'magazine' && <MagazineDetails item={effectiveItem as MagazineApi} />}
+          {effectiveItemType === 'mod' && <ModDetails item={effectiveItem as ModApi} />}
         </div>
       ) : null}
     </Modal>
@@ -730,6 +732,76 @@ function PerkDetails({ perk }: { perk: PerkApi }) {
               <div className="text-red-400">{t('itemDetail.notForRobots')}</div>
             )}
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ModDetails({ item }: { item: ModApi }) {
+  const { t } = useTranslation();
+
+  const formatEffect = (e: ModApi['effects'][number]): string => {
+    switch (e.effectType) {
+      case 'damageBonus':
+        return `${t('itemDetail.mod.damageBonus')}: ${e.numericValue && e.numericValue > 0 ? '+' : ''}${e.numericValue}`;
+      case 'fireRateBonus':
+        return `${t('itemDetail.mod.fireRateBonus')}: ${e.numericValue && e.numericValue > 0 ? '+' : ''}${e.numericValue}`;
+      case 'rangeChange':
+        return `${t('itemDetail.mod.rangeChange')}: ${e.numericValue && e.numericValue > 0 ? '+' : ''}${e.numericValue}`;
+      case 'gainQuality':
+        return `${t('itemDetail.mod.gainQuality')}: ${t(`qualities.${e.qualityName}.name`)}${e.qualityValue ? ` ${e.qualityValue}` : ''}`;
+      case 'loseQuality':
+        return `${t('itemDetail.mod.loseQuality')}: ${t(`qualities.${e.qualityName}.name`)}`;
+      case 'setDamage':
+        return `${t('itemDetail.mod.setDamage')}: ${e.numericValue}`;
+      case 'setAmmo':
+        return `${t('itemDetail.mod.setAmmo')}: ${e.ammoType}`;
+      case 'setFireRate':
+        return `${t('itemDetail.mod.setFireRate')}: ${e.numericValue}`;
+      case 'special':
+        return e.descriptionKey ? t(e.descriptionKey, { defaultValue: e.descriptionKey }) : '';
+      default:
+        return e.effectType;
+    }
+  };
+
+  return (
+    <div className="space-y-3 text-sm">
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <span className="text-vault-yellow-dark">{t('itemDetail.mod.slot')}: </span>
+          <span className="text-white">{t(`modSlots.${item.slot}`, { defaultValue: item.slot })}</span>
+        </div>
+        <div>
+          <span className="text-vault-yellow-dark">{t('itemDetail.mod.applicableTo')}: </span>
+          <span className="text-white">{t(`skills.${item.applicableTo}`, { defaultValue: item.applicableTo })}</span>
+        </div>
+        {item.weightChange !== 0 && (
+          <div>
+            <span className="text-vault-yellow-dark">{t('itemDetail.mod.weightChange')}: </span>
+            <span className={item.weightChange > 0 ? 'text-red-400' : 'text-green-400'}>
+              {item.weightChange > 0 ? '+' : ''}{item.weightChange} {t('common.labels.lbs')}
+            </span>
+          </div>
+        )}
+        {item.requiredPerk && (
+          <div>
+            <span className="text-vault-yellow-dark">{t('itemDetail.mod.requiredPerk')}: </span>
+            <span className="text-white">{t(`perks.${item.requiredPerk}.name`, { defaultValue: item.requiredPerk })}</span>
+            {item.requiredPerkRank && <span className="text-gray-400"> ({t('itemDetail.mod.rank')} {item.requiredPerkRank})</span>}
+          </div>
+        )}
+      </div>
+
+      {item.effects.length > 0 && (
+        <div>
+          <h4 className="text-vault-yellow font-bold mb-2">{t('itemDetail.mod.effects')}</h4>
+          <ul className="space-y-1">
+            {item.effects.map((e, i) => (
+              <li key={i} className="text-gray-200">• {formatEffect(e)}</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

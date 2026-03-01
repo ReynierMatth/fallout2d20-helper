@@ -25,7 +25,7 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
 // ===== ITEMS API =====
 
-export type ItemType = 'weapon' | 'armor' | 'powerArmor' | 'robotArmor' | 'clothing' | 'ammunition' | 'syringerAmmo' | 'chem' | 'food' | 'generalGood' | 'oddity' | 'magazine';
+export type ItemType = 'weapon' | 'armor' | 'powerArmor' | 'robotArmor' | 'clothing' | 'ammunition' | 'syringerAmmo' | 'chem' | 'food' | 'generalGood' | 'oddity' | 'magazine' | 'mod';
 
 // Structured effect for consumable items (food, chems, general goods, syringer ammo)
 export interface ItemEffect {
@@ -172,6 +172,25 @@ export interface MagazineApi extends BaseItemApi {
   issues: MagazineIssueApi[];
 }
 
+export interface ModEffectApi {
+  effectType: string;
+  numericValue?: number;
+  qualityName?: string;
+  qualityValue?: number;
+  ammoType?: string;
+  descriptionKey?: string;
+}
+
+export interface ModApi extends BaseItemApi {
+  slot: string;
+  applicableTo: string;
+  nameAddKey?: string;
+  requiredPerk?: string;
+  requiredPerkRank?: number;
+  weightChange: number;
+  effects: ModEffectApi[];
+}
+
 // ===== DISEASES (not items - standalone conditions) =====
 
 export interface DiseaseApi {
@@ -298,6 +317,8 @@ export const itemsApi = {
   getMagazines: () => fetchApi<MagazineApi[]>('/items/magazines'),
   getMagazine: (id: number) => fetchApi<MagazineApi>(`/items/magazines/${id}`),
 
+  getMods: () => fetchApi<ModApi[]>('/items/mods'),
+
   // All items
   getAllItems: () => fetchApi<{
     weapons: WeaponApi[];
@@ -312,6 +333,7 @@ export const itemsApi = {
     robotArmors: RobotArmorApi[];
     syringerAmmo: SyringerAmmoApi[];
     oddities: GeneralGoodApi[];
+    mods: ModApi[];
   }>('/items'),
 };
 

@@ -19,6 +19,8 @@ import {
   oddities,
   magazines,
   magazineIssues,
+  mods,
+  modEffects,
 } from '../db/schema/index';
 
 const router = Router();
@@ -113,6 +115,22 @@ router.get('/:id(\\d+)', async (req: any, res) => {
         details = {
           ...magazineDetails,
           issues,
+        };
+        break;
+      }
+      case 'mod': {
+        const [modDetails] = await db.select().from(mods).where(eq(mods.itemId, id));
+        const effects = await db.select().from(modEffects).where(eq(modEffects.modId, modDetails.id));
+        details = {
+          ...modDetails,
+          effects: effects.map((e) => ({
+            effectType: e.effectType,
+            numericValue: e.numericValue,
+            qualityName: e.qualityName,
+            qualityValue: e.qualityValue,
+            ammoType: e.ammoType,
+            descriptionKey: e.descriptionKey,
+          })),
         };
         break;
       }
@@ -894,6 +912,57 @@ router.get('/oddities', async (_req, res) => {
   }
 });
 
+// ===== MODS =====
+
+router.get('/mods', async (_req, res) => {
+  try {
+    const modsResults = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        modId: mods.id,
+        slot: mods.slot,
+        applicableTo: mods.applicableTo,
+        nameAddKey: mods.nameAddKey,
+        requiredPerk: mods.requiredPerk,
+        requiredPerkRank: mods.requiredPerkRank,
+        weightChange: mods.weightChange,
+      })
+      .from(items)
+      .innerJoin(mods, eq(items.id, mods.itemId));
+
+    const modsWithEffects = await Promise.all(
+      modsResults.map(async (mod) => {
+        const effects = await db
+          .select()
+          .from(modEffects)
+          .where(eq(modEffects.modId, mod.modId));
+        const { modId, ...rest } = mod;
+        return {
+          ...rest,
+          effects: effects.map((e) => ({
+            effectType: e.effectType,
+            numericValue: e.numericValue,
+            qualityName: e.qualityName,
+            qualityValue: e.qualityValue,
+            ammoType: e.ammoType,
+            descriptionKey: e.descriptionKey,
+          })),
+        };
+      })
+    );
+
+    res.json(modsWithEffects);
+  } catch (error) {
+    console.error('Error fetching mods:', error);
+    res.status(500).json({ error: 'Failed to fetch mods' });
+  }
+});
+
 // ===== COMBINED ITEMS ENDPOINT =====
 
 router.get('/', async (req, res) => {
@@ -1182,6 +1251,44 @@ router.get('/', async (req, res) => {
       .from(items)
       .innerJoin(oddities, eq(items.id, oddities.itemId));
 
+    // Mods
+    const modsResults = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        nameKey: items.nameKey,
+        value: items.value,
+        rarity: items.rarity,
+        weight: items.weight,
+        modId: mods.id,
+        slot: mods.slot,
+        applicableTo: mods.applicableTo,
+        nameAddKey: mods.nameAddKey,
+        requiredPerk: mods.requiredPerk,
+        requiredPerkRank: mods.requiredPerkRank,
+        weightChange: mods.weightChange,
+      })
+      .from(items)
+      .innerJoin(mods, eq(items.id, mods.itemId));
+
+    const modsData = await Promise.all(
+      modsResults.map(async (mod) => {
+        const effects = await db.select().from(modEffects).where(eq(modEffects.modId, mod.modId));
+        const { modId, ...rest } = mod;
+        return {
+          ...rest,
+          effects: effects.map((e) => ({
+            effectType: e.effectType,
+            numericValue: e.numericValue,
+            qualityName: e.qualityName,
+            qualityValue: e.qualityValue,
+            ammoType: e.ammoType,
+            descriptionKey: e.descriptionKey,
+          })),
+        };
+      })
+    );
+
     res.json({
       weapons: weaponsData,
       armors: armorsData,
@@ -1195,6 +1302,7 @@ router.get('/', async (req, res) => {
       robotArmors: robotArmorsData,
       syringerAmmo: syringerAmmoData,
       oddities: odditiesData,
+      mods: modsData,
     });
   } catch (error) {
     console.error('Error fetching all items:', error);

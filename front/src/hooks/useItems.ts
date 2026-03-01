@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { itemsApi, type WeaponApi, type ArmorApi, type PowerArmorApi, type RobotArmorApi, type ClothingApi, type AmmunitionApi, type SyringerAmmoApi, type ChemApi, type FoodApi, type GeneralGoodApi, type MagazineApi } from '../services/api';
+import { itemsApi, type WeaponApi, type ArmorApi, type PowerArmorApi, type RobotArmorApi, type ClothingApi, type AmmunitionApi, type SyringerAmmoApi, type ChemApi, type FoodApi, type GeneralGoodApi, type MagazineApi, type ModApi } from '../services/api';
 
 export interface ItemsData {
   weapons: WeaponApi[];
@@ -14,6 +14,7 @@ export interface ItemsData {
   robotArmors: RobotArmorApi[];
   syringerAmmo: SyringerAmmoApi[];
   oddities: GeneralGoodApi[];
+  mods: ModApi[];
 }
 
 export function useItems() {

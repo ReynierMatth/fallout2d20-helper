@@ -39,7 +39,40 @@ export const robotLocationEnum = pgEnum('robot_location', ['all', 'optic', 'body
 export const itemTypeEnum = pgEnum('item_type', [
   'weapon', 'armor', 'powerArmor', 'robotArmor', 'clothing',
   'ammunition', 'syringerAmmo', 'chem', 'food',
-  'generalGood', 'oddity', 'magazine'
+  'generalGood', 'oddity', 'magazine', 'mod'
+]);
+
+// ===== MODS =====
+export const modSlotEnum = pgEnum('mod_slot', [
+  // Small guns / big guns
+  'culasse', 'canon', 'chargeur', 'poignee', 'crosse', 'viseur', 'bouche',
+  // Energy weapons
+  'condensateur',
+  // Armor
+  'material', 'functionality',
+  // Melee / unarmed
+  'improvement',
+  // Clothing
+  'modification',
+  // Robot (torso internal)
+  'internal',
+]);
+
+export const modApplicableToEnum = pgEnum('mod_applicable_to', [
+  'smallGuns', 'energyWeapons', 'bigGuns', 'meleeWeapons', 'unarmed',
+  'armor', 'clothing', 'robot',
+]);
+
+export const modEffectTypeEnum = pgEnum('mod_effect_type', [
+  'damageBonus',   // +N CD damage
+  'fireRateBonus', // +N fire rate
+  'rangeChange',   // +/-1 range level
+  'gainQuality',   // adds a quality
+  'loseQuality',   // removes a quality
+  'setDamage',     // sets damage dice to N
+  'setAmmo',       // changes ammo type
+  'setFireRate',   // sets fire rate to N
+  'special',       // free-text effect (description key only)
 ]);
 
 export const foodTypeEnum = pgEnum('food_type', ['food', 'drink']);

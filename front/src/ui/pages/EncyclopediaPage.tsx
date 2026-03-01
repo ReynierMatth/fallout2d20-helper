@@ -27,6 +27,7 @@ type ItemCategory =
   | 'syringer-ammo'
   | 'magazines'
   | 'oddities'
+  | 'mods'
   | 'diseases'
   | 'perks'
   | 'weapon-qualities';
@@ -219,6 +220,14 @@ export function EncyclopediaPage() {
           categoryKey: 'oddities', subType: o.goodType,
         });
       });
+
+      items.mods?.forEach(m => {
+        displayItems.push({
+          id: m.id, itemType: 'mod', name: m.name,
+          value: m.value, rarity: m.rarity, weight: m.weight,
+          categoryKey: 'mods', subType: m.slot,
+        });
+      });
     }
 
     diseases.forEach(d => {
@@ -274,6 +283,7 @@ export function EncyclopediaPage() {
     { value: 'syringer-ammo', label: t('encyclopedia.categories.syringer-ammo') },
     { value: 'magazines', label: t('encyclopedia.categories.magazines') },
     { value: 'oddities', label: t('encyclopedia.categories.oddities') },
+    { value: 'mods', label: t('encyclopedia.categories.mods') },
     { value: 'diseases', label: t('encyclopedia.categories.diseases') },
     { value: 'perks', label: t('encyclopedia.categories.perks') },
     { value: 'weapon-qualities', label: t('encyclopedia.categories.weapon-qualities') },

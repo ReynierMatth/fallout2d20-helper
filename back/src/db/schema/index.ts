@@ -5,3 +5,4 @@ export * from './characters';
 export * from './perks';
 export * from './equipmentPacks';
 export * from './sessions';
+export * from './mods';
