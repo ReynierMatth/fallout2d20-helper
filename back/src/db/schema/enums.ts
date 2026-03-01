@@ -58,13 +58,15 @@ export const modSlotEnum = pgEnum('mod_slot', [
   'material', 'functionality',
   // Clothing
   'modification',
+  // Power armor
+  'amelioration', 'systeme', 'blindage',
   // Robot (torso internal)
   'internal',
 ]);
 
 export const modApplicableToEnum = pgEnum('mod_applicable_to', [
   'smallGuns', 'energyWeapons', 'bigGuns', 'meleeWeapons', 'unarmed',
-  'armor', 'clothing', 'robot',
+  'armor', 'clothing', 'powerArmor', 'robot',
 ]);
 
 export const modEffectTypeEnum = pgEnum('mod_effect_type', [
@@ -82,6 +84,8 @@ export const modEffectTypeEnum = pgEnum('mod_effect_type', [
   'energyResistance',     // +N energy DR
   'radiationResistance',  // +N radiation DR
   'carryCapacity',        // +N carry capacity
+  // Power armor
+  'hpBonus',              // +N HP on power armor piece
 ]);
 
 export const foodTypeEnum = pgEnum('food_type', ['food', 'drink']);

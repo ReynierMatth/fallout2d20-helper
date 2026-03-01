@@ -570,6 +570,70 @@ export const CLOTHING_COMPATIBILITY: WeaponModCompatibility[] = [
   { weaponName: 'Vault Jumpsuit', modNames: [...VAULT_SUIT_MODS, ...BALLISTIC_WEAVE] },
 ];
 
+// ===== Power Armor Mod Compatibility =====
+
+// System mods available to ALL power armors (except noted restrictions)
+const PA_SYSTEM_HEAD = [
+  'Épurateur de radiations', 'Détecteur', 'ATH de visée', 'Base de données interne',
+];
+const PA_SYSTEM_TORSO = [
+  'Noyau de réacteur', 'Purificateur sanguin', 'Protocoles d\'urgence',
+  'Servomoteurs de déplacement assisté', 'Dynamo cinétique', 'Pompe médicale',
+  'Plaques réactives', 'Bobines Tesla', 'Stealth Boy', 'Jetpack',
+];
+const PA_SYSTEM_ARMS = [
+  'Poing rouillé', 'Bracelets hydrauliques', 'Bracelets optimisés', 'Bracelets Tesla',
+];
+const PA_SYSTEM_LEGS = [
+  'Amortisseurs calibrés', 'Évent d\'explosion', 'Servomoteurs à vitesse surmultipliée',
+];
+
+// Plating mods (all PA types EXCEPT Raider)
+const PA_PLATING = [
+  'Blindage en titane', 'Blindage en plomb', 'Revêtement photovoltaïque',
+  'Revêtement antigel', 'Blindage prismatique', 'Blindage antiexplosion',
+];
+// X-01 cannot use Revêtement antigel
+const PA_PLATING_X01 = PA_PLATING.filter(m => m !== 'Revêtement antigel');
+
+// Raider PA: all torso system mods + Barre d'armature soudée
+const PA_RAIDER_SYSTEM_TORSO = [
+  ...PA_SYSTEM_TORSO,
+  'Barre d\'armature soudée',
+];
+
+export const POWER_ARMOR_COMPATIBILITY: WeaponModCompatibility[] = [
+  // --- Raider Power Armor (no plating, has improvements) ---
+  { weaponName: 'Raider Power Armor Helmet', modNames: [...PA_SYSTEM_HEAD, 'Casque Raider II'] },
+  { weaponName: 'Raider Power Armor Chest Piece', modNames: [...PA_RAIDER_SYSTEM_TORSO, 'Plastron Raider II'] },
+  { weaponName: 'Raider Power Armor Arm', modNames: [...PA_SYSTEM_ARMS.filter(m => m !== 'Bracelets Tesla'), 'Brassard Raider II'] },
+  { weaponName: 'Raider Power Armor Leg', modNames: [...PA_SYSTEM_LEGS, 'Jambière Raider II'] },
+
+  // --- T-45 Power Armor ---
+  { weaponName: 'T-45 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING, 'Casque T-45b', 'Casque T-45c', 'Casque T-45d', 'Casque T-45e', 'Casque T-45f'] },
+  { weaponName: 'T-45 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING, 'Plastron T-45b', 'Plastron T-45c', 'Plastron T-45d', 'Plastron T-45e', 'Plastron T-45f'] },
+  { weaponName: 'T-45 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING, 'Brassard T-45b', 'Brassard T-45c', 'Brassard T-45d', 'Brassard T-45e', 'Brassard T-45f'] },
+  { weaponName: 'T-45 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING, 'Jambière T-45b', 'Jambière T-45c', 'Jambière T-45d', 'Jambière T-45e', 'Jambière T-45f'] },
+
+  // --- T-51 Power Armor ---
+  { weaponName: 'T-51 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING] },
+  { weaponName: 'T-51 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING] },
+  { weaponName: 'T-51 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING] },
+  { weaponName: 'T-51 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING] },
+
+  // --- T-60 Power Armor ---
+  { weaponName: 'T-60 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING] },
+  { weaponName: 'T-60 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING] },
+  { weaponName: 'T-60 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING] },
+  { weaponName: 'T-60 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING] },
+
+  // --- X-01 Power Armor (no Revêtement antigel) ---
+  { weaponName: 'X-01 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING_X01] },
+  { weaponName: 'X-01 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING_X01] },
+  { weaponName: 'X-01 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING_X01] },
+  { weaponName: 'X-01 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING_X01] },
+];
+
 export const ALL_WEAPON_MOD_COMPATIBILITY: WeaponModCompatibility[] = [
   ...SMALL_GUNS_COMPATIBILITY,
   ...ENERGY_WEAPONS_COMPATIBILITY,
@@ -577,5 +641,6 @@ export const ALL_WEAPON_MOD_COMPATIBILITY: WeaponModCompatibility[] = [
   ...MELEE_WEAPONS_COMPATIBILITY,
   ...ARMOR_COMPATIBILITY,
   ...CLOTHING_COMPATIBILITY,
+  ...POWER_ARMOR_COMPATIBILITY,
 ];
 

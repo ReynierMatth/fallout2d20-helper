@@ -6,11 +6,12 @@ export type ModSlot =
   | 'material' | 'functionality'
   | 'improvement'
   | 'modification'
+  | 'amelioration' | 'systeme' | 'blindage'
   | 'internal';
 
 export type ModApplicableTo =
   | 'smallGuns' | 'energyWeapons' | 'bigGuns' | 'meleeWeapons' | 'unarmed'
-  | 'armor' | 'clothing' | 'robot';
+  | 'armor' | 'clothing' | 'powerArmor' | 'robot';
 
 export type ModEffectType =
   | 'damageBonus' | 'fireRateBonus' | 'rangeChange'
@@ -18,7 +19,8 @@ export type ModEffectType =
   | 'setDamage' | 'setAmmo' | 'setFireRate'
   | 'special'
   | 'ballisticResistance' | 'energyResistance' | 'radiationResistance'
-  | 'carryCapacity';
+  | 'carryCapacity'
+  | 'hpBonus';
 
 export interface ModEffectEntry {
   effectType: ModEffectType;
@@ -1788,6 +1790,484 @@ export const CLOTHING_MODS: ModEntry[] = [
   },
 ];
 
+// ===== MODS D'ARMURE ASSISTÉE =====
+// Perk "Armurier" = armorer, "Scientifique" = science, "Forgeron" = blacksmith
+
+export const POWER_ARMOR_MODS: ModEntry[] = [
+
+  // ===== MODS DE SYSTÈME — TÊTE =====
+  {
+    name: 'Épurateur de radiations', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.epurateurRadiations.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.radiationPurifier' },
+    ],
+  },
+  {
+    name: 'Détecteur', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.detecteur.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.sensor' },
+    ],
+  },
+  {
+    name: 'ATH de visée', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.athVisee.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.targetingHud' },
+    ],
+  },
+  {
+    name: 'Base de données interne', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.baseDonnees.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.internalDatabase' },
+    ],
+  },
+
+  // ===== MODS DE SYSTÈME — BUSTE =====
+  {
+    name: 'Barre d\'armature soudée', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.barreArmature.nameAdd',
+    weightChange: 1, cost: 25, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.weldenRebar' },
+    ],
+  },
+  {
+    name: 'Noyau de réacteur', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.noyauReacteur.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.reactorCore' },
+    ],
+  },
+  {
+    name: 'Purificateur sanguin', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.purificateurSanguin.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.bloodCleanser' },
+    ],
+  },
+  {
+    name: 'Protocoles d\'urgence', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.protocolesUrgence.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.emergencyProtocols' },
+    ],
+  },
+  {
+    name: 'Servomoteurs de déplacement assisté', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.servomoteursAssiste.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.motionAssistServos' },
+    ],
+  },
+  {
+    name: 'Dynamo cinétique', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.dynamoCinetique.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.kineticDynamo' },
+    ],
+  },
+  {
+    name: 'Pompe médicale', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.pompeMedicale.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.medicalPump' },
+    ],
+  },
+  {
+    name: 'Plaques réactives', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.plaquesReactives.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'armorer', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.reactivePlates' },
+    ],
+  },
+  {
+    name: 'Bobines Tesla', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.bobinesTesla.nameAdd',
+    weightChange: 1, cost: 100, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.teslaCoils' },
+    ],
+  },
+  {
+    name: 'Stealth Boy', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.stealthBoy.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.stealthBoy' },
+    ],
+  },
+  {
+    name: 'Jetpack', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.jetpack.nameAdd',
+    weightChange: 0.5, cost: 500, requiredPerk: 'armorer', requiredPerkRank: 4, requiredPerk2: 'science', requiredPerkRank2: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.jetpack' },
+    ],
+  },
+
+  // ===== MODS DE SYSTÈME — BRAS =====
+  {
+    name: 'Poing rouillé', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.poingRouille.nameAdd',
+    weightChange: 0.5, cost: 50, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+  {
+    name: 'Bracelets hydrauliques', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.braceletsHydrauliques.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'blacksmith', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.hydraulicBracers' },
+    ],
+  },
+  {
+    name: 'Bracelets optimisés', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.braceletsOptimises.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.optimizedBracers' },
+    ],
+  },
+  {
+    name: 'Bracelets Tesla', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.braceletsTesla.nameAdd',
+    weightChange: 0.5, cost: 150, requiredPerk: 'blacksmith', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.teslaBracers' },
+    ],
+  },
+
+  // ===== MODS DE SYSTÈME — JAMBES =====
+  {
+    name: 'Amortisseurs calibrés', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.amortisseursCalibres.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'carryCapacity', numericValue: 25 },
+    ],
+  },
+  {
+    name: 'Évent d\'explosion', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.eventExplosion.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.explosionVent' },
+    ],
+  },
+  {
+    name: 'Servomoteurs à vitesse surmultipliée', slot: 'systeme', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.systeme.servomoteursVitesse.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.overdriveServos' },
+    ],
+  },
+
+  // ===== MODS DE BLINDAGE — TOUTES LOCALISATIONS =====
+  // Note: coût et poids doublés pour le buste (géré côté frontend)
+  // L'armure de pillard ne peut PAS utiliser les blindages
+  {
+    name: 'Blindage en titane', slot: 'blindage', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.blindage.titane.nameAdd',
+    weightChange: 0.5, cost: 10, requiredPerk: 'armorer', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Blindage en plomb', slot: 'blindage', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.blindage.plomb.nameAdd',
+    weightChange: 1, cost: 10, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'radiationResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Revêtement photovoltaïque', slot: 'blindage', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.blindage.photovoltaique.nameAdd',
+    weightChange: 0.5, cost: 10, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.pa.photovoltaic' },
+    ],
+  },
+  {
+    name: 'Revêtement antigel', slot: 'blindage', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.blindage.antigel.nameAdd',
+    weightChange: 0.5, cost: 10, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Blindage prismatique', slot: 'blindage', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.blindage.prismatique.nameAdd',
+    weightChange: 1, cost: 10, requiredPerk: 'science', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Blindage antiexplosion', slot: 'blindage', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.blindage.antiexplosion.nameAdd',
+    weightChange: 0.5, cost: 10, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.blastResist2' },
+    ],
+  },
+
+  // ===== AMÉLIORATIONS — ARMURE ASSISTÉE DE PILLARD =====
+  {
+    name: 'Casque Raider II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.raider2.casque.nameAdd',
+    weightChange: 0.5, cost: 5, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Plastron Raider II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.raider2.plastron.nameAdd',
+    weightChange: 1, cost: 10, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Brassard Raider II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.raider2.brassard.nameAdd',
+    weightChange: 1, cost: 7, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Jambière Raider II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.raider2.jambiere.nameAdd',
+    weightChange: 1, cost: 7, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+];
+
+// ===== AMÉLIORATIONS — ARMURE ASSISTÉE T-45 =====
+
+export const T45_IMPROVEMENT_MODS: ModEntry[] = [
+  // --- T-45b ---
+  {
+    name: 'Casque T-45b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45b.casque.nameAdd',
+    weightChange: 0.5, cost: 3, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [{ effectType: 'hpBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Plastron T-45b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45b.plastron.nameAdd',
+    weightChange: 0.5, cost: 7, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [{ effectType: 'hpBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Brassard T-45b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45b.brassard.nameAdd',
+    weightChange: 0.5, cost: 7, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Jambière T-45b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45b.jambiere.nameAdd',
+    weightChange: 0.5, cost: 7, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  // --- T-45c ---
+  {
+    name: 'Casque T-45c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45c.casque.nameAdd',
+    weightChange: 0.5, cost: 6, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Plastron T-45c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45c.plastron.nameAdd',
+    weightChange: 1, cost: 14, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [{ effectType: 'hpBonus', numericValue: 4 }],
+  },
+  {
+    name: 'Brassard T-45c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45c.brassard.nameAdd',
+    weightChange: 1, cost: 10, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Jambière T-45c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45c.jambiere.nameAdd',
+    weightChange: 1, cost: 10, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  // --- T-45d ---
+  {
+    name: 'Casque T-45d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45d.casque.nameAdd',
+    weightChange: 1, cost: 9, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Plastron T-45d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45d.plastron.nameAdd',
+    weightChange: 1.5, cost: 21, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 5 },
+    ],
+  },
+  {
+    name: 'Brassard T-45d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45d.brassard.nameAdd',
+    weightChange: 1, cost: 15, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Jambière T-45d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45d.jambiere.nameAdd',
+    weightChange: 1, cost: 15, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  // --- T-45e ---
+  {
+    name: 'Casque T-45e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45e.casque.nameAdd',
+    weightChange: 1, cost: 12, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Plastron T-45e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45e.plastron.nameAdd',
+    weightChange: 2, cost: 28, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 7 },
+    ],
+  },
+  {
+    name: 'Brassard T-45e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45e.brassard.nameAdd',
+    weightChange: 1.5, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Jambière T-45e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45e.jambiere.nameAdd',
+    weightChange: 1.5, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  // --- T-45f ---
+  {
+    name: 'Casque T-45f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45f.casque.nameAdd',
+    weightChange: 1.5, cost: 15, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Plastron T-45f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45f.plastron.nameAdd',
+    weightChange: 2.5, cost: 35, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 8 },
+    ],
+  },
+  {
+    name: 'Brassard T-45f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45f.brassard.nameAdd',
+    weightChange: 2, cost: 25, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 4 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Jambière T-45f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t45f.jambiere.nameAdd',
+    weightChange: 2, cost: 25, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 4 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+];
+
 // All mods combined
 export const ALL_MODS: ModEntry[] = [
   ...SMALL_GUNS_MODS,
@@ -1796,4 +2276,6 @@ export const ALL_MODS: ModEntry[] = [
   ...MELEE_WEAPONS_MODS,
   ...ARMOR_MODS,
   ...CLOTHING_MODS,
+  ...POWER_ARMOR_MODS,
+  ...T45_IMPROVEMENT_MODS,
 ];
