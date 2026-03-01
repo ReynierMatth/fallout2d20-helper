@@ -108,6 +108,8 @@ export interface UseCharactersApiReturn {
   addToInventory: (characterId: string, data: AddInventoryData) => Promise<InventoryItemApi>;
   updateInventoryItem: (characterId: string, inventoryId: number, data: UpdateInventoryData) => Promise<InventoryItemApi>;
   removeFromInventory: (characterId: string, inventoryId: number) => Promise<void>;
+  installMod: (characterId: string, inventoryId: number, modInventoryId: number) => Promise<InventoryItemApi>;
+  uninstallMod: (characterId: string, inventoryId: number, modInventoryId: number) => Promise<InventoryItemApi>;
 }
 
 /**
@@ -342,6 +344,60 @@ export function useCharactersApi(): UseCharactersApiReturn {
     []
   );
 
+  // Install a mod on an inventory item
+  const installMod = useCallback(
+    async (characterId: string, inventoryId: number, modInventoryId: number): Promise<InventoryItemApi> => {
+      const numericId = Number(characterId);
+      const result = await charactersApi.installMod(numericId, inventoryId, modInventoryId);
+
+      // Update local state
+      setCharacters((prev) =>
+        prev.map((char) => {
+          if (char.id === characterId) {
+            return {
+              ...char,
+              inventory: (char.inventory ?? []).map((inv: InventoryItemApi) =>
+                inv.id === inventoryId ? result : inv
+              ),
+              updatedAt: Date.now(),
+            };
+          }
+          return char;
+        })
+      );
+
+      return result;
+    },
+    []
+  );
+
+  // Uninstall a mod from an inventory item
+  const uninstallMod = useCallback(
+    async (characterId: string, inventoryId: number, modInventoryId: number): Promise<InventoryItemApi> => {
+      const numericId = Number(characterId);
+      const result = await charactersApi.uninstallMod(numericId, inventoryId, modInventoryId);
+
+      // Update local state
+      setCharacters((prev) =>
+        prev.map((char) => {
+          if (char.id === characterId) {
+            return {
+              ...char,
+              inventory: (char.inventory ?? []).map((inv: InventoryItemApi) =>
+                inv.id === inventoryId ? result : inv
+              ),
+              updatedAt: Date.now(),
+            };
+          }
+          return char;
+        })
+      );
+
+      return result;
+    },
+    []
+  );
+
   return {
     characters,
     pcs,
@@ -363,5 +419,7 @@ export function useCharactersApi(): UseCharactersApiReturn {
     addToInventory,
     updateInventoryItem,
     removeFromInventory,
+    installMod,
+    uninstallMod,
   };
 }

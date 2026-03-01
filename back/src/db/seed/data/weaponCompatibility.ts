@@ -252,6 +252,27 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
 ];
 
 
+export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
+  {
+    // Laser de l'Institut → mod crosse renomme l'arme en "Fusil de l'Institut"
+    weaponName: 'Institute Laser',
+    modNames: [
+      // Condensateur
+      'Stimulateur de photons', 'Amplificateur d\'ondes Bêta',
+      'Condensateur amélioré', 'Agitateur de photons',
+      // Canon
+      'Canon long', 'Canon automatique', 'Canon amélioré',
+      // Crosse
+      'Crosse standard',
+      // Viseur
+      'Viseur laser', 'Lunette courte', 'Lunette longue',
+      'Lunette de vision nocturne courte', 'Lunette de vision nocturne longue',
+      'Lunette de reconnaissance',
+    ],
+  },
+];
+
 export const ALL_WEAPON_MOD_COMPATIBILITY: WeaponModCompatibility[] = [
   ...SMALL_GUNS_COMPATIBILITY,
+  ...ENERGY_WEAPONS_COMPATIBILITY,
 ];

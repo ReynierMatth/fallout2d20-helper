@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db/index';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import {
   characters,
   characterSpecial,
@@ -17,6 +17,8 @@ import {
   powerArmors,
   clothing,
   clothingLocations,
+  inventoryItemMods,
+  mods,
 } from '../db/schema/index';
 
 const router = Router();
@@ -108,6 +110,38 @@ async function getCharacterInventory(characterId: number) {
     }
   }
 
+  // Fetch installed mods for all inventory items (weapon type)
+  const allInventoryIds = inventoryRows.map(r => r.id);
+  const installedModsMap: Record<number, { modInventoryId: number; modItemId: number; modName: string; slot: string; nameAddKey?: string }[]> = {};
+
+  if (allInventoryIds.length > 0) {
+    for (const invId of allInventoryIds) {
+      const modRows = await db
+        .select({
+          modInventoryId: inventoryItemMods.modInventoryId,
+          modItemId: characterInventory.itemId,
+          modName: items.name,
+          slot: mods.slot,
+          nameAddKey: mods.nameAddKey,
+        })
+        .from(inventoryItemMods)
+        .innerJoin(characterInventory, eq(inventoryItemMods.modInventoryId, characterInventory.id))
+        .innerJoin(items, eq(characterInventory.itemId, items.id))
+        .innerJoin(mods, eq(mods.itemId, characterInventory.itemId))
+        .where(eq(inventoryItemMods.targetInventoryId, invId));
+
+      if (modRows.length > 0) {
+        installedModsMap[invId] = modRows.map(r => ({
+          modInventoryId: r.modInventoryId,
+          modItemId: r.modItemId,
+          modName: r.modName,
+          slot: r.slot,
+          nameAddKey: r.nameAddKey ?? undefined,
+        }));
+      }
+    }
+  }
+
   return inventoryRows.map((row) => {
     const armor = armorDetails[row.itemId];
     const powerArmor = powerArmorDetails[row.itemId];
@@ -134,6 +168,8 @@ async function getCharacterInventory(characterId: number) {
       armorDetails: armor || null,
       powerArmorDetails: powerArmor || null,
       clothingDetails: clothingDetails[row.itemId] || null,
+      // Include installed mods if any
+      installedMods: installedModsMap[row.id] || [],
     };
   });
 }
@@ -795,6 +831,94 @@ router.delete('/:id/inventory/:invId', async (req, res) => {
   } catch (error) {
     console.error('Error removing from inventory:', error);
     res.status(500).json({ error: 'Failed to remove from inventory' });
+  }
+});
+
+// ===== MOD INSTALL/UNINSTALL ENDPOINTS =====
+
+// POST install a mod on an inventory item
+router.post('/:id/inventory/:invId/mods', async (req, res) => {
+  try {
+    const characterId = Number(req.params.id);
+    const invId = Number(req.params.invId);
+    const { modInventoryId } = req.body;
+
+    if (!modInventoryId) {
+      return res.status(400).json({ error: 'modInventoryId is required' });
+    }
+
+    // Check target inventory entry belongs to character
+    const [targetInv] = await db
+      .select()
+      .from(characterInventory)
+      .where(eq(characterInventory.id, invId));
+
+    if (!targetInv || targetInv.characterId !== characterId) {
+      return res.status(404).json({ error: 'Target inventory entry not found' });
+    }
+
+    // Check mod inventory entry belongs to character
+    const [modInv] = await db
+      .select()
+      .from(characterInventory)
+      .where(eq(characterInventory.id, modInventoryId));
+
+    if (!modInv || modInv.characterId !== characterId) {
+      return res.status(404).json({ error: 'Mod inventory entry not found' });
+    }
+
+    // Insert the mod installation record
+    await db.insert(inventoryItemMods).values({
+      targetInventoryId: invId,
+      modInventoryId: Number(modInventoryId),
+    });
+
+    // Return updated inventory item
+    const inventory = await getCharacterInventory(characterId);
+    const updatedEntry = inventory.find((inv) => inv.id === invId);
+
+    res.status(201).json(updatedEntry);
+  } catch (error) {
+    console.error('Error installing mod:', error);
+    res.status(500).json({ error: 'Failed to install mod' });
+  }
+});
+
+// DELETE uninstall a mod from an inventory item
+router.delete('/:id/inventory/:invId/mods/:modInvId', async (req, res) => {
+  try {
+    const characterId = Number(req.params.id);
+    const invId = Number(req.params.invId);
+    const modInvId = Number(req.params.modInvId);
+
+    // Check target inventory entry belongs to character
+    const [targetInv] = await db
+      .select()
+      .from(characterInventory)
+      .where(eq(characterInventory.id, invId));
+
+    if (!targetInv || targetInv.characterId !== characterId) {
+      return res.status(404).json({ error: 'Target inventory entry not found' });
+    }
+
+    // Delete the installation record
+    await db
+      .delete(inventoryItemMods)
+      .where(
+        and(
+          eq(inventoryItemMods.targetInventoryId, invId),
+          eq(inventoryItemMods.modInventoryId, modInvId)
+        )
+      );
+
+    // Return updated inventory item
+    const inventory = await getCharacterInventory(characterId);
+    const updatedEntry = inventory.find((inv) => inv.id === invId);
+
+    res.json(updatedEntry);
+  } catch (error) {
+    console.error('Error uninstalling mod:', error);
+    res.status(500).json({ error: 'Failed to uninstall mod' });
   }
 });
 

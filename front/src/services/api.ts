@@ -368,6 +368,14 @@ export interface InventoryClothingDetails {
   drPoison?: number | null;
 }
 
+export interface InstalledModSummary {
+  modInventoryId: number;
+  modItemId: number;
+  modName: string;
+  slot: string;
+  nameAddKey?: string;
+}
+
 // Inventory item as returned by API
 export interface InventoryItemApi {
   id: number; // Inventory entry ID
@@ -392,6 +400,8 @@ export interface InventoryItemApi {
   armorDetails?: InventoryArmorDetails | null;
   powerArmorDetails?: InventoryPowerArmorDetails | null;
   clothingDetails?: InventoryClothingDetails | null;
+  // Installed mods (weapons only)
+  installedMods?: InstalledModSummary[];
 }
 
 export interface CharacterApi {
@@ -509,6 +519,15 @@ export const charactersApi = {
     }),
   removeFromInventory: (characterId: number, inventoryId: number) =>
     fetchApi<null>(`/characters/${characterId}/inventory/${inventoryId}`, {
+      method: 'DELETE',
+    }),
+  installMod: (characterId: number, inventoryId: number, modInventoryId: number) =>
+    fetchApi<InventoryItemApi>(`/characters/${characterId}/inventory/${inventoryId}/mods`, {
+      method: 'POST',
+      body: JSON.stringify({ modInventoryId }),
+    }),
+  uninstallMod: (characterId: number, inventoryId: number, modInventoryId: number) =>
+    fetchApi<InventoryItemApi>(`/characters/${characterId}/inventory/${inventoryId}/mods/${modInventoryId}`, {
       method: 'DELETE',
     }),
 };

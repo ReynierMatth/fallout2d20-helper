@@ -424,6 +424,13 @@ export default {
       'Robot Repair Kit': 'Robot Repair Kit',
       'Fertilizer Bag': 'Fertilizer Bag',
     },
+    // Weapon names when a stock mod is installed (full rename)
+    stockedNames: {
+      'Institute Laser': 'Institute Rifle',
+      'Laser Pistol': 'Laser Rifle',
+      'Pipe Gun': 'Pipe Rifle',
+      'Pipe Revolver': 'Pipe Revolver Rifle',
+    },
     magazines: {
       'Duck and Cover!': 'Duck and Cover!',
       'Guns and Bullets': 'Guns and Bullets',

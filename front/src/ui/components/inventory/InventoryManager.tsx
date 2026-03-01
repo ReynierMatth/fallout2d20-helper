@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Plus, Minus, Trash2, Check, X, Package, Coins, AlertTriangle, Sword, Shield, Shirt, Pill, Apple, Wrench } from 'lucide-react';
+import { useTranslation, type TFunction } from 'react-i18next';
+import { Plus, Minus, Trash2, Check, X, Package, Coins, AlertTriangle, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings } from 'lucide-react';
 import { Button } from '../../../components/Button';
 import { ItemSelector } from './ItemSelector';
 import { ItemDetailModal } from '../../../components/ItemDetailModal';
@@ -30,6 +30,7 @@ const itemTypeIcons: Record<ItemType, React.ElementType> = {
   oddity: Package,
   powerArmor: Shield,
   magazine: Package,
+  mod: Settings,
 };
 
 // Color mapping for item types
@@ -46,10 +47,34 @@ const itemTypeColors: Record<ItemType, string> = {
   generalGood: 'text-gray-400',
   oddity: 'text-cyan-400',
   magazine: 'text-teal-400',
+  mod: 'text-emerald-400',
 };
 
 // Body locations for armor equipping
 const BODY_LOCATIONS = ['head', 'torso', 'armLeft', 'armRight', 'legLeft', 'legRight'] as const;
+
+// Compute the translated display name for an inventory item, accounting for installed mods
+function computeWeaponDisplayName(inv: InventoryItemApi, displayName: string, t: TFunction): string {
+  const installedMods = inv.installedMods;
+  if (!installedMods || installedMods.length === 0) return displayName;
+
+  let baseName = displayName;
+
+  // If a stock ("crosse") mod is installed, try to find a renamed weapon name
+  const crosseMod = installedMods.find(m => m.slot === 'crosse');
+  if (crosseMod) {
+    const stocked = t(`items.stockedNames.${inv.item.name}`, { defaultValue: '' });
+    if (stocked) baseName = stocked;
+  }
+
+  // Collect non-empty nameAdd suffixes from all mods
+  const suffixes = installedMods
+    .map(m => m.nameAddKey ? t(m.nameAddKey, { defaultValue: '' }) : '')
+    .filter(Boolean);
+
+  if (suffixes.length > 0) return `${baseName} (${suffixes.join(', ')})`;
+  return baseName;
+}
 
 export function InventoryManager({
   characterId,
@@ -60,13 +85,15 @@ export function InventoryManager({
   onCapsChange,
 }: InventoryManagerProps) {
   const { t } = useTranslation();
-  const { addToInventory, updateInventoryItem, removeFromInventory } = useCharactersApi();
+  const { addToInventory, updateInventoryItem, removeFromInventory, installMod, uninstallMod } = useCharactersApi();
 
   const [isItemSelectorOpen, setIsItemSelectorOpen] = useState(false);
   const [editingCaps, setEditingCaps] = useState(false);
   const [capsInput, setCapsInput] = useState(String(caps));
   const [loading, setLoading] = useState<number | null>(null);
   const [selectedItemForDetail, setSelectedItemForDetail] = useState<{ itemId: number; itemType: ItemType } | null>(null);
+  // Which weapon inv ID has its mod panel open
+  const [modPanelOpenFor, setModPanelOpenFor] = useState<number | null>(null);
 
   // Calculate total weight
   const totalWeight = inventory.reduce((sum, inv) => {
@@ -146,6 +173,33 @@ export function InventoryManager({
     }
   };
 
+  // Install a mod on a weapon
+  const handleInstallMod = async (targetInvId: number, modInventoryId: number) => {
+    try {
+      setLoading(targetInvId);
+      await installMod(characterId, targetInvId, modInventoryId);
+      setModPanelOpenFor(null);
+      onInventoryChange?.();
+    } catch (err) {
+      console.error('Failed to install mod:', err);
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  // Uninstall a mod from a weapon
+  const handleUninstallMod = async (targetInvId: number, modInventoryId: number) => {
+    try {
+      setLoading(targetInvId);
+      await uninstallMod(characterId, targetInvId, modInventoryId);
+      onInventoryChange?.();
+    } catch (err) {
+      console.error('Failed to uninstall mod:', err);
+    } finally {
+      setLoading(null);
+    }
+  };
+
   // Save caps
   const handleSaveCaps = () => {
     const newCaps = Math.max(0, parseInt(capsInput) || 0);
@@ -162,7 +216,7 @@ export function InventoryManager({
   }, {} as Record<ItemType, InventoryItemApi[]>);
 
   // Order for display
-  const typeOrder: ItemType[] = ['weapon', 'armor', 'clothing', 'ammunition', 'chem', 'food', 'generalGood', 'robotArmor', 'syringerAmmo', 'oddity'];
+  const typeOrder: ItemType[] = ['weapon', 'armor', 'clothing', 'ammunition', 'chem', 'food', 'generalGood', 'robotArmor', 'syringerAmmo', 'oddity', 'mod'];
 
   return (
     <div className="space-y-4">
@@ -269,34 +323,50 @@ export function InventoryManager({
                       : inv.item.itemType === 'ammunition' ? 'ammunition'
                       : 'general';
 
-                    let displayName = inv.item.name;
+                    let baseName = inv.item.name;
                     // Try nameKey
                     if (inv.item.nameKey) {
                       const translated = t(inv.item.nameKey);
-                      if (translated !== inv.item.nameKey) displayName = translated;
+                      if (translated !== inv.item.nameKey) baseName = translated;
                     }
                     // Try items.categoryKey.name
-                    if (displayName === inv.item.name) {
+                    if (baseName === inv.item.name) {
                       const translated = t(`items.${categoryKey}.${inv.item.name}`);
-                      if (translated !== `items.${categoryKey}.${inv.item.name}`) displayName = translated;
+                      if (translated !== `items.${categoryKey}.${inv.item.name}`) baseName = translated;
                     }
                     // Try items.name
-                    if (displayName === inv.item.name) {
+                    if (baseName === inv.item.name) {
                       const translated = t(`items.${inv.item.name}`);
-                      if (translated !== `items.${inv.item.name}`) displayName = translated;
+                      if (translated !== `items.${inv.item.name}`) baseName = translated;
                     }
 
+                    // For weapons, apply mod name transforms
+                    const displayName = inv.item.itemType === 'weapon'
+                      ? computeWeaponDisplayName(inv, baseName, t)
+                      : baseName;
+
                     const isLoading = loading === inv.id;
+                    const isModPanelOpen = modPanelOpenFor === inv.id;
+
+                    // Find compatible mods in inventory (items of type 'mod' not already installed on this weapon)
+                    const installedModIds = new Set((inv.installedMods ?? []).map(m => m.modInventoryId));
+                    const availableMods = inv.item.itemType === 'weapon'
+                      ? inventory.filter(i =>
+                          i.item.itemType === 'mod' &&
+                          !installedModIds.has(i.id)
+                        )
+                      : [];
 
                     return (
                       <div
                         key={inv.id}
-                        className={`flex items-center gap-2 p-2 rounded border ${
+                        className={`rounded border ${
                           inv.equipped
                             ? 'border-vault-yellow bg-vault-blue'
                             : 'border-gray-700 bg-gray-800'
                         } ${isLoading ? 'opacity-50' : ''}`}
                       >
+                        <div className="flex items-center gap-2 p-2">
                         {/* Item name & info */}
                         <div className="flex-1 min-w-0">
                           <button
@@ -369,6 +439,19 @@ export function InventoryManager({
                           )
                         )}
 
+                        {/* Mod install button (weapons only) */}
+                        {inv.item.itemType === 'weapon' && (
+                          <button
+                            type="button"
+                            onClick={() => setModPanelOpenFor(isModPanelOpen ? null : inv.id)}
+                            disabled={isLoading}
+                            className={`p-1 rounded ${isModPanelOpen ? 'text-vault-yellow bg-vault-blue' : 'text-gray-400 hover:bg-gray-700'}`}
+                            title={t('mods.installMod')}
+                          >
+                            <Settings size={14} />
+                          </button>
+                        )}
+
                         {/* Remove button */}
                         <button
                           type="button"
@@ -379,6 +462,59 @@ export function InventoryManager({
                         >
                           <Trash2 size={14} />
                         </button>
+                        </div>{/* end flex row */}
+
+                        {/* Installed mods + mod install panel */}
+                        {inv.item.itemType === 'weapon' && (
+                          <>
+                            {/* Installed mods badges */}
+                            {(inv.installedMods ?? []).length > 0 && (
+                              <div className="flex flex-wrap gap-1 px-2 pb-1">
+                                {(inv.installedMods ?? []).map(mod => (
+                                  <span
+                                    key={mod.modInventoryId}
+                                    className="flex items-center gap-1 px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300"
+                                  >
+                                    {mod.modName}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleUninstallMod(inv.id, mod.modInventoryId)}
+                                      disabled={isLoading}
+                                      className="text-red-400 hover:text-red-300"
+                                      title={t('common.remove')}
+                                    >
+                                      <X size={10} />
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Mod install panel */}
+                            {isModPanelOpen && (
+                              <div className="border-t border-gray-700 px-2 py-2">
+                                <p className="text-xs text-gray-400 mb-1">{t('mods.installMod')} :</p>
+                                {availableMods.length === 0 ? (
+                                  <p className="text-xs text-gray-500 italic">{t('mods.noCompatibleMods')}</p>
+                                ) : (
+                                  <div className="flex flex-wrap gap-1">
+                                    {availableMods.map(modInv => (
+                                      <button
+                                        key={modInv.id}
+                                        type="button"
+                                        onClick={() => handleInstallMod(inv.id, modInv.id)}
+                                        disabled={isLoading}
+                                        className="px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-white"
+                                      >
+                                        {modInv.item.name}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                     );
                   })}

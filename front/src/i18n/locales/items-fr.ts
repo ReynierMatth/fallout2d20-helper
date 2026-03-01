@@ -21,8 +21,8 @@ export default {
       // Energy Weapons
       'Institute Laser': 'Laser de l\'Institut',
       'Laser Musket': 'Mousquet laser',
-      'Laser Pistol': 'Pistolet laser',
-      'Plasma Pistol': 'Pistolet à plasma',
+      'Laser Pistol': 'Arme laser',
+      'Plasma Gun': 'Arme plasma',
       'Gamma Gun': 'Pistolet Gamma',
       // Big Guns
       'Fat Man': 'Fat Man',
@@ -447,6 +447,13 @@ export default {
       'Mister Gutsy Plating': 'Blindage Mister Gutsy',
       'Robot Repair Kit': 'Kit de réparation pour robot',
       'Fertilizer Bag': 'Sac d\'engrais',
+    },
+    // Noms des armes lorsqu'une crosse est installée (rename complet)
+    stockedNames: {
+      'Institute Laser': 'Fusil de l\'Institut',
+      'Laser Pistol': 'Fusil laser',
+      'Pipe Gun': 'Fusil de fortune',
+      'Pipe Revolver': 'Fusil revolver de fortune',
     },
     magazines: {
       'Duck and Cover!': 'À couvert !',

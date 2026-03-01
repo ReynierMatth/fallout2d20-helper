@@ -48,6 +48,8 @@ export const modSlotEnum = pgEnum('mod_slot', [
   'culasse', 'canon', 'chargeur', 'poignee', 'crosse', 'viseur', 'bouche',
   // Energy weapons
   'condensateur',
+  // Gamma Gun specific
+  'parabole',
   // Armor
   'material', 'functionality',
   // Melee / unarmed

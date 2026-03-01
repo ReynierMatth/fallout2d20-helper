@@ -78,6 +78,20 @@
       "when": 1772200000000,
       "tag": "0010_mods_unique_constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772300000000,
+      "tag": "0011_cleanup_laser_gun",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1772400000000,
+      "tag": "0012_add_parabole_slot",
+      "breakpoints": true
     }
   ]
 }

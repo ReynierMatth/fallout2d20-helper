@@ -1,6 +1,6 @@
 export type ModSlot =
   | 'culasse' | 'canon' | 'chargeur' | 'poignee' | 'crosse' | 'viseur' | 'bouche'
-  | 'condensateur'
+  | 'condensateur' | 'parabole'
   | 'material' | 'functionality'
   | 'improvement'
   | 'modification'
@@ -173,8 +173,11 @@ export const SMALL_GUNS_MODS: ModEntry[] = [
   {
     name: 'Canon long', slot: 'canon', applicableTo: 'smallGuns',
     nameAddKey: 'mods.smallGuns.canon.canonLong.nameAdd',
-    weightChange: 0.5, cost: 20, requiredPerk: 'gunNut', requiredPerkRank: 1,
-    effects: [{ effectType: 'rangeChange', numericValue: 1 }],
+    weightChange: 1, cost: 20,
+    effects: [
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
+      { effectType: 'rangeChange', numericValue: 1 },
+    ],
   },
   {
     name: 'Canon à ouvertures', slot: 'canon', applicableTo: 'smallGuns',
@@ -279,8 +282,12 @@ export const SMALL_GUNS_MODS: ModEntry[] = [
   {
     name: 'Crosse standard', slot: 'crosse', applicableTo: 'smallGuns',
     nameAddKey: 'mods.smallGuns.crosse.crosseStandard.nameAdd',
-    weightChange: 0.5, cost: 5,
-    effects: [{ effectType: 'gainQuality', qualityName: 'twoHanded' }],
+    weightChange: 0.5, cost: 10,
+    effects: [
+      { effectType: 'gainQuality', qualityName: 'twoHanded' },
+      { effectType: 'loseQuality', qualityName: 'inaccurate' },
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
+    ],
   },
   {
     name: 'Crosse complète', slot: 'crosse', applicableTo: 'smallGuns',
@@ -298,6 +305,7 @@ export const SMALL_GUNS_MODS: ModEntry[] = [
       { effectType: 'gainQuality', qualityName: 'twoHanded' },
       { effectType: 'loseQuality', qualityName: 'inaccurate' },
       { effectType: 'gainQuality', qualityName: 'accurate' },
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
     ],
   },
   {
@@ -308,6 +316,7 @@ export const SMALL_GUNS_MODS: ModEntry[] = [
       { effectType: 'gainQuality', qualityName: 'twoHanded' },
       { effectType: 'loseQuality', qualityName: 'inaccurate' },
       { effectType: 'fireRateBonus', numericValue: 1 },
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
     ],
   },
 
@@ -392,7 +401,188 @@ export const SMALL_GUNS_MODS: ModEntry[] = [
   },
 ];
 
+// ===== MODS DES ARMES À ÉNERGIE (Energy Weapons) =====
+// All energy weapons mods use the Sciences skill + optional perk to install.
+
+export const ENERGY_WEAPONS_MODS: ModEntry[] = [
+
+  // ----- MODS DE CONDENSATEUR -----
+  {
+    name: 'Amplificateur d\'ondes Bêta', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.amplificateurOndes.nameAdd',
+    weightChange: 0, cost: 30,
+    effects: [{ effectType: 'gainQuality', qualityName: 'persistent' }],
+  },
+  {
+    name: 'Condensateur amélioré', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.condensateurAmeliore.nameAdd',
+    weightChange: 0, cost: 35,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'fireRateBonus', numericValue: -1 },
+    ],
+  },
+  {
+    name: 'Stimulateur de photons', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.stimulateurPhotons.nameAdd',
+    weightChange: 0, cost: 30, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [{ effectType: 'gainQuality', qualityName: 'vicious' }],
+  },
+  {
+    name: 'Agitateur de photons', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.agitateurPhotons.nameAdd',
+    weightChange: 0.5, cost: 35, requiredPerk: 'science', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'vicious' },
+    ],
+  },
+
+  // ----- MODS DE CANON -----
+  {
+    name: 'Canon court à fixation', slot: 'canon', applicableTo: 'energyWeapons',
+    weightChange: 0, cost: 6,
+    effects: [{ effectType: 'special', descriptionKey: 'mods.effects.acceptsMouthMod' }],
+  },
+  {
+    name: 'Diviseur', slot: 'canon', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.canon.diviseur.nameAdd',
+    weightChange: 0.5, cost: 31,
+    effects: [
+      { effectType: 'damageBonus', numericValue: -1 },
+      { effectType: 'gainQuality', qualityName: 'blast' },
+      { effectType: 'gainQuality', qualityName: 'inaccurate' },
+    ],
+  },
+  {
+    name: 'Canon automatique', slot: 'canon', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.canon.canonAutomatique.nameAdd',
+    weightChange: 0.5, cost: 24, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: -1 },
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
+      { effectType: 'rangeChange', numericValue: 1 },
+      { effectType: 'fireRateBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Canon long à fixation', slot: 'canon', applicableTo: 'energyWeapons',
+    weightChange: 1, cost: 25, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
+      { effectType: 'rangeChange', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.acceptsMouthMod' },
+    ],
+  },
+  {
+    name: 'Canon amélioré', slot: 'canon', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.canon.canonAmeliore.nameAdd',
+    weightChange: 0.5, cost: 26, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [{ effectType: 'damageBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Canon de précision', slot: 'canon', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.canon.canonPrecision.nameAdd',
+    weightChange: 1, cost: 30, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
+      { effectType: 'rangeChange', numericValue: 1 },
+      { effectType: 'fireRateBonus', numericValue: -1 },
+    ],
+  },
+  {
+    name: 'Canon lance-flammes', slot: 'canon', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.canon.canonLanceFlammes.nameAdd',
+    weightChange: 0.5, cost: 35, requiredPerk: 'science', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: -2 },
+      { effectType: 'fireRateBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'blast' },
+      { effectType: 'gainQuality', qualityName: 'burst' },
+      { effectType: 'rangeChange', numericValue: -1 },
+      { effectType: 'gainQuality', qualityName: 'inaccurate' },
+    ],
+  },
+
+  // ----- MODS DE CROSSE (energy weapon version — also removes closeQuarters) -----
+  // Note: 'Crosse standard', 'Crosse de tireur d\'élite', 'Crosse à compensateur de recul'
+  //       are shared with small guns (updated above to include loseCloseQuarters).
+  // 'Crosse complète' has fundamentally different effects for energy weapons:
+  {
+    name: 'Crosse complète (énergie)', slot: 'crosse', applicableTo: 'energyWeapons',
+    weightChange: 0.5, cost: 15,
+    effects: [
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
+    ],
+  },
+
+  // ----- MODS DE BOUCHE -----
+  {
+    name: 'Diviseur de rayon', slot: 'bouche', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.bouche.diviseurRayon.nameAdd',
+    weightChange: 0.5, cost: 15, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: -1 },
+      { effectType: 'gainQuality', qualityName: 'blast' },
+      { effectType: 'fireRateBonus', numericValue: -1 },
+      { effectType: 'gainQuality', qualityName: 'inaccurate' },
+      { effectType: 'rangeChange', numericValue: -1 },
+    ],
+  },
+  {
+    name: 'Concentrateur de faisceau', slot: 'bouche', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.bouche.concentrateurFaisceau.nameAdd',
+    weightChange: 0.5, cost: 20, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [{ effectType: 'rangeChange', numericValue: 1 }],
+  },
+  {
+    name: 'Lentille à gyrocompensation', slot: 'bouche', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.bouche.lentilleGyrocompensation.nameAdd',
+    weightChange: 0.5, cost: 25, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'fireRateBonus', numericValue: 1 },
+      { effectType: 'loseQuality', qualityName: 'inaccurate' },
+    ],
+  },
+
+  // ----- MODS DE PARABOLE (Pistolet Gamma uniquement) -----
+  {
+    name: 'Parabole à renfoncement', slot: 'parabole', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.parabole.parabolaRenfoncement.nameAdd',
+    weightChange: 1, cost: 72, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'rangeChange', numericValue: 1 },
+    ],
+  },
+
+  // ----- MODS DE BOUCHE PISTOLET GAMMA -----
+  {
+    name: 'Antenne de transmission électrique', slot: 'bouche', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.bouche.antenneTransmission.nameAdd',
+    weightChange: 0, cost: 30, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'setDamage', numericValue: 7 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+      { effectType: 'gainQuality', qualityName: 'radioactive' },
+    ],
+  },
+  {
+    name: 'Répéteur de signal', slot: 'bouche', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.bouche.repeteurSignal.nameAdd',
+    weightChange: 0, cost: 60, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'fireRateBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'burst' },
+      { effectType: 'loseQuality', qualityName: 'blast' },
+    ],
+  },
+];
+
 // All mods combined (will grow as other categories are added)
 export const ALL_MODS: ModEntry[] = [
   ...SMALL_GUNS_MODS,
+  ...ENERGY_WEAPONS_MODS,
 ];
