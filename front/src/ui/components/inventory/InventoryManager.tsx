@@ -68,8 +68,17 @@ function computeWeaponDisplayName(inv: InventoryItemApi, displayName: string, t:
     if (stocked) baseName = stocked;
   }
 
-  // Collect non-empty nameAdd suffixes from all mods
+  // Amelioration mods replace the full item name (e.g. "Casque T-45" → "Casque T-45b")
+  const FULL_RENAME_SLOTS = ['amelioration'];
+  const fullRenameMod = installedMods.find(m => FULL_RENAME_SLOTS.includes(m.slot));
+  if (fullRenameMod?.nameAddKey) {
+    const renamed = t(fullRenameMod.nameAddKey, { defaultValue: '' });
+    if (renamed) return renamed;
+  }
+
+  // Collect non-empty nameAdd suffixes from all mods (exclude full-rename mods)
   const suffixes = installedMods
+    .filter(m => !FULL_RENAME_SLOTS.includes(m.slot))
     .map(m => m.nameAddKey ? t(m.nameAddKey, { defaultValue: '' }) : '')
     .filter(Boolean);
 
@@ -341,8 +350,9 @@ export function InventoryManager({
                       if (translated !== `items.${inv.item.name}`) baseName = translated;
                     }
 
-                    // For weapons, apply mod name transforms
-                    const displayName = inv.item.itemType === 'weapon'
+                    // For moddable items (weapons, armor, power armor), apply mod name transforms
+                    const moddableTypes = ['weapon', 'armor', 'powerArmor'];
+                    const displayName = moddableTypes.includes(inv.item.itemType)
                       ? computeWeaponDisplayName(inv, baseName, t)
                       : baseName;
 
