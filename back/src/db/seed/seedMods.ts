@@ -44,6 +44,8 @@ export async function seedMods() {
         weightChange: mod.weightChange,
         requiredPerk: mod.requiredPerk,
         requiredPerkRank: mod.requiredPerkRank,
+        requiredPerk2: mod.requiredPerk2,
+        requiredPerkRank2: mod.requiredPerkRank2,
       })
       .onConflictDoUpdate({
         target: mods.itemId,
@@ -54,6 +56,8 @@ export async function seedMods() {
           weightChange: sql`excluded.weight_change`,
           requiredPerk: sql`excluded.required_perk`,
           requiredPerkRank: sql`excluded.required_perk_rank`,
+          requiredPerk2: sql`excluded.required_perk_2`,
+          requiredPerkRank2: sql`excluded.required_perk_rank_2`,
         },
       })
       .returning({ id: mods.id });

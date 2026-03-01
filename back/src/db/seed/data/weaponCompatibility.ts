@@ -369,7 +369,7 @@ export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Laser Gatling
-    weaponName: 'Gatling Laser',
+    weaponName: 'Laser Gatling',
     modNames: [
       // Condensateur
       'Stimulateur de photons (Gatling)', 'Amplificateur d\'ondes Bêta (Gatling)',
@@ -442,10 +442,140 @@ export const MELEE_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
   { weaponName: 'Power Fist', modNames: ['Perforant (poing assisté)', 'Bobine thermique (poing assisté)'] },
 ];
 
+// ===== Armor & Clothing Mod Compatibility =====
+
+// --- Mod name groups ---
+
+const ALL_LOCATION_IMPROVEMENTS = [
+  'Structure légère', 'Poches', 'Larges poches', 'Revêtement en plomb', 'Structure ultra légère',
+];
+const TORSO_IMPROVEMENTS = [
+  'Rembourrage', 'Revêtement amianté', 'Densifié', 'BioCommMesh', 'Pneumatique',
+];
+const ARMS_IMPROVEMENTS = [
+  'Bagarreur', 'Renforcé (bras)', 'Stabilisé', 'Aérodynamique', 'Alourdi',
+];
+const LEGS_IMPROVEMENTS = [
+  'Amortissement', 'Silencieux (jambes)',
+];
+
+const RAIDER_MATERIALS = ['Soudé', 'Trempé', 'Renforcé (raider)', 'Étayé'];
+const LEATHER_MATERIALS = ['Cuir bouilli', 'Cuir armé', 'Cuir traité', 'Cuir ombré', 'Cuir clouté'];
+const METAL_MATERIALS = ['Métal peint', 'Métal émaillé', 'Métal ombré', 'Métal allié', 'Métal poli'];
+const COMBAT_MATERIALS = ['Renforcé (combat)', 'Ombré', 'Fibre de verre', 'Polymère'];
+const SYNTH_MATERIALS = ['Stratifié', 'Résineux', 'Microfibre de carbone', 'Nanofilament'];
+
+const BALLISTIC_WEAVE = [
+  'Tissu balistique', 'Tissu balistique Mk II', 'Tissu balistique Mk III',
+  'Tissu balistique Mk IV', 'Tissu balistique Mk V',
+];
+const VAULT_SUIT_MODS = [
+  'Revêtement isolant', 'Revêtement traité', 'Revêtement résistant',
+  'Revêtement protecteur', 'Revêtement blindé',
+];
+
+// Helper: builds compatible mod list for an armor piece based on location + armor type
+function armorCompat(
+  armorName: string,
+  location: 'head' | 'torso' | 'arm' | 'leg',
+  materials: string[],
+): WeaponModCompatibility {
+  const mods = [...ALL_LOCATION_IMPROVEMENTS, ...materials];
+  if (location === 'torso') mods.push(...TORSO_IMPROVEMENTS);
+  if (location === 'arm') mods.push(...ARMS_IMPROVEMENTS);
+  if (location === 'leg') mods.push(...LEGS_IMPROVEMENTS);
+  // head: only all-location improvements + material mods (no head-specific improvements)
+  return { weaponName: armorName, modNames: mods };
+}
+
+export const ARMOR_COMPATIBILITY: WeaponModCompatibility[] = [
+  // --- Raider Armor (no helmet) ---
+  armorCompat('Raider Chest Piece', 'torso', RAIDER_MATERIALS),
+  armorCompat('Sturdy Raider Chest Piece', 'torso', RAIDER_MATERIALS),
+  armorCompat('Heavy Raider Chest Piece', 'torso', RAIDER_MATERIALS),
+  armorCompat('Raider Arm', 'arm', RAIDER_MATERIALS),
+  armorCompat('Sturdy Raider Arm', 'arm', RAIDER_MATERIALS),
+  armorCompat('Heavy Raider Arm', 'arm', RAIDER_MATERIALS),
+  armorCompat('Raider Leg', 'leg', RAIDER_MATERIALS),
+  armorCompat('Sturdy Raider Leg', 'leg', RAIDER_MATERIALS),
+  armorCompat('Heavy Raider Leg', 'leg', RAIDER_MATERIALS),
+
+  // --- Leather Armor (no helmet) ---
+  armorCompat('Leather Chest Piece', 'torso', LEATHER_MATERIALS),
+  armorCompat('Sturdy Leather Chest Piece', 'torso', LEATHER_MATERIALS),
+  armorCompat('Heavy Leather Chest Piece', 'torso', LEATHER_MATERIALS),
+  armorCompat('Leather Arm', 'arm', LEATHER_MATERIALS),
+  armorCompat('Sturdy Leather Arm', 'arm', LEATHER_MATERIALS),
+  armorCompat('Heavy Leather Arm', 'arm', LEATHER_MATERIALS),
+  armorCompat('Leather Leg', 'leg', LEATHER_MATERIALS),
+  armorCompat('Sturdy Leather Leg', 'leg', LEATHER_MATERIALS),
+  armorCompat('Heavy Leather Leg', 'leg', LEATHER_MATERIALS),
+
+  // --- Metal Armor (with helmet) ---
+  armorCompat('Metal Helmet', 'head', METAL_MATERIALS),
+  armorCompat('Sturdy Metal Helmet', 'head', METAL_MATERIALS),
+  armorCompat('Heavy Metal Helmet', 'head', METAL_MATERIALS),
+  armorCompat('Metal Chest Piece', 'torso', METAL_MATERIALS),
+  armorCompat('Sturdy Metal Chest Piece', 'torso', METAL_MATERIALS),
+  armorCompat('Heavy Metal Chest Piece', 'torso', METAL_MATERIALS),
+  armorCompat('Metal Arm', 'arm', METAL_MATERIALS),
+  armorCompat('Sturdy Metal Arm', 'arm', METAL_MATERIALS),
+  armorCompat('Heavy Metal Arm', 'arm', METAL_MATERIALS),
+  armorCompat('Metal Leg', 'leg', METAL_MATERIALS),
+  armorCompat('Sturdy Metal Leg', 'leg', METAL_MATERIALS),
+  armorCompat('Heavy Metal Leg', 'leg', METAL_MATERIALS),
+
+  // --- Combat Armor (with helmet) ---
+  armorCompat('Combat Armor Helmet', 'head', COMBAT_MATERIALS),
+  armorCompat('Sturdy Combat Armor Helmet', 'head', COMBAT_MATERIALS),
+  armorCompat('Heavy Combat Armor Helmet', 'head', COMBAT_MATERIALS),
+  armorCompat('Combat Armor Chest Piece', 'torso', COMBAT_MATERIALS),
+  armorCompat('Sturdy Combat Armor Chest Piece', 'torso', COMBAT_MATERIALS),
+  armorCompat('Heavy Combat Armor Chest Piece', 'torso', COMBAT_MATERIALS),
+  armorCompat('Combat Armor Arm', 'arm', COMBAT_MATERIALS),
+  armorCompat('Sturdy Combat Armor Arm', 'arm', COMBAT_MATERIALS),
+  armorCompat('Heavy Combat Armor Arm', 'arm', COMBAT_MATERIALS),
+  armorCompat('Combat Armor Leg', 'leg', COMBAT_MATERIALS),
+  armorCompat('Sturdy Combat Armor Leg', 'leg', COMBAT_MATERIALS),
+  armorCompat('Heavy Combat Armor Leg', 'leg', COMBAT_MATERIALS),
+
+  // --- Synth Armor (with helmet) ---
+  armorCompat('Synth Helmet', 'head', SYNTH_MATERIALS),
+  armorCompat('Sturdy Synth Helmet', 'head', SYNTH_MATERIALS),
+  armorCompat('Heavy Synth Helmet', 'head', SYNTH_MATERIALS),
+  armorCompat('Synth Chest Piece', 'torso', SYNTH_MATERIALS),
+  armorCompat('Sturdy Synth Chest Piece', 'torso', SYNTH_MATERIALS),
+  armorCompat('Heavy Synth Chest Piece', 'torso', SYNTH_MATERIALS),
+  armorCompat('Synth Arm', 'arm', SYNTH_MATERIALS),
+  armorCompat('Sturdy Synth Arm', 'arm', SYNTH_MATERIALS),
+  armorCompat('Heavy Synth Arm', 'arm', SYNTH_MATERIALS),
+  armorCompat('Synth Leg', 'leg', SYNTH_MATERIALS),
+  armorCompat('Sturdy Synth Leg', 'leg', SYNTH_MATERIALS),
+  armorCompat('Heavy Synth Leg', 'leg', SYNTH_MATERIALS),
+
+  // Vault-Tec Security Armor : PAS DE MODS
+];
+
+export const CLOTHING_COMPATIBILITY: WeaponModCompatibility[] = [
+  // Tissu balistique : vêtements qui le supportent
+  { weaponName: 'Military Fatigues', modNames: BALLISTIC_WEAVE },
+  { weaponName: 'Casual Clothes', modNames: BALLISTIC_WEAVE },
+  { weaponName: 'Sturdy Clothes', modNames: BALLISTIC_WEAVE },
+  { weaponName: 'Leather Clothes', modNames: BALLISTIC_WEAVE },
+  { weaponName: 'Brotherhood of Steel Uniform', modNames: BALLISTIC_WEAVE },
+  { weaponName: 'Fancy Clothes', modNames: BALLISTIC_WEAVE },
+  { weaponName: 'Casual Hat', modNames: BALLISTIC_WEAVE },
+  { weaponName: 'Fancy Hat', modNames: BALLISTIC_WEAVE },
+  // Combinaison d'Abri : mods spécifiques + tissu balistique
+  { weaponName: 'Vault Jumpsuit', modNames: [...VAULT_SUIT_MODS, ...BALLISTIC_WEAVE] },
+];
+
 export const ALL_WEAPON_MOD_COMPATIBILITY: WeaponModCompatibility[] = [
   ...SMALL_GUNS_COMPATIBILITY,
   ...ENERGY_WEAPONS_COMPATIBILITY,
   ...BIG_GUNS_COMPATIBILITY,
   ...MELEE_WEAPONS_COMPATIBILITY,
+  ...ARMOR_COMPATIBILITY,
+  ...CLOTHING_COMPATIBILITY,
 ];
 

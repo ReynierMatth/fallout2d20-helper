@@ -27,6 +27,9 @@ export const mods = pgTable('mods', {
   requiredPerk: varchar('required_perk', { length: 50 }),
   // Rank of the required perk (1-4)
   requiredPerkRank: integer('required_perk_rank'),
+  // Optional second perk required (e.g. some armor mods need armorer + science)
+  requiredPerk2: varchar('required_perk_2', { length: 50 }),
+  requiredPerkRank2: integer('required_perk_rank_2'),
   // Weight delta applied to the target item when this mod is installed (can be negative)
   weightChange: real('weight_change').notNull().default(0),
 });
@@ -48,14 +51,14 @@ export const modEffects = pgTable('mod_effects', {
   descriptionKey: varchar('description_key', { length: 100 }),
 });
 
-// Which specific mods a given weapon/armor item can accept
-export const weaponCompatibleMods = pgTable('weapon_compatible_mods', {
+// Which specific mods a given item (weapon, armor, clothing) can accept
+export const itemCompatibleMods = pgTable('item_compatible_mods', {
   id: serial('id').primaryKey(),
-  // The weapon/armor item
-  weaponItemId: integer('weapon_item_id').references(() => items.id, { onDelete: 'cascade' }).notNull(),
+  // The target item (weapon, armor piece, clothing)
+  targetItemId: integer('target_item_id').references(() => items.id, { onDelete: 'cascade' }).notNull(),
   // The mod item that is compatible
   modItemId: integer('mod_item_id').references(() => items.id, { onDelete: 'cascade' }).notNull(),
-}, (t) => [unique().on(t.weaponItemId, t.modItemId)]);
+}, (t) => [unique().on(t.targetItemId, t.modItemId)]);
 
 // Tracks which mod inventory entries are installed on which item inventory entries
 export const inventoryItemMods = pgTable('inventory_item_mods', {
@@ -87,16 +90,16 @@ export const modEffectsRelations = relations(modEffects, ({ one }) => ({
   }),
 }));
 
-export const weaponCompatibleModsRelations = relations(weaponCompatibleMods, ({ one }) => ({
-  weapon: one(items, {
-    fields: [weaponCompatibleMods.weaponItemId],
+export const itemCompatibleModsRelations = relations(itemCompatibleMods, ({ one }) => ({
+  targetItem: one(items, {
+    fields: [itemCompatibleMods.targetItemId],
     references: [items.id],
-    relationName: 'weaponCompatibleMods',
+    relationName: 'itemCompatibleMods',
   }),
   mod: one(items, {
-    fields: [weaponCompatibleMods.modItemId],
+    fields: [itemCompatibleMods.modItemId],
     references: [items.id],
-    relationName: 'modCompatibleWeapons',
+    relationName: 'modCompatibleItems',
   }),
 }));
 

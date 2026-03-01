@@ -92,6 +92,13 @@
       "when": 1772400000000,
       "tag": "0012_add_parabole_slot",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1772500000000,
+      "tag": "0013_armor_clothing_mods",
+      "breakpoints": true
     }
   ]
 }

@@ -50,10 +50,12 @@ export const modSlotEnum = pgEnum('mod_slot', [
   'condensateur',
   // Gamma Gun specific
   'parabole',
+  // Big guns (flamer)
+  'carburant', 'reservoir', 'buse',
+  // Melee / unarmed
+  'lame', 'improvement',
   // Armor
   'material', 'functionality',
-  // Melee / unarmed
-  'improvement',
   // Clothing
   'modification',
   // Robot (torso internal)
@@ -75,6 +77,11 @@ export const modEffectTypeEnum = pgEnum('mod_effect_type', [
   'setAmmo',       // changes ammo type
   'setFireRate',   // sets fire rate to N
   'special',       // free-text effect (description key only)
+  // Armor-specific
+  'ballisticResistance',  // +N ballistic DR
+  'energyResistance',     // +N energy DR
+  'radiationResistance',  // +N radiation DR
+  'carryCapacity',        // +N carry capacity
 ]);
 
 export const foodTypeEnum = pgEnum('food_type', ['food', 'drink']);

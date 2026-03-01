@@ -16,7 +16,9 @@ export type ModEffectType =
   | 'damageBonus' | 'fireRateBonus' | 'rangeChange'
   | 'gainQuality' | 'loseQuality'
   | 'setDamage' | 'setAmmo' | 'setFireRate'
-  | 'special';
+  | 'special'
+  | 'ballisticResistance' | 'energyResistance' | 'radiationResistance'
+  | 'carryCapacity';
 
 export interface ModEffectEntry {
   effectType: ModEffectType;
@@ -40,6 +42,8 @@ export interface ModEntry {
   cost: number;
   requiredPerk?: string;
   requiredPerkRank?: number;
+  requiredPerk2?: string;
+  requiredPerkRank2?: number;
   effects: ModEffectEntry[];
 }
 
@@ -1327,10 +1331,469 @@ export const MELEE_WEAPONS_MODS: ModEntry[] = [
   },
 ];
 
-// All mods combined (will grow as other categories are added)
+// ===== MODS D'AMÉLIORATION D'ARMURE =====
+// All armor improvement & material mods use the Réparation skill + optional perk to install.
+// Perk "Armurier" = armorer, "Scientifique" = science
+
+export const ARMOR_MODS: ModEntry[] = [
+
+  // ===== AMÉLIORATIONS — TOUTES LES LOCALISATIONS =====
+  {
+    name: 'Structure légère', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.structureLegere.nameAdd',
+    weightChange: -1, cost: 1,
+    effects: [],
+  },
+  {
+    name: 'Poches', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.poches.nameAdd',
+    weightChange: 1, cost: 1,
+    effects: [
+      { effectType: 'carryCapacity', numericValue: 10 },
+    ],
+  },
+  {
+    name: 'Larges poches', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.largesPoches.nameAdd',
+    weightChange: 1, cost: 5,
+    effects: [
+      { effectType: 'carryCapacity', numericValue: 20 },
+    ],
+  },
+  {
+    name: 'Revêtement en plomb', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.revetementPlomb.nameAdd',
+    weightChange: 2, cost: 5, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'radiationResistance', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Structure ultra légère', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.structureUltraLegere.nameAdd',
+    weightChange: -3, cost: 7, requiredPerk: 'armorer', requiredPerkRank: 3,
+    effects: [],
+  },
+
+  // ===== AMÉLIORATIONS — BUSTE UNIQUEMENT =====
+  {
+    name: 'Rembourrage', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.rembourrage.nameAdd',
+    weightChange: 2, cost: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.blastResist2' },
+    ],
+  },
+  {
+    name: 'Revêtement amianté', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.revetementAmiante.nameAdd',
+    weightChange: 2, cost: 3, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'special', descriptionKey: 'mods.effects.ignoreEnergyPersistent' },
+    ],
+  },
+  {
+    name: 'Densifié', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.densifie.nameAdd',
+    weightChange: 2, cost: 7, requiredPerk: 'armorer', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.blastResist4' },
+    ],
+  },
+  {
+    name: 'BioCommMesh', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.bioCommMesh.nameAdd',
+    weightChange: 1, cost: 9, requiredPerk: 'armorer', requiredPerkRank: 4, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.chemDurationDouble' },
+    ],
+  },
+  {
+    name: 'Pneumatique', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.pneumatique.nameAdd',
+    weightChange: 1, cost: 9, requiredPerk: 'armorer', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.stunRequires2Effects' },
+    ],
+  },
+
+  // ===== AMÉLIORATIONS — BRAS UNIQUEMENT =====
+  {
+    name: 'Bagarreur', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.bagarreur.nameAdd',
+    weightChange: 0.5, cost: 1, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.unarmedDamageBonus1' },
+    ],
+  },
+  {
+    name: 'Renforcé (bras)', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.renforce.nameAdd',
+    weightChange: 0.5, cost: 1, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.meleeResist2' },
+    ],
+  },
+  {
+    name: 'Stabilisé', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.stabilise.nameAdd',
+    weightChange: 0.5, cost: 1, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.aimRangedDamageBonus1' },
+    ],
+  },
+  {
+    name: 'Aérodynamique', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.aerodynamique.nameAdd',
+    weightChange: 0, cost: 1, requiredPerk: 'armorer', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.melee4APBonusDamage' },
+    ],
+  },
+  {
+    name: 'Alourdi', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.alourdi.nameAdd',
+    weightChange: 0.5, cost: 3, requiredPerk: 'armorer', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.meleePiercing1' },
+    ],
+  },
+
+  // ===== AMÉLIORATIONS — JAMBES UNIQUEMENT =====
+  {
+    name: 'Amortissement', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.amortissement.nameAdd',
+    weightChange: 0, cost: 1, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.fallResist2' },
+    ],
+  },
+  {
+    name: 'Silencieux (jambes)', slot: 'functionality', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.functionality.silencieux.nameAdd',
+    weightChange: 0, cost: 2, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'special', descriptionKey: 'mods.effects.sneakReroll' },
+    ],
+  },
+
+  // ===== MATÉRIAUX — ARMURE DE PILLARD =====
+  {
+    name: 'Soudé', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.soude.nameAdd',
+    weightChange: 0.5, cost: 3,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Trempé', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.trempe.nameAdd',
+    weightChange: 0.5, cost: 6,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Renforcé (raider)', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.renforce.nameAdd',
+    weightChange: 1, cost: 9, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Étayé', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.etaye.nameAdd',
+    weightChange: 1.5, cost: 12, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 4 },
+      { effectType: 'energyResistance', numericValue: 4 },
+    ],
+  },
+
+  // ===== MATÉRIAUX — ARMURE DE CUIR =====
+  {
+    name: 'Cuir bouilli', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.cuirBouilli.nameAdd',
+    weightChange: 0.5, cost: 5,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Cuir armé', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.cuirArme.nameAdd',
+    weightChange: 0.5, cost: 10,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Cuir traité', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.cuirTraite.nameAdd',
+    weightChange: 0.5, cost: 15, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Cuir ombré', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.cuirOmbre.nameAdd',
+    weightChange: 0.5, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'special', descriptionKey: 'mods.effects.shadowed' },
+    ],
+  },
+  {
+    name: 'Cuir clouté', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.cuirCloute.nameAdd',
+    weightChange: 1, cost: 25, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 4 },
+      { effectType: 'energyResistance', numericValue: 4 },
+    ],
+  },
+
+  // ===== MATÉRIAUX — ARMURE DE MÉTAL =====
+  {
+    name: 'Métal peint', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.metalPeint.nameAdd',
+    weightChange: 0.5, cost: 10,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Métal émaillé', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.metalEmaille.nameAdd',
+    weightChange: 1, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Métal ombré', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.metalOmbre.nameAdd',
+    weightChange: 0.5, cost: 25, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'special', descriptionKey: 'mods.effects.shadowed' },
+    ],
+  },
+  {
+    name: 'Métal allié', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.metalAllie.nameAdd',
+    weightChange: 1.5, cost: 30, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Métal poli', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.metalPoli.nameAdd',
+    weightChange: 2, cost: 40, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 4 },
+      { effectType: 'energyResistance', numericValue: 4 },
+    ],
+  },
+
+  // ===== MATÉRIAUX — ARMURE DE COMBAT =====
+  {
+    name: 'Renforcé (combat)', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.renforce.nameAdd',
+    weightChange: 0.5, cost: 15,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Ombré', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.ombre.nameAdd',
+    weightChange: 0.5, cost: 15, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.shadowed' },
+    ],
+  },
+  {
+    name: 'Fibre de verre', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.fibreDeVerre.nameAdd',
+    weightChange: 0.5, cost: 30, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Polymère', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.polymere.nameAdd',
+    weightChange: 1, cost: 45, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+    ],
+  },
+
+  // ===== MATÉRIAUX — ARMURE DE SYNTHÉTIQUE =====
+  {
+    name: 'Stratifié', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.stratifie.nameAdd',
+    weightChange: 0.5, cost: 5,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Résineux', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.resineux.nameAdd',
+    weightChange: 0.5, cost: 10, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Microfibre de carbone', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.microfibreCarbone.nameAdd',
+    weightChange: 1, cost: 15, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Nanofilament', slot: 'material', applicableTo: 'armor',
+    nameAddKey: 'mods.armor.material.nanofilament.nameAdd',
+    weightChange: 1.5, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 4 },
+      { effectType: 'energyResistance', numericValue: 4 },
+    ],
+  },
+];
+
+// ===== MODS DE VÊTEMENTS =====
+
+export const CLOTHING_MODS: ModEntry[] = [
+
+  // ===== TISSU BALISTIQUE =====
+  {
+    name: 'Tissu balistique', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.tissuBalistique.nameAdd',
+    weightChange: 0, cost: 20,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Tissu balistique Mk II', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.tissuBalistiqueMk2.nameAdd',
+    weightChange: 0, cost: 30, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 3 },
+      { effectType: 'energyResistance', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Tissu balistique Mk III', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.tissuBalistiqueMk3.nameAdd',
+    weightChange: 0, cost: 40, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 4 },
+      { effectType: 'energyResistance', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Tissu balistique Mk IV', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.tissuBalistiqueMk4.nameAdd',
+    weightChange: 0, cost: 50, requiredPerk: 'armorer', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 5 },
+      { effectType: 'energyResistance', numericValue: 5 },
+    ],
+  },
+  {
+    name: 'Tissu balistique Mk V', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.tissuBalistiqueMk5.nameAdd',
+    weightChange: 0, cost: 60, requiredPerk: 'armorer', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 6 },
+      { effectType: 'energyResistance', numericValue: 6 },
+    ],
+  },
+
+  // ===== MODS DE LA COMBINAISON D'ABRI =====
+  {
+    name: 'Revêtement isolant', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.revetementIsolant.nameAdd',
+    weightChange: 0, cost: 10,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Revêtement traité', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.revetementTraite.nameAdd',
+    weightChange: 0.5, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'radiationResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Revêtement résistant', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.revetementResistant.nameAdd',
+    weightChange: 0.5, cost: 30, requiredPerk: 'armorer', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'radiationResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Revêtement protecteur', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.revetementProtecteur.nameAdd',
+    weightChange: 0.5, cost: 40, requiredPerk: 'armorer', requiredPerkRank: 4, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'radiationResistance', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Revêtement blindé', slot: 'modification', applicableTo: 'clothing',
+    nameAddKey: 'mods.clothing.revetementBlinde.nameAdd',
+    weightChange: 0.5, cost: 50, requiredPerk: 'armorer', requiredPerkRank: 4, requiredPerk2: 'science', requiredPerkRank2: 4,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'radiationResistance', numericValue: 3 },
+    ],
+  },
+];
+
+// All mods combined
 export const ALL_MODS: ModEntry[] = [
   ...SMALL_GUNS_MODS,
   ...ENERGY_WEAPONS_MODS,
   ...BIG_GUNS_MODS,
   ...MELEE_WEAPONS_MODS,
+  ...ARMOR_MODS,
+  ...CLOTHING_MODS,
 ];
