@@ -146,6 +146,7 @@ router.get('/tag-skill-bonuses', async (_req, res) => {
         itemId: tagSkillBonusItems.itemId,
         quantity: tagSkillBonusItems.quantity,
         quantityCD: tagSkillBonusItems.quantityCD,
+        choiceGroup: tagSkillBonusItems.choiceGroup,
         // Item details
         itemName: items.name,
         itemType: items.itemType,
@@ -154,20 +155,39 @@ router.get('/tag-skill-bonuses', async (_req, res) => {
       .from(tagSkillBonusItems)
       .innerJoin(items, eq(tagSkillBonusItems.itemId, items.id));
 
-    // Group by skill
+    // Group by skill, merging items that share a choiceGroup into choice objects
     const grouped: Record<string, any[]> = {};
     for (const bonus of bonuses) {
       if (!grouped[bonus.skill]) {
         grouped[bonus.skill] = [];
       }
-      grouped[bonus.skill].push({
+      const option = {
         itemId: bonus.itemId,
         itemName: bonus.itemName,
         itemType: bonus.itemType,
         itemNameKey: bonus.itemNameKey,
         quantity: bonus.quantity,
         quantityCD: bonus.quantityCD,
-      });
+      };
+      if (bonus.choiceGroup !== null && bonus.choiceGroup !== undefined) {
+        const existing = grouped[bonus.skill].find(
+          (e: any) => e.isChoice && e._choiceGroup === bonus.choiceGroup
+        );
+        if (existing) {
+          existing.options.push(option);
+        } else {
+          grouped[bonus.skill].push({ isChoice: true, _choiceGroup: bonus.choiceGroup, options: [option] });
+        }
+      } else {
+        grouped[bonus.skill].push(option);
+      }
+    }
+
+    // Remove internal _choiceGroup field before sending response
+    for (const entries of Object.values(grouped)) {
+      for (const entry of entries) {
+        if (entry._choiceGroup !== undefined) delete entry._choiceGroup;
+      }
     }
 
     res.json(grouped);

@@ -325,6 +325,7 @@ export function CharacterSheetPage() {
                 <Card title={t('bodyResistance.title')}>
                   <BodyResistanceMap
                     inventory={(character.inventory ?? []) as InventoryItemApi[]}
+                    originId={character.origin}
                     onPieceHpChange={handlePieceHpChange}
                   />
                 </Card>
