@@ -673,6 +673,14 @@ export default {
     armRight: 'R. Arm',
     legLeft: 'L. Leg',
     legRight: 'R. Leg',
+    misterHandy: {
+      head: 'Optic',
+      torso: 'Body',
+      armLeft: 'Arm 1',
+      armRight: 'Arm 2',
+      legLeft: 'Arm 3',
+      legRight: 'Thruster',
+    },
   },
 
   bodyResistance: {

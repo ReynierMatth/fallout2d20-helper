@@ -21,6 +21,7 @@ interface LocationDR {
 interface BodyResistanceMapProps {
   inventory: InventoryItemApi[];
   showPoison?: boolean;
+  originId?: string;
   onPieceHpChange?: (inventoryId: number, newHp: number) => void;
 }
 
@@ -34,8 +35,9 @@ const HIT_LOCATIONS: Record<BodyLocation, string> = {
   legRight: '18-20',
 };
 
-export function BodyResistanceMap({ inventory, showPoison = false, onPieceHpChange }: BodyResistanceMapProps) {
+export function BodyResistanceMap({ inventory, showPoison = false, originId, onPieceHpChange }: BodyResistanceMapProps) {
   const { t } = useTranslation();
+  const isMisterHandy = originId === 'misterHandy';
 
   // Calculate DR for each body location based on equipped items
   const locationDR = useMemo(() => {
@@ -137,8 +139,15 @@ export function BodyResistanceMap({ inventory, showPoison = false, onPieceHpChan
     onPieceHpChange(inventoryId, newHp);
   };
 
+  const getLabel = (location: BodyLocation): string => {
+    if (isMisterHandy) {
+      return t(`bodyLocations.misterHandy.${location}`);
+    }
+    return t(`bodyLocations.${location}`);
+  };
+
   // Render a single location box
-  const LocationBox = ({ location, label }: { location: BodyLocation; label: string }) => {
+  const LocationBox = ({ location }: { location: BodyLocation }) => {
     const data = locationDR[location];
     const hasValues = data.physical > 0 || data.energy > 0 || data.radiation > 0;
     const hasPowerArmor = data.paMaxHp !== undefined;
@@ -152,7 +161,7 @@ export function BodyResistanceMap({ inventory, showPoison = false, onPieceHpChan
         {/* Header */}
         <div className={`px-2 py-1 text-center ${isDamaged ? 'bg-red-900' : 'bg-vault-blue'}`}>
           <span className={`text-xs font-bold uppercase ${isDamaged ? 'text-red-400' : 'text-vault-yellow'}`}>
-            {label}
+            {getLabel(location)}
           </span>
           <span className={`text-xs ml-1 ${isDamaged ? 'text-red-600' : 'text-vault-yellow-dark'}`}>
             ({HIT_LOCATIONS[location]})
@@ -249,27 +258,59 @@ export function BodyResistanceMap({ inventory, showPoison = false, onPieceHpChan
     );
   };
 
+  if (isMisterHandy) {
+    return (
+      <div className="space-y-3">
+        {/* Optique - centered top */}
+        <div className="flex justify-center">
+          <div className="w-48">
+            <LocationBox location="head" />
+          </div>
+        </div>
+
+        {/* Bras 1 | gap | Bras 2 */}
+        <div className="grid grid-cols-2 gap-2">
+          <LocationBox location="armLeft" />
+          <LocationBox location="armRight" />
+        </div>
+
+        {/* Corps - centered */}
+        <div className="flex justify-center">
+          <div className="w-48">
+            <LocationBox location="torso" />
+          </div>
+        </div>
+
+        {/* Bras 3 | Propulseur */}
+        <div className="grid grid-cols-2 gap-2">
+          <LocationBox location="legLeft" />
+          <LocationBox location="legRight" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {/* Head - centered */}
       <div className="flex justify-center">
         <div className="w-32">
-          <LocationBox location="head" label={t('bodyLocations.head')} />
+          <LocationBox location="head" />
         </div>
       </div>
 
       {/* Arms and Torso row */}
       <div className="grid grid-cols-3 gap-2">
-        <LocationBox location="armLeft" label={t('bodyLocations.armLeft')} />
-        <LocationBox location="torso" label={t('bodyLocations.torso')} />
-        <LocationBox location="armRight" label={t('bodyLocations.armRight')} />
+        <LocationBox location="armLeft" />
+        <LocationBox location="torso" />
+        <LocationBox location="armRight" />
       </div>
 
       {/* Legs row */}
       <div className="grid grid-cols-3 gap-2">
-        <LocationBox location="legLeft" label={t('bodyLocations.legLeft')} />
+        <LocationBox location="legLeft" />
         <div /> {/* Empty center */}
-        <LocationBox location="legRight" label={t('bodyLocations.legRight')} />
+        <LocationBox location="legRight" />
       </div>
     </div>
   );

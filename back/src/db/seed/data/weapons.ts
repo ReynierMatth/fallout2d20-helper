@@ -107,7 +107,7 @@ export const weapons: Weapon[] = [
     ammo: 'fusionCell', weight: 6.5, value: 57, rarity: 1,
   },
   {
-    name: 'Laser Gun', skill: 'energyWeapons',
+    name: 'Laser Pistol', skill: 'energyWeapons',
     damage: 4, damageType: 'energy', fireRate: 2, range: 'close',
     qualities: [{ quality: 'piercing', value: 1 }, { quality: 'closeQuarters' }],
     ammo: 'fusionCell', weight: 2, value: 69, rarity: 2,

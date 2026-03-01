@@ -1,0 +1,1 @@
+ALTER TABLE "tag_skill_bonus_items" ADD COLUMN "choice_group" integer;

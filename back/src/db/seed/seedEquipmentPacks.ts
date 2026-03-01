@@ -175,8 +175,11 @@ export async function seedTagSkillBonusItems() {
 
   let count = 0;
   for (const bonus of TAG_SKILL_BONUS_ITEMS) {
+    let choiceGroupCounter = 0;
     for (const entry of bonus.items) {
       if (isEquipmentChoice(entry)) {
+        choiceGroupCounter++;
+        const currentChoiceGroup = choiceGroupCounter;
         for (const option of entry.options) {
           const itemId = await getItemIdByNameAndCategory(option.itemName, option.category);
           if (itemId) {
@@ -185,6 +188,7 @@ export async function seedTagSkillBonusItems() {
               itemId,
               quantity: option.quantity ?? 1,
               quantityCD: option.quantityCD,
+              choiceGroup: currentChoiceGroup,
             });
             count++;
           } else {
