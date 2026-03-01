@@ -1,6 +1,8 @@
 export type ModSlot =
   | 'culasse' | 'canon' | 'chargeur' | 'poignee' | 'crosse' | 'viseur' | 'bouche'
   | 'condensateur' | 'parabole'
+  | 'carburant' | 'reservoir' | 'buse'
+  | 'lame'
   | 'material' | 'functionality'
   | 'improvement'
   | 'modification'
@@ -547,6 +549,44 @@ export const ENERGY_WEAPONS_MODS: ModEntry[] = [
     ],
   },
 
+  // ----- MODS DE CONDENSATEUR RÉSERVÉS AU MOUSQUET LASER -----
+  {
+    name: 'Condensateur à trois charges', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.troisCharges.nameAdd',
+    weightChange: 0, cost: 4,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.laserMusket3charges' },
+    ],
+  },
+  {
+    name: 'Condensateur à quatre charges', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.quatreCharges.nameAdd',
+    weightChange: 0.5, cost: 8, requiredPerk: 'science', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'special', descriptionKey: 'mods.effects.laserMusket4charges' },
+    ],
+  },
+  {
+    name: 'Condensateur à cinq charges', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.cinqCharges.nameAdd',
+    weightChange: 0.5, cost: 12, requiredPerk: 'science', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 3 },
+      { effectType: 'special', descriptionKey: 'mods.effects.laserMusket5charges' },
+    ],
+  },
+  {
+    name: 'Condensateur à six charges', slot: 'condensateur', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.condensateur.sixCharges.nameAdd',
+    weightChange: 1, cost: 16, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 4 },
+      { effectType: 'special', descriptionKey: 'mods.effects.laserMusket6charges' },
+    ],
+  },
+
   // ----- MODS DE PARABOLE (Pistolet Gamma uniquement) -----
   {
     name: 'Parabole à renfoncement', slot: 'parabole', applicableTo: 'energyWeapons',
@@ -581,8 +621,716 @@ export const ENERGY_WEAPONS_MODS: ModEntry[] = [
   },
 ];
 
+// ===== MODS DES ARMES LOURDES (Big Guns) =====
+// All big guns mods use the Réparation skill + optional perk to install.
+
+export const BIG_GUNS_MODS: ModEntry[] = [
+
+  // ===== MODS DU LANCE-FLAMMES =====
+
+  // ----- MOD DE CARBURANT -----
+  {
+    name: 'Réservoir à napalm', slot: 'carburant', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.carburant.reservoirNapalm.nameAdd',
+    weightChange: 3.5, cost: 59, requiredPerk: 'gunNut', requiredPerkRank: 1,
+    effects: [{ effectType: 'damageBonus', numericValue: 1 }],
+  },
+
+  // ----- MOD DE CANON -----
+  // "Canon long" pour le lance-flammes a des effets différents du Canon long armes légères
+  {
+    name: 'Canon long (lance-flammes)', slot: 'canon', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.canon.canonLong.nameAdd',
+    weightChange: 1, cost: 28, requiredPerk: 'gunNut', requiredPerkRank: 1,
+    effects: [{ effectType: 'loseQuality', qualityName: 'inaccurate' }],
+  },
+
+  // ----- MODS DE RÉSERVOIR À PROPERGOL -----
+  {
+    name: 'Grand réservoir', slot: 'reservoir', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.reservoir.grandReservoir.nameAdd',
+    weightChange: 1.5, cost: 28, requiredPerk: 'gunNut', requiredPerkRank: 1,
+    effects: [{ effectType: 'fireRateBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Réservoir géant', slot: 'reservoir', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.reservoir.reservoirGeant.nameAdd',
+    weightChange: 3, cost: 34, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [{ effectType: 'fireRateBonus', numericValue: 2 }],
+  },
+
+  // ----- MODS DE BUSE -----
+  {
+    name: 'Buse de compression', slot: 'buse', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.buse.buseCompression.nameAdd',
+    weightChange: 0, cost: 22, requiredPerk: 'gunNut', requiredPerkRank: 1,
+    effects: [{ effectType: 'damageBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Buse de vaporisation', slot: 'buse', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.buse.buseVaporisation.nameAdd',
+    weightChange: 0, cost: 47, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'vicious' },
+    ],
+  },
+
+  // ----- MODS DE CROSSE -----
+  // "Crosse à compensateur de recul" for big guns has different cost/effects than the smallGuns version
+  {
+    name: 'Crosse à compensateur de recul (lourd)', slot: 'crosse', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.crosse.crosseCompensateur.nameAdd',
+    weightChange: 1, cost: 40,
+    effects: [{ effectType: 'fireRateBonus', numericValue: 1 }],
+  },
+
+  // ----- MODS DE VISEUR -----
+  {
+    name: 'Viseur d\'Artilleur', slot: 'viseur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.viseur.viseurArtilleur.nameAdd',
+    weightChange: 0.5, cost: 5,
+    effects: [{ effectType: 'special', descriptionKey: 'mods.effects.rerollLocationDie' }],
+  },
+
+  // ----- MODS DE BOUCHE -----
+  {
+    name: 'Module d\'électrification', slot: 'bouche', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.bouche.moduleElectrification.nameAdd',
+    weightChange: 0.5, cost: 70, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'gainQuality', qualityName: 'vicious' },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+    ],
+  },
+  {
+    name: 'Module de combustion', slot: 'bouche', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.bouche.moduleCombustion.nameAdd',
+    weightChange: 0.5, cost: 130, requiredPerk: 'gunNut', requiredPerkRank: 3,
+    effects: [{ effectType: 'gainQuality', qualityName: 'persistent' }],
+  },
+
+  // ===== MODS DU LASER GATLING =====
+  // Ces mods s'installent avec la compétence Sciences.
+  // Leurs noms ressemblent aux mods d'armes à énergie mais stats distinctes → suffixe (Gatling)
+
+  // ----- MODS DE CONDENSATEUR -----
+  {
+    name: 'Stimulateur de photons (Gatling)', slot: 'condensateur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.energyWeapons.condensateur.stimulateurPhotons.nameAdd',
+    weightChange: 0.5, cost: 19, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [{ effectType: 'gainQuality', qualityName: 'vicious' }],
+  },
+  {
+    name: 'Amplificateur d\'ondes Bêta (Gatling)', slot: 'condensateur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.energyWeapons.condensateur.amplificateurOndes.nameAdd',
+    weightChange: 0.5, cost: 57,
+    effects: [{ effectType: 'gainQuality', qualityName: 'persistent' }],
+  },
+  {
+    name: 'Condensateur amélioré (Gatling)', slot: 'condensateur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.energyWeapons.condensateur.condensateurAmeliore.nameAdd',
+    weightChange: 0.5, cost: 94,
+    effects: [{ effectType: 'damageBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Agitateur de photons (Gatling)', slot: 'condensateur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.energyWeapons.condensateur.agitateurPhotons.nameAdd',
+    weightChange: 1.5, cost: 132, requiredPerk: 'science', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'vicious' },
+    ],
+  },
+
+  // ----- MOD DE CANON -----
+  {
+    name: 'Canons à chargement', slot: 'canon', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.canon.canonsChargement.nameAdd',
+    weightChange: 5, cost: 357, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 4 },
+      { effectType: 'fireRateBonus', numericValue: -3 },
+      { effectType: 'rangeChange', numericValue: 1 },
+    ],
+  },
+
+  // ----- MOD DE VISEUR -----
+  {
+    name: 'Viseur laser (Gatling)', slot: 'viseur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.smallGuns.viseur.viseurLaser.nameAdd',
+    weightChange: 0.5, cost: 169, requiredPerk: 'science', requiredPerkRank: 4,
+    effects: [{ effectType: 'loseQuality', qualityName: 'inaccurate' }],
+  },
+
+  // ----- MOD DE BUSE -----
+  {
+    name: 'Concentrateur de faisceau (Gatling)', slot: 'buse', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.energyWeapons.bouche.concentrateurFaisceau.nameAdd',
+    weightChange: 0, cost: 22,
+    effects: [
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+      { effectType: 'rangeChange', numericValue: 1 },
+    ],
+  },
+
+  // ===== MODS DU MINIGUN =====
+
+  // ----- MODS DE CANON -----
+  {
+    name: 'Canon grande vitesse', slot: 'canon', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.canon.canonGrandeVitesse.nameAdd',
+    weightChange: 2.5, cost: 45, requiredPerk: 'gunNut', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'fireRateBonus', numericValue: 1 },
+      { effectType: 'rangeChange', numericValue: -1 },
+    ],
+  },
+  {
+    // Distinct du "Triple canon" du Lance-missiles (effets différents)
+    name: 'Triple canon (minigun)', slot: 'canon', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.canon.tripleCanonMinigun.nameAdd',
+    weightChange: 1.5, cost: 75, requiredPerk: 'gunNut', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'fireRateBonus', numericValue: -2 },
+    ],
+  },
+
+  // ----- MOD DE VISEUR -----
+  {
+    // Distinct du "Viseur d'Artilleur" du Junk Jet (perd Imprécis vs relance dé de loc)
+    name: 'Viseur d\'Artilleur (minigun)', slot: 'viseur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.smallGuns.viseur.viseurLaser.nameAdd',
+    weightChange: 0.5, cost: 68,
+    effects: [{ effectType: 'loseQuality', qualityName: 'inaccurate' }],
+  },
+
+  // ----- MOD DE BOUCHE -----
+  {
+    name: 'Broyeur', slot: 'bouche', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.bouche.baionnette.nameAdd',
+    weightChange: 2.5, cost: 5, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [{ effectType: 'special', descriptionKey: 'mods.effects.minigunGrinder' }],
+  },
+
+  // ===== MODS DU LANCE-MISSILES =====
+
+  // ----- MODS DE CANON -----
+  {
+    name: 'Triple canon', slot: 'canon', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.canon.tripleCanon.nameAdd',
+    weightChange: 8, cost: 143, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [{ effectType: 'fireRateBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Quadruple canon', slot: 'canon', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.canon.quadrupleCanon.nameAdd',
+    weightChange: 10, cost: 218, requiredPerk: 'gunNut', requiredPerkRank: 3,
+    effects: [{ effectType: 'fireRateBonus', numericValue: 2 }],
+  },
+
+  // ----- MODS DE VISEUR -----
+  {
+    name: 'Lunette (lance-missiles)', slot: 'viseur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.viseur.lunette.nameAdd',
+    weightChange: 3, cost: 143, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [{ effectType: 'gainQuality', qualityName: 'accurate' }],
+  },
+  {
+    name: 'Lunette de vision nocturne (lance-missiles)', slot: 'viseur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.viseur.lunetteVisionNocturne.nameAdd',
+    weightChange: 3, cost: 248, requiredPerk: 'gunNut', requiredPerkRank: 4,
+    effects: [
+      { effectType: 'gainQuality', qualityName: 'accurate' },
+      { effectType: 'gainQuality', qualityName: 'nightVision' },
+    ],
+  },
+  {
+    name: 'Ordinateur de visée', slot: 'viseur', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.viseur.ordinateurVisee.nameAdd',
+    weightChange: 3.5, cost: 293, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [{ effectType: 'special', descriptionKey: 'mods.effects.aimingComputer' }],
+  },
+
+  // ----- MODS DE BOUCHE -----
+  {
+    // Différente de la Baïonnette armes légères (stats et effets distincts)
+    name: 'Baïonnette (lance-missiles)', slot: 'bouche', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.bouche.baionnette.nameAdd',
+    weightChange: 0.5, cost: 30,
+    effects: [{ effectType: 'special', descriptionKey: 'mods.effects.bayonetLauncher' }],
+  },
+  {
+    name: 'Stabilisateur', slot: 'bouche', applicableTo: 'bigGuns',
+    nameAddKey: 'mods.bigGuns.bouche.stabilisateur.nameAdd',
+    weightChange: 1, cost: 60, requiredPerk: 'gunNut', requiredPerkRank: 2,
+    effects: [{ effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 }],
+  },
+];
+
+// ===== MODS DES ARMES DE MÊLÉE (Melee Weapons) =====
+// All melee weapon mods use the Réparation skill + optional perk to install.
+
+export const MELEE_WEAPONS_MODS: ModEntry[] = [
+
+  // ===== MODS DE L'ÉPÉE =====
+  {
+    name: 'Lame dentelée (épée)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameDentelee.nameAdd',
+    weightChange: 0, cost: 25, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [{ effectType: 'gainQuality', qualityName: 'persistent' }],
+  },
+  {
+    name: 'Lame électrifiée', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameElectrifiee.nameAdd',
+    weightChange: 0, cost: 50, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+    ],
+  },
+  {
+    name: 'Lame dentelée électrifiée', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameDenteleeElectrifiee.nameAdd',
+    weightChange: 0, cost: 75, requiredPerk: 'blacksmith', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+  {
+    name: 'Module d\'étourdissement', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.moduleEtourdissement.nameAdd',
+    weightChange: 0, cost: 100, requiredPerk: 'blacksmith', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+      { effectType: 'gainQuality', qualityName: 'stun' },
+    ],
+  },
+
+  // ===== MODS DU COUTEAU DE COMBAT =====
+  {
+    // Distinct de la Lame dentelée (épée) — effets et coût différents
+    name: 'Lame dentelée (couteau)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameDentelee.nameAdd',
+    weightChange: 0, cost: 12, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+  {
+    name: 'Lame furtive', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameFurtive.nameAdd',
+    weightChange: 0, cost: 18, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+      { effectType: 'special', descriptionKey: 'mods.effects.stealthBonus2' },
+    ],
+  },
+
+  // ===== MODS DE LA MACHETTE =====
+  {
+    // Distinct des autres Lame dentelée — +2 dégâts, coût différent
+    name: 'Lame dentelée (machette)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameDentelee.nameAdd',
+    weightChange: 0, cost: 12, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DE L'ÉVENTREUR =====
+  {
+    name: 'Lame courbe', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameCourbe.nameAdd',
+    weightChange: 0.5, cost: 15,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.disarm2AP' },
+    ],
+  },
+  {
+    name: 'Lame rallongée', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameRallongee.nameAdd',
+    weightChange: 1.5, cost: 25, requiredPerk: 'blacksmith', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MOD DU FLAMBEUR =====
+  {
+    name: 'Jets de flammes supplémentaires', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.jetsFlammesSupplementaires.nameAdd',
+    weightChange: 0.5, cost: 100, requiredPerk: 'blacksmith', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MOD DU CRAN D'ARRÊT =====
+  {
+    // Distinct des autres Lame dentelée — coût 10, Forgeron 1
+    name: 'Lame dentelée (cran)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lameDentelee.nameAdd',
+    weightChange: 0, cost: 10, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DE LA BATTE DE BASEBALL =====
+  {
+    name: 'Barbelé', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.barbele.nameAdd',
+    weightChange: 0, cost: 5,
+    effects: [{ effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 }],
+  },
+  {
+    name: 'À pointes', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aPointes.nameAdd',
+    weightChange: 0.5, cost: 7,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Affûté', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.affute.nameAdd',
+    weightChange: 0.5, cost: 7,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+  {
+    name: 'À chaînes', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aChaines.nameAdd',
+    weightChange: 0.5, cost: 10, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [{ effectType: 'damageBonus', numericValue: 2 }],
+  },
+  {
+    name: 'À lames', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aLames.nameAdd',
+    weightChange: 1, cost: 12, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DE LA PLANCHE =====
+  {
+    name: 'À pointes (planche)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aPointes.nameAdd',
+    weightChange: 0.5, cost: 6,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Perforant', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.perforant.nameAdd',
+    weightChange: 0.5, cost: 9, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [{ effectType: 'damageBonus', numericValue: 2 }],
+  },
+  {
+    name: 'À lames (planche)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aLames.nameAdd',
+    weightChange: 1, cost: 10, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DU TUYAU DE PLOMB =====
+  {
+    name: 'À pointes (tuyau)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aPointes.nameAdd',
+    weightChange: 0.5, cost: 4,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Lourd', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lourd.nameAdd',
+    weightChange: 1, cost: 11, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [{ effectType: 'damageBonus', numericValue: 2 }],
+  },
+
+  // ===== MODS DE LA CLÉ SERRE-TUBE =====
+  {
+    name: 'À crochets', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aCrochets.nameAdd',
+    weightChange: 0, cost: 9,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.disarm2AP' },
+    ],
+  },
+  {
+    // Distinct de Lourd (tuyau) — poids +3,5, nameAdd "Alourdissement"
+    name: 'Lourd (clé)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.alourdissement.nameAdd',
+    weightChange: 3.5, cost: 12, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [{ effectType: 'damageBonus', numericValue: 2 }],
+  },
+  {
+    // Distinct de Perforant (planche) — ajoute aussi Perforant 1
+    name: 'Perforant (clé)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.perforant.nameAdd',
+    weightChange: 0.5, cost: 13, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    // nameAdd "Poids" — réutilise la clé de Lourd (tuyau)
+    name: 'Extralourd', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lourd.nameAdd',
+    weightChange: 1, cost: 22, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [{ effectType: 'damageBonus', numericValue: 3 }],
+  },
+
+  // ===== MODS DE LA QUEUE DE BILLARD =====
+  {
+    name: 'Barbelé (queue)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.barbele.nameAdd',
+    weightChange: 0, cost: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Affûté (queue)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.affute.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DU ROULEAU À PÂTISSERIE =====
+  {
+    name: 'À pointes (rouleau)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aPointes.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Affûté (rouleau)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.affute.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DE LA MATRAQUE =====
+  {
+    name: 'Électrifié', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.electrifie.nameAdd',
+    weightChange: 0, cost: 15, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+    ],
+  },
+  {
+    // nameAdd "KO" — distinct du Module d'étourdissement (épée)
+    name: 'Module d\'étourdissement (matraque)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.ko.nameAdd',
+    weightChange: 0, cost: 30, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 3 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+    ],
+  },
+
+  // ===== MODS DE LA MASSE =====
+  {
+    name: 'Perforant (masse)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.perforant.nameAdd',
+    weightChange: 2.5, cost: 18, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Lourd (masse)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.lourd.nameAdd',
+    weightChange: 4.5, cost: 30, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [{ effectType: 'damageBonus', numericValue: 2 }],
+  },
+
+  // ===== MODS DE LA SUPER MASSE =====
+  {
+    name: 'Bobine thermique', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.bobineThermique.nameAdd',
+    weightChange: 0, cost: 180, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+    ],
+  },
+  {
+    // Mêmes effets que Module d'étourdissement (épée) mais coût différent
+    name: 'Module d\'étourdissement (super masse)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.moduleEtourdissement.nameAdd',
+    weightChange: 0, cost: 360, requiredPerk: 'blacksmith', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'stun' },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+    ],
+  },
+
+  // ===== MOD DU DÉMONTE-PNEU =====
+  {
+    name: 'À lames (démonte-pneu)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aLames.nameAdd',
+    weightChange: 0.5, cost: 12, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DE LA CANNE =====
+  {
+    name: 'Barbelé (canne)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.barbele.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'À pointes (canne)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aPointes.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+
+  // ===== MODS DU GANT DE BOXE =====
+  {
+    // Pas de damageBonus — seulement Perforant 1
+    name: 'À pointes (gant)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.aPointes.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [{ effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 }],
+  },
+  {
+    name: 'Perforant (gant)', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.perforant.nameAdd',
+    weightChange: 0, cost: 4, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Revêtement en plomb', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.revetementPlomb.nameAdd',
+    weightChange: 0.5, cost: 7, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [{ effectType: 'damageBonus', numericValue: 2 }],
+  },
+
+  // ===== MOD DU GANTELET D'ÉCORCHEUR =====
+  {
+    name: 'Griffe supplémentaire', slot: 'lame', applicableTo: 'meleeWeapons',
+    nameAddKey: 'mods.meleeWeapons.lame.griffeSupplementaire.nameAdd',
+    weightChange: 1, cost: 22,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'special', descriptionKey: 'mods.effects.disarm2AP' },
+    ],
+  },
+
+  // ===== MODS DU POING AMÉRICAIN =====
+  {
+    name: 'Affûté (poing)', slot: 'lame', applicableTo: 'unarmed',
+    nameAddKey: 'mods.meleeWeapons.lame.affute.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [{ effectType: 'gainQuality', qualityName: 'persistent' }],
+  },
+  {
+    name: 'À pointes (poing)', slot: 'lame', applicableTo: 'unarmed',
+    nameAddKey: 'mods.meleeWeapons.lame.aPointes.nameAdd',
+    weightChange: 0, cost: 3,
+    effects: [{ effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 }],
+  },
+  {
+    name: 'Perforant (poing)', slot: 'lame', applicableTo: 'unarmed',
+    nameAddKey: 'mods.meleeWeapons.lame.perforant.nameAdd',
+    weightChange: 0, cost: 4, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'À lames (poing)', slot: 'lame', applicableTo: 'unarmed',
+    nameAddKey: 'mods.meleeWeapons.lame.aLames.nameAdd',
+    weightChange: 0, cost: 5, requiredPerk: 'blacksmith', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 1 },
+      { effectType: 'gainQuality', qualityName: 'persistent' },
+    ],
+  },
+
+  // ===== MODS DU POING ASSISTÉ =====
+  {
+    name: 'Perforant (poing assisté)', slot: 'lame', applicableTo: 'unarmed',
+    nameAddKey: 'mods.meleeWeapons.lame.perforant.nameAdd',
+    weightChange: 0.5, cost: 45, requiredPerk: 'blacksmith', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'gainQuality', qualityName: 'piercing', qualityValue: 1 },
+    ],
+  },
+  {
+    name: 'Bobine thermique (poing assisté)', slot: 'lame', applicableTo: 'unarmed',
+    nameAddKey: 'mods.meleeWeapons.lame.bobineThermique.nameAdd',
+    weightChange: 0, cost: 100, requiredPerk: 'blacksmith', requiredPerkRank: 3,
+    effects: [
+      { effectType: 'damageBonus', numericValue: 2 },
+      { effectType: 'special', descriptionKey: 'mods.effects.changeDamageTypeToEnergy' },
+    ],
+  },
+];
+
 // All mods combined (will grow as other categories are added)
 export const ALL_MODS: ModEntry[] = [
   ...SMALL_GUNS_MODS,
   ...ENERGY_WEAPONS_MODS,
+  ...BIG_GUNS_MODS,
+  ...MELEE_WEAPONS_MODS,
 ];

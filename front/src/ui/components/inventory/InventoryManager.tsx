@@ -60,9 +60,10 @@ function computeWeaponDisplayName(inv: InventoryItemApi, displayName: string, t:
 
   let baseName = displayName;
 
-  // If a stock ("crosse") mod is installed, try to find a renamed weapon name
-  const crosseMod = installedMods.find(m => m.slot === 'crosse');
-  if (crosseMod) {
+  // Some slots trigger a full weapon rename (crosse, carburant…) — check stockedNames
+  const RENAME_SLOTS = ['crosse', 'carburant'];
+  const renameMod = installedMods.find(m => RENAME_SLOTS.includes(m.slot));
+  if (renameMod) {
     const stocked = t(`items.stockedNames.${inv.item.name}`, { defaultValue: '' });
     if (stocked) baseName = stocked;
   }

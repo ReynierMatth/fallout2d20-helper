@@ -27,7 +27,7 @@ export default {
       // Big Guns
       'Fat Man': 'Fat Man',
       'Heavy Incinerator': 'Incinérateur lourd',
-      'Junk Jet': 'Lance-rebuts',
+      'Junk Jet': 'Junk Jet',
       'Flamer': 'Lance-flammes',
       'Missile Launcher': 'Lance-missiles',
       'Gatling Laser': 'Laser Gatling',
@@ -35,22 +35,24 @@ export default {
       // Melee Weapons
       'Unarmed Attack': 'Attaque à mains nues',
       'Rock': 'Pierre',
+      'Gun Bash (1H)': 'Coup de crosse (1 main)',
+      'Gun Bash (2H)': 'Coup de crosse à deux mains',
       'Sword': 'Épée',
       'Combat Knife': 'Couteau de combat',
       'Machete': 'Machette',
       'Ripper': 'Éventreur',
-      'Shishkebab': 'Shishkebab',
-      'Switchblade': 'Couteau à cran d\'arrêt',
+      'Shishkebab': 'Flambeur',
+      'Switchblade': 'Cran d\'arrêt',
       'Baseball Bat': 'Batte de baseball',
       'Aluminum Baseball Bat': 'Batte de baseball en aluminium',
       'Board': 'Planche',
       'Lead Pipe': 'Tuyau de plomb',
-      'Pipe Wrench': 'Clé à molette',
+      'Pipe Wrench': 'Clé serre-tube',
       'Pool Cue': 'Queue de billard',
       'Rolling Pin': 'Rouleau à pâtisserie',
       'Baton': 'Matraque',
       'Sledgehammer': 'Masse',
-      'Super Sledge': 'Super-masse',
+      'Super Sledge': 'Super masse',
       'Tire Iron': 'Démonte-pneu',
       'Walking Cane': 'Canne',
       // Unarmed
@@ -448,12 +450,14 @@ export default {
       'Robot Repair Kit': 'Kit de réparation pour robot',
       'Fertilizer Bag': 'Sac d\'engrais',
     },
-    // Noms des armes lorsqu'une crosse est installée (rename complet)
+    // Noms des armes lorsqu'un mod de rename est installé (crosse, carburant…)
     stockedNames: {
       'Institute Laser': 'Fusil de l\'Institut',
       'Laser Pistol': 'Fusil laser',
+      'Plasma Gun': 'Fusil plasma',
       'Pipe Gun': 'Fusil de fortune',
       'Pipe Revolver': 'Fusil revolver de fortune',
+      'Flamer': 'Lance-napalm',
     },
     magazines: {
       'Duck and Cover!': 'À couvert !',

@@ -270,9 +270,182 @@ export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
       'Lunette de reconnaissance',
     ],
   },
+  {
+    // Arme laser (pistolet par défaut) → mod crosse renomme en "Fusil laser"
+    weaponName: 'Laser Pistol',
+    modNames: [
+      // Condensateur
+      'Stimulateur de photons', 'Amplificateur d\'ondes Bêta',
+      'Condensateur amélioré', 'Agitateur de photons',
+      // Canon
+      'Canon long', 'Canon automatique', 'Canon de précision', 'Canon amélioré',
+      // Poignée
+      'Poignée de tireur d\'élite',
+      // Crosse → rename en "Fusil laser"
+      'Crosse standard', 'Crosse de tireur d\'élite', 'Crosse à compensateur de recul',
+      // Viseur
+      'Viseur laser', 'Lunette courte', 'Lunette longue',
+      'Lunette de vision nocturne courte', 'Lunette de vision nocturne longue',
+      'Lunette de reconnaissance',
+      // Bouche
+      'Diviseur de rayon', 'Concentrateur de faisceau', 'Lentille à gyrocompensation',
+    ],
+  },
+  {
+    // Arme plasma (pistolet par défaut) → mod crosse renomme en "Fusil plasma"
+    weaponName: 'Plasma Gun',
+    modNames: [
+      // Condensateur
+      'Stimulateur de photons', 'Amplificateur d\'ondes Bêta',
+      'Condensateur amélioré', 'Agitateur de photons',
+      // Canon
+      'Diviseur', 'Canon automatique', 'Canon de précision',
+      'Canon lance-flammes', 'Canon amélioré',
+      // Crosse → rename en "Fusil plasma"
+      'Crosse standard', 'Crosse de tireur d\'élite', 'Crosse à compensateur de recul',
+      // Viseur
+      'Viseur laser', 'Lunette courte', 'Lunette longue',
+      'Lunette de vision nocturne courte', 'Lunette de vision nocturne longue',
+      'Lunette de reconnaissance',
+    ],
+  },
+  {
+    // Pistolet Gamma — tous les mods lui sont réservés
+    weaponName: 'Gamma Gun',
+    modNames: [
+      // Parabole
+      'Parabole à renfoncement',
+      // Bouche
+      'Antenne de transmission électrique', 'Répéteur de signal',
+    ],
+  },
+  {
+    // Mousquet laser — condensateurs spécifiques + mods partagés
+    weaponName: 'Laser Musket',
+    modNames: [
+      // Condensateur (exclusifs au mousquet laser)
+      'Condensateur à trois charges', 'Condensateur à quatre charges',
+      'Condensateur à cinq charges', 'Condensateur à six charges',
+      // Canon
+      'Canon long', 'Canon court à fixation', 'Canon long à fixation',
+      // Crosse
+      'Crosse complète (énergie)',
+      // Viseur
+      'Viseur laser', 'Lunette courte', 'Lunette longue',
+      'Lunette de vision nocturne courte', 'Lunette de vision nocturne longue',
+      'Lunette de reconnaissance',
+      // Bouche
+      'Diviseur de rayon', 'Concentrateur de faisceau', 'Lentille à gyrocompensation',
+    ],
+  },
+];
+
+export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
+  {
+    // Lance-flammes
+    weaponName: 'Flamer',
+    modNames: [
+      // Carburant
+      'Réservoir à napalm',
+      // Canon (version spécifique lance-flammes)
+      'Canon long (lance-flammes)',
+      // Réservoir à propergol
+      'Grand réservoir', 'Réservoir géant',
+      // Buse
+      'Buse de compression', 'Buse de vaporisation',
+    ],
+  },
+  {
+    // Minigun
+    weaponName: 'Minigun',
+    modNames: [
+      // Canon
+      'Canon grande vitesse', 'Triple canon (minigun)',
+      // Viseur
+      'Viseur d\'Artilleur (minigun)',
+      // Bouche
+      'Broyeur',
+    ],
+  },
+  {
+    // Laser Gatling
+    weaponName: 'Gatling Laser',
+    modNames: [
+      // Condensateur
+      'Stimulateur de photons (Gatling)', 'Amplificateur d\'ondes Bêta (Gatling)',
+      'Condensateur amélioré (Gatling)', 'Agitateur de photons (Gatling)',
+      // Canon
+      'Canons à chargement',
+      // Viseur
+      'Viseur laser (Gatling)',
+      // Buse
+      'Concentrateur de faisceau (Gatling)',
+    ],
+  },
+  {
+    // Lance-missiles
+    weaponName: 'Missile Launcher',
+    modNames: [
+      // Canon
+      'Triple canon', 'Quadruple canon',
+      // Viseur
+      'Lunette (lance-missiles)', 'Lunette de vision nocturne (lance-missiles)',
+      'Ordinateur de visée',
+      // Bouche
+      'Baïonnette (lance-missiles)', 'Stabilisateur',
+    ],
+  },
+  {
+    // Junk Jet — mods de bouche exclusifs + crosse/canon/viseur propres
+    weaponName: 'Junk Jet',
+    modNames: [
+      // Canon (réutilise le Canon long des armes légères — mêmes stats)
+      'Canon long',
+      // Crosse (version arme lourde, stats différentes)
+      'Crosse à compensateur de recul (lourd)',
+      // Viseur
+      'Viseur d\'Artilleur',
+      // Bouche
+      'Module d\'électrification', 'Module de combustion',
+    ],
+  },
+];
+
+export const MELEE_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
+  { weaponName: 'Sword', modNames: ['Lame dentelée (épée)', 'Lame électrifiée', 'Lame dentelée électrifiée', 'Module d\'étourdissement'] },
+  { weaponName: 'Combat Knife', modNames: ['Lame dentelée (couteau)', 'Lame furtive'] },
+  { weaponName: 'Machete', modNames: ['Lame dentelée (machette)'] },
+  { weaponName: 'Ripper', modNames: ['Lame courbe', 'Lame rallongée'] },
+  { weaponName: 'Shishkebab', modNames: ['Jets de flammes supplémentaires'] },
+  { weaponName: 'Switchblade', modNames: ['Lame dentelée (cran)'] },
+  {
+    weaponName: 'Baseball Bat',
+    modNames: ['Barbelé', 'À pointes', 'Affûté', 'À chaînes', 'À lames'],
+  },
+  {
+    weaponName: 'Aluminum Baseball Bat',
+    modNames: ['Barbelé', 'À pointes', 'Affûté', 'À chaînes', 'À lames'],
+  },
+  { weaponName: 'Board', modNames: ['À pointes (planche)', 'Perforant', 'À lames (planche)'] },
+  { weaponName: 'Lead Pipe', modNames: ['À pointes (tuyau)', 'Lourd'] },
+  { weaponName: 'Pipe Wrench', modNames: ['À crochets', 'Lourd (clé)', 'Perforant (clé)', 'Extralourd'] },
+  { weaponName: 'Pool Cue', modNames: ['Barbelé (queue)', 'Affûté (queue)'] },
+  { weaponName: 'Rolling Pin', modNames: ['À pointes (rouleau)', 'Affûté (rouleau)'] },
+  { weaponName: 'Baton', modNames: ['Électrifié', 'Module d\'étourdissement (matraque)'] },
+  { weaponName: 'Sledgehammer', modNames: ['Perforant (masse)', 'Lourd (masse)'] },
+  { weaponName: 'Super Sledge', modNames: ['Bobine thermique', 'Module d\'étourdissement (super masse)'] },
+  { weaponName: 'Tire Iron', modNames: ['À lames (démonte-pneu)'] },
+  { weaponName: 'Walking Cane', modNames: ['Barbelé (canne)', 'À pointes (canne)'] },
+  { weaponName: 'Boxing Glove', modNames: ['À pointes (gant)', 'Perforant (gant)', 'Revêtement en plomb'] },
+  { weaponName: 'Deathclaw Gauntlet', modNames: ['Griffe supplémentaire'] },
+  { weaponName: 'Knuckles', modNames: ['Affûté (poing)', 'À pointes (poing)', 'Perforant (poing)', 'À lames (poing)'] },
+  { weaponName: 'Power Fist', modNames: ['Perforant (poing assisté)', 'Bobine thermique (poing assisté)'] },
 ];
 
 export const ALL_WEAPON_MOD_COMPATIBILITY: WeaponModCompatibility[] = [
   ...SMALL_GUNS_COMPATIBILITY,
   ...ENERGY_WEAPONS_COMPATIBILITY,
+  ...BIG_GUNS_COMPATIBILITY,
+  ...MELEE_WEAPONS_COMPATIBILITY,
 ];
+
