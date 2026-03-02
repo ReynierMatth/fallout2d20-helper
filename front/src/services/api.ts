@@ -693,6 +693,17 @@ export const equipmentPacksApi = {
 export type SessionStatus = 'active' | 'paused' | 'completed';
 export type CombatantStatus = 'active' | 'unconscious' | 'dead' | 'fled';
 
+export interface SessionEquippedWeapon {
+  itemId: number;
+  name: string;
+  nameKey?: string;
+  skill: string;
+  damage: number;
+  damageType: string;
+  fireRate: number;
+  range: string;
+}
+
 export interface SessionParticipantCharacter {
   id: number;
   name: string;
@@ -707,7 +718,9 @@ export interface SessionParticipantCharacter {
   maxLuckPoints: number;
   currentLuckPoints: number;
   special: Record<string, number>;
+  skills: Record<string, number>;
   conditions: string[];
+  equippedWeapons: SessionEquippedWeapon[];
 }
 
 export interface SessionParticipantApi {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, Loader2, Check } from 'lucide-react';
 import { getRarityColor, formatCaps, formatWeight } from '../generators/utils';
+import { SelectCharacterModal } from './SelectCharacterModal';
 
 export interface TableItem {
   name: string;
@@ -63,13 +64,14 @@ function getCategoryKey(category: string): string {
 
 export function ItemTable({ items, showCategory = true, onItemClick, pcs, onAddToCharacter }: ItemTableProps) {
   const { t } = useTranslation();
-  const [openRow, setOpenRow] = useState<string | null>(null);
+  const [modalItem, setModalItem] = useState<{ item: TableItem; rowKey: string } | null>(null);
   const [loadingRow, setLoadingRow] = useState<string | null>(null);
   const [successRow, setSuccessRow] = useState<string | null>(null);
 
-  const handleAddToCharacter = async (characterId: string, item: TableItem, rowKey: string) => {
-    if (!onAddToCharacter) return;
-    setOpenRow(null);
+  const handleAddToCharacter = async (characterId: string) => {
+    if (!onAddToCharacter || !modalItem) return;
+    const { item, rowKey } = modalItem;
+    setModalItem(null);
     setLoadingRow(rowKey);
     try {
       await onAddToCharacter(characterId, item);
@@ -122,7 +124,7 @@ export function ItemTable({ items, showCategory = true, onItemClick, pcs, onAddT
                   <th className="pb-2 font-medium text-right">{t('common.labels.value')}</th>
                   <th className="pb-2 font-medium text-right hidden sm:table-cell">{t('common.labels.weight')}</th>
                   <th className="pb-2 font-medium text-right hidden md:table-cell">{t('common.labels.rarity')}</th>
-                  {showInventoryColumn && <th className="pb-2 w-8" />}
+                  {showInventoryColumn && <th className="pb-2 w-10" />}
                 </tr>
               </thead>
               <tbody>
@@ -152,29 +154,16 @@ export function ItemTable({ items, showCategory = true, onItemClick, pcs, onAddT
                       {showInventoryColumn && (
                         <td className="py-2 pl-2 text-right" onClick={e => e.stopPropagation()}>
                           {successRow === rowKey ? (
-                            <Check size={14} className="text-green-400 inline" />
+                            <Check size={18} className="text-green-400 inline" />
                           ) : loadingRow === rowKey ? (
-                            <Loader2 size={14} className="animate-spin text-vault-yellow inline" />
-                          ) : openRow === rowKey ? (
-                            <select
-                              autoFocus
-                              defaultValue=""
-                              onChange={e => e.target.value && handleAddToCharacter(e.target.value, item, rowKey)}
-                              onBlur={() => setOpenRow(null)}
-                              className="bg-vault-blue border border-vault-yellow text-vault-yellow text-xs rounded px-1 py-0.5 max-w-[120px]"
-                            >
-                              <option value="" disabled>{t('common.selectPc')}</option>
-                              {pcs!.map(pc => (
-                                <option key={pc.id} value={pc.id}>{pc.name}</option>
-                              ))}
-                            </select>
+                            <Loader2 size={18} className="animate-spin text-vault-yellow inline" />
                           ) : (
                             <button
-                              onClick={() => setOpenRow(rowKey)}
-                              className="text-vault-yellow-dark hover:text-vault-yellow transition-colors"
+                              onClick={() => setModalItem({ item, rowKey })}
+                              className="text-vault-yellow-dark hover:text-vault-yellow transition-colors p-1"
                               title={t('common.addToInventory')}
                             >
-                              <UserPlus size={14} />
+                              <UserPlus size={18} />
                             </button>
                           )}
                         </td>
@@ -187,6 +176,17 @@ export function ItemTable({ items, showCategory = true, onItemClick, pcs, onAddT
           </div>
         </div>
       ))}
+
+      {/* Character selection modal */}
+      {showInventoryColumn && (
+        <SelectCharacterModal
+          isOpen={!!modalItem}
+          onClose={() => setModalItem(null)}
+          onSelect={handleAddToCharacter}
+          pcs={pcs!}
+          itemName={modalItem ? getItemName(modalItem.item) : undefined}
+        />
+      )}
     </div>
   );
 }

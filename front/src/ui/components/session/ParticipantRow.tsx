@@ -1,13 +1,18 @@
-import { Skull, AlertCircle, LogOut, Eye, Trash2, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Skull, AlertCircle, LogOut, Eye, Trash2, Sparkles, ChevronDown, ChevronRight, Crosshair } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { SessionParticipantApi, CombatantStatus } from '../../../services/api';
 import { HPBar } from '../character/HPBar';
 import { OriginIcon } from '../character/OriginIcon';
+import { ItemDetailModal } from '../../../components/ItemDetailModal';
+import { SKILL_ATTRIBUTES } from '../../../domain/rules/skillRules';
 
 interface ParticipantRowProps {
   participant: SessionParticipantApi;
   isActive?: boolean;
   showCombatControls?: boolean;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
   onDamage?: (amount: number) => void;
   onHeal?: (amount: number) => void;
   onRadiation?: (amount: number) => void;
@@ -23,6 +28,8 @@ export function ParticipantRow({
   participant,
   isActive = false,
   showCombatControls = false,
+  collapsed = false,
+  onToggleCollapse,
   onDamage,
   onHeal,
   onRadiation,
@@ -34,6 +41,7 @@ export function ParticipantRow({
   className = '',
 }: ParticipantRowProps) {
   const { t } = useTranslation();
+  const [selectedWeaponId, setSelectedWeaponId] = useState<number | null>(null);
 
   const { character, combatStatus, turnOrder } = participant;
 
@@ -66,7 +74,17 @@ export function ParticipantRow({
       } ${statusColors[combatStatus]} ${className}`}
     >
       {/* Header row */}
-      <div className="flex items-center gap-3 p-3">
+      <div
+        className={`flex items-center gap-3 p-3 ${onToggleCollapse && !isActive ? 'cursor-pointer' : ''}`}
+        onClick={() => !isActive && onToggleCollapse?.()}
+      >
+        {/* Collapse chevron (in combat, not for active) */}
+        {showCombatControls && onToggleCollapse && (
+          <div className="flex-shrink-0 text-vault-yellow-dark">
+            {collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+          </div>
+        )}
+
         {/* Turn order (in combat) */}
         {showCombatControls && turnOrder !== null && (
           <div className="w-8 h-8 flex items-center justify-center rounded-full bg-vault-blue border border-vault-yellow-dark">
@@ -146,7 +164,7 @@ export function ParticipantRow({
         {onViewSheet && (
           <button
             type="button"
-            onClick={onViewSheet}
+            onClick={(e) => { e.stopPropagation(); onViewSheet(); }}
             className="p-2 text-vault-yellow-dark hover:text-vault-yellow active:text-vault-yellow transition-colors cursor-pointer"
             title={t('sessions.participants.viewSheet')}
           >
@@ -155,8 +173,55 @@ export function ParticipantRow({
         )}
       </div>
 
+      {/* Equipped weapons with TN (visible when expanded) */}
+      {isActive && character.equippedWeapons?.length > 0 && (
+        <div className="px-3 pb-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-gray-700 pt-2">
+          {character.equippedWeapons.map((weapon) => {
+            const skillKey = weapon.skill as keyof typeof SKILL_ATTRIBUTES;
+            const attribute = SKILL_ATTRIBUTES[skillKey];
+            const tn = attribute
+              ? (character.special?.[attribute] ?? 0) + (character.skills?.[skillKey] ?? 0)
+              : 0;
+            // Translate weapon name: try nameKey, then items.weapons.Name, then items.Name
+            let weaponName = weapon.name;
+            if (weapon.nameKey) {
+              const tr = t(weapon.nameKey);
+              if (tr !== weapon.nameKey) weaponName = tr;
+            }
+            if (weaponName === weapon.name) {
+              const tr = t(`items.weapons.${weapon.name}`);
+              if (tr !== `items.weapons.${weapon.name}`) weaponName = tr;
+            }
+            if (weaponName === weapon.name) {
+              const tr = t(`items.${weapon.name}`);
+              if (tr !== `items.${weapon.name}`) weaponName = tr;
+            }
+            return (
+              <div key={weapon.name} className="flex items-center gap-2 text-xs">
+                <Crosshair size={12} className="text-vault-yellow-dark flex-shrink-0" />
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setSelectedWeaponId(weapon.itemId); }}
+                  className="text-white hover:text-vault-yellow underline decoration-dotted cursor-pointer"
+                >
+                  {weaponName}
+                </button>
+                <span className="text-vault-yellow font-bold">TN {tn}</span>
+                <span className="text-gray-400">
+                  {weapon.damage}
+                  <span className="text-[10px] ml-0.5">
+                    {t(`damageTypes.${weapon.damageType}`)}
+                  </span>
+                </span>
+                <span className="text-gray-500">{t(`ranges.${weapon.range}`)}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Controls row - larger touch targets for tablet */}
-      <div className="px-3 pb-3 flex flex-wrap items-center gap-3 border-t border-gray-700 pt-3">
+      {!collapsed && <div className="px-3 pb-3 flex flex-wrap items-center gap-3 border-t border-gray-700 pt-3">
         {/* HP Controls */}
         {(onDamage || onHeal) && combatStatus !== 'dead' && (
           <div className="flex items-center gap-2">
@@ -284,7 +349,15 @@ export function ParticipantRow({
             {t('common.remove')}
           </button>
         )}
-      </div>
+      </div>}
+
+      {/* Weapon detail modal */}
+      <ItemDetailModal
+        isOpen={selectedWeaponId !== null}
+        onClose={() => setSelectedWeaponId(null)}
+        itemId={selectedWeaponId}
+        itemType="weapon"
+      />
     </div>
   );
 }

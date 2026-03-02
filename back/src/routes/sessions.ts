@@ -9,6 +9,9 @@ import {
   characterSkills,
   characterTagSkills,
   characterConditions,
+  characterInventory,
+  items,
+  weapons,
 } from '../db/schema/index';
 
 const router = Router();
@@ -58,6 +61,34 @@ async function getParticipantWithCharacter(participantId: number) {
     special[row.attribute] = row.value;
   }
 
+  // Get skills
+  const skillRows = await db
+    .select({ skill: characterSkills.skill, rank: characterSkills.rank })
+    .from(characterSkills)
+    .where(eq(characterSkills.characterId, participant.characterId));
+
+  const skills: Record<string, number> = {};
+  for (const row of skillRows) {
+    skills[row.skill] = row.rank;
+  }
+
+  // Get all weapons in inventory
+  const equippedWeaponRows = await db
+    .select({
+      itemId: items.id,
+      name: items.name,
+      nameKey: items.nameKey,
+      skill: weapons.skill,
+      damage: weapons.damage,
+      damageType: weapons.damageType,
+      fireRate: weapons.fireRate,
+      range: weapons.range,
+    })
+    .from(characterInventory)
+    .innerJoin(items, eq(characterInventory.itemId, items.id))
+    .innerJoin(weapons, eq(items.id, weapons.itemId))
+    .where(eq(characterInventory.characterId, participant.characterId));
+
   return {
     id: participant.id,
     sessionId: participant.sessionId,
@@ -78,7 +109,9 @@ async function getParticipantWithCharacter(participantId: number) {
       maxLuckPoints: participant.maxLuckPoints,
       currentLuckPoints: participant.currentLuckPoints,
       special,
+      skills,
       conditions: conditions.map(c => c.condition),
+      equippedWeapons: equippedWeaponRows,
     },
   };
 }
@@ -112,12 +145,15 @@ async function getFullSession(sessionId: number) {
     .innerJoin(characters, eq(sessionParticipants.characterId, characters.id))
     .where(eq(sessionParticipants.sessionId, sessionId));
 
-  // Get conditions and SPECIAL for all characters in this session
+  // Get conditions, SPECIAL, skills, and equipped weapons for all characters
   const characterIds = participantRows.map(p => p.characterId);
 
-  // Fetch all conditions for all characters
   const conditionsByCharacter: Record<number, string[]> = {};
   const specialByCharacter: Record<number, Record<string, number>> = {};
+  const skillsByCharacter: Record<number, Record<string, number>> = {};
+  const equippedWeaponsByCharacter: Record<number, Array<{
+    name: string; skill: string; damage: number; damageType: string; fireRate: number; range: string;
+  }>> = {};
 
   for (const charId of characterIds) {
     // Conditions
@@ -136,6 +172,31 @@ async function getFullSession(sessionId: number) {
     for (const row of specialRows) {
       specialByCharacter[charId][row.attribute] = row.value;
     }
+
+    // Skills
+    const skillRows = await db
+      .select({ skill: characterSkills.skill, rank: characterSkills.rank })
+      .from(characterSkills)
+      .where(eq(characterSkills.characterId, charId));
+    skillsByCharacter[charId] = {};
+    for (const row of skillRows) {
+      skillsByCharacter[charId][row.skill] = row.rank;
+    }
+
+    // All weapons in inventory
+    equippedWeaponsByCharacter[charId] = await db
+      .select({
+        name: items.name,
+        skill: weapons.skill,
+        damage: weapons.damage,
+        damageType: weapons.damageType,
+        fireRate: weapons.fireRate,
+        range: weapons.range,
+      })
+      .from(characterInventory)
+      .innerJoin(items, eq(characterInventory.itemId, items.id))
+      .innerJoin(weapons, eq(items.id, weapons.itemId))
+      .where(eq(characterInventory.characterId, charId));
   }
 
   const participants = participantRows.map(p => ({
@@ -158,7 +219,9 @@ async function getFullSession(sessionId: number) {
       maxLuckPoints: p.maxLuckPoints,
       currentLuckPoints: p.currentLuckPoints,
       special: specialByCharacter[p.characterId] || {},
+      skills: skillsByCharacter[p.characterId] || {},
       conditions: conditionsByCharacter[p.characterId] || [],
+      equippedWeapons: equippedWeaponsByCharacter[p.characterId] || [],
     },
   }));
 

@@ -296,10 +296,10 @@ export function InventoryManager({
         <button
           type="button"
           onClick={() => setIsItemSelectorOpen(true)}
-          className="flex-shrink-0 p-2 bg-vault-yellow text-vault-blue rounded hover:bg-vault-yellow-dark transition-colors"
+          className="flex-shrink-0 p-3 bg-vault-yellow text-vault-blue rounded hover:bg-vault-yellow-dark transition-colors"
           title={t('inventory.addItem')}
         >
-          <Plus size={20} />
+          <Plus size={24} />
         </button>
       </div>
 
@@ -444,18 +444,18 @@ export function InventoryManager({
                             type="button"
                             onClick={() => handleQuantityChange(inv, -1)}
                             disabled={inv.quantity <= 1 || isLoading}
-                            className="p-1 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-50"
+                            className="p-1.5 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-50"
                           >
-                            <Minus size={12} />
+                            <Minus size={14} />
                           </button>
                           <span className="w-8 text-center text-sm font-mono">{inv.quantity}</span>
                           <button
                             type="button"
                             onClick={() => handleQuantityChange(inv, 1)}
                             disabled={isLoading}
-                            className="p-1 bg-gray-700 rounded hover:bg-gray-600"
+                            className="p-1.5 bg-gray-700 rounded hover:bg-gray-600"
                           >
-                            <Plus size={12} />
+                            <Plus size={14} />
                           </button>
                         </div>
 
@@ -469,7 +469,7 @@ export function InventoryManager({
                                 }
                               }}
                               disabled={isLoading}
-                              className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-xs text-white"
+                              className="px-3 py-1.5 bg-gray-700 border border-gray-600 rounded text-sm text-white"
                               defaultValue=""
                             >
                               <option value="" disabled>{t('inventory.equip')}</option>
@@ -482,7 +482,7 @@ export function InventoryManager({
                               type="button"
                               onClick={() => handleToggleEquip(inv)}
                               disabled={isLoading}
-                              className={`px-2 py-1 text-xs rounded ${
+                              className={`px-3 py-1.5 text-sm rounded ${
                                 inv.equipped
                                   ? 'bg-vault-yellow text-vault-blue'
                                   : 'bg-gray-700 text-white hover:bg-gray-600'
@@ -499,10 +499,10 @@ export function InventoryManager({
                             type="button"
                             onClick={() => setModPanelOpenFor(isModPanelOpen ? null : inv.id)}
                             disabled={isLoading}
-                            className={`p-1 rounded ${isModPanelOpen ? 'text-vault-yellow bg-vault-blue' : 'text-gray-400 hover:bg-gray-700'}`}
+                            className={`p-1.5 rounded ${isModPanelOpen ? 'text-vault-yellow bg-vault-blue' : 'text-gray-400 hover:bg-gray-700'}`}
                             title={t('mods.installMod')}
                           >
-                            <Settings size={14} />
+                            <Settings size={16} />
                           </button>
                         )}
 
@@ -511,10 +511,10 @@ export function InventoryManager({
                           type="button"
                           onClick={() => handleRemove(inv)}
                           disabled={isLoading}
-                          className="p-1 text-red-400 hover:bg-red-900/30 rounded"
+                          className="p-1.5 text-red-400 hover:bg-red-900/30 rounded"
                           title={t('inventory.removeItem')}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={16} />
                         </button>
                         </div>{/* end flex row */}
 
