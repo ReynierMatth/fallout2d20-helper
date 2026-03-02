@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Package, Store, Dice6, Home, Book, Users, Calendar, Menu } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { MobileNav } from './MobileNav';
-import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { LanguageSwitcher } from '../components/shared/LanguageSwitcher';
 
 interface AppShellProps {
   children: React.ReactNode;

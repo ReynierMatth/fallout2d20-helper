@@ -46,10 +46,10 @@ const AMMO_TYPE_TO_NAME: Record<string, string> = {
 };
 
 import { Button } from './Button';
-import { SpecialInput } from './SpecialInput';
+import { SpecialInput } from '../ui/components/character/SpecialInput';
 import { ItemDetailModal } from './ItemDetailModal';
-import { StepWizard, type WizardStep } from './StepWizard';
-import { StepIndicator } from './StepIndicator';
+import { StepWizard, type WizardStep } from '../ui/components/shared/StepWizard';
+import { StepIndicator } from '../ui/components/shared/StepIndicator';
 
 interface CharacterFormProps {
   character?: Character;

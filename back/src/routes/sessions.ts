@@ -186,7 +186,9 @@ async function getFullSession(sessionId: number) {
     // All weapons in inventory
     equippedWeaponsByCharacter[charId] = await db
       .select({
+        itemId: items.id,
         name: items.name,
+        nameKey: items.nameKey,
         skill: weapons.skill,
         damage: weapons.damage,
         damageType: weapons.damageType,

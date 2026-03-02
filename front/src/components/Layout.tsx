@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Package, Store, Dice6, Home, Menu, X, Book, Users, Calendar } from 'lucide-react';
 import { useState } from 'react';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import { LanguageSwitcher } from '../ui/components/shared/LanguageSwitcher';
 
 interface LayoutProps {
   children: React.ReactNode;

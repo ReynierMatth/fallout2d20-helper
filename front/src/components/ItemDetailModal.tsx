@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { Modal } from './Modal';
 import { getRarityColor } from '../generators/utils';
 import { itemsApi, type ItemType, type ItemEffect, type WeaponApi, type ArmorApi, type PowerArmorApi, type ClothingApi, type ChemApi, type FoodApi, type AmmunitionApi, type GeneralGoodApi, type RobotArmorApi, type SyringerAmmoApi, type MagazineApi, type DiseaseApi, type PerkApi, type ModApi, type ModCompatibleItem } from '../services/api';
-import { EffectDisplay } from './EffectDisplay';
+import { EffectDisplay } from '../ui/components/shared/EffectDisplay';
 
 type AnyItemApi = WeaponApi | ArmorApi | PowerArmorApi | RobotArmorApi | ClothingApi | AmmunitionApi | SyringerAmmoApi | ChemApi | FoodApi | GeneralGoodApi | MagazineApi | ModApi;
 
