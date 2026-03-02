@@ -554,40 +554,27 @@ function GeneralGoodDetails({ item }: { item: GeneralGoodApi }) {
 
 function MagazineDetails({ item }: { item: MagazineApi }) {
   const { t } = useTranslation();
+  const issue = item.issues?.[0];
 
   return (
     <div className="space-y-3">
-      {/* Perk description */}
+      {/* d20 range badge (for individual issue items) */}
+      {issue && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-vault-yellow-dark">d20 :</span>
+          <span className="inline-flex items-center justify-center bg-vault-yellow text-vault-gray font-bold rounded px-2 py-0.5 min-w-[2.5rem] text-xs">
+            {issue.d20Min === issue.d20Max
+              ? issue.d20Min
+              : `${issue.d20Min}-${issue.d20Max}`}
+          </span>
+        </div>
+      )}
+
+      {/* Perk/effect description */}
       {item.perkDescriptionKey && (
         <div className="text-sm">
           <h4 className="text-vault-yellow font-bold mb-1">{t('itemDetail.perkBonus')}</h4>
           <p className="text-gray-300">{t(item.perkDescriptionKey)}</p>
-        </div>
-      )}
-
-      {/* Issues as cards */}
-      {item.issues && item.issues.length > 0 && (
-        <div>
-          <h4 className="text-vault-yellow font-bold text-sm mb-2">{t('itemDetail.issues')}</h4>
-          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-            {item.issues.map((issue, i) => (
-              <div key={i} className="bg-vault-gray-light/20 rounded-lg px-3 py-2 border border-vault-gray-light/30">
-                <div className="flex items-start gap-2">
-                  <span className="inline-flex items-center justify-center bg-vault-yellow text-vault-gray font-bold rounded px-2 py-0.5 min-w-[2.5rem] text-xs shrink-0 mt-0.5">
-                    {issue.d20Min === issue.d20Max
-                      ? issue.d20Min
-                      : `${issue.d20Min}-${issue.d20Max}`}
-                  </span>
-                  <div className="min-w-0">
-                    <span className="text-white text-sm font-medium">
-                      {issue.issueNameKey ? t(issue.issueNameKey, { defaultValue: issue.issueName }) : issue.issueName}
-                    </span>
-                    <p className="text-gray-400 text-xs mt-0.5">{t(issue.effectDescriptionKey)}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>

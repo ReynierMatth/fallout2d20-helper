@@ -1,5 +1,5 @@
 import { db } from '../index';
-import { sql, inArray } from 'drizzle-orm';
+import { sql, inArray, eq } from 'drizzle-orm';
 import {
   items,
   weapons,
@@ -20,6 +20,7 @@ import {
   magazineIssues,
   diseases,
   personalTrinkets,
+  characterInventory,
 } from '../schema/index';
 
 // Import data from local seed data
@@ -705,25 +706,30 @@ export async function seedPersonalTrinkets() {
 export async function seedMagazines() {
   console.log('Seeding magazines...');
 
+  // Clean up old magazine items (series-level items from previous seed format)
+  // character_inventory.item_id has no ON DELETE CASCADE, so clean it first
+  const oldMagazineItems = await db
+    .select({ id: items.id })
+    .from(items)
+    .where(eq(items.itemType, 'magazine'));
+  if (oldMagazineItems.length > 0) {
+    const oldIds = oldMagazineItems.map(i => i.id);
+    await db.delete(characterInventory).where(inArray(characterInventory.itemId, oldIds));
+    await db.delete(magazineIssues).where(inArray(magazineIssues.magazineId, oldIds));
+    await db.delete(magazines).where(inArray(magazines.itemId, oldIds));
+    await db.delete(items).where(inArray(items.id, oldIds));
+  }
+
+  // Insert one item per magazine (each issue is its own item)
   const insertedItems = await db
     .insert(items)
     .values(magazinesData.map(m => ({
       itemType: 'magazine' as const,
       name: m.name,
-      nameKey: m.nameKey,
       value: MAGAZINE_VALUE,
       rarity: MAGAZINE_RARITY,
       weight: MAGAZINE_WEIGHT,
     })))
-    .onConflictDoUpdate({
-      target: items.name,
-      set: {
-        nameKey: sql`excluded.name_key`,
-        value: sql`excluded.value`,
-        rarity: sql`excluded.rarity`,
-        weight: sql`excluded.weight`,
-      },
-    })
     .returning({ id: items.id, name: items.name });
 
   const nameToId = new Map(insertedItems.map(i => [i.name, i.id]));
@@ -731,33 +737,27 @@ export async function seedMagazines() {
     itemIdMap.set(getItemKey(item.name, 'magazine'), item.id);
   }
 
+  // Insert magazines table entry for each item
   await db
     .insert(magazines)
     .values(magazinesData.map(m => ({
       itemId: nameToId.get(m.name)!,
       perkDescriptionKey: m.perkDescriptionKey,
-    })))
-    .onConflictDoUpdate({
-      target: magazines.itemId,
-      set: { perkDescriptionKey: sql`excluded.perk_description_key` },
-    });
+    })));
 
-  // Batch replace magazine issues
-  const allItemIds = insertedItems.map(i => i.id);
-  await db.delete(magazineIssues).where(inArray(magazineIssues.magazineId, allItemIds));
-  const allIssues = magazinesData.flatMap(m =>
-    m.issues.map(issue => ({
+  // Insert magazine_issues for items that have d20 range info
+  const issueItems = magazinesData.filter(m => m.issue);
+  if (issueItems.length > 0) {
+    await db.insert(magazineIssues).values(issueItems.map(m => ({
       magazineId: nameToId.get(m.name)!,
-      d20Min: issue.d20Min,
-      d20Max: issue.d20Max,
-      issueName: issue.name,
-      issueNameKey: issue.nameKey,
-      effectDescriptionKey: issue.effectKey,
-    }))
-  );
-  if (allIssues.length > 0) await db.insert(magazineIssues).values(allIssues);
+      d20Min: m.issue!.d20Min,
+      d20Max: m.issue!.d20Max,
+      issueName: m.issue!.issueName,
+      effectDescriptionKey: m.issue!.effectDescriptionKey,
+    })));
+  }
 
-  console.log(`  Upserted ${magazinesData.length} magazine series`);
+  console.log(`  Upserted ${magazinesData.length} magazine items`);
 }
 
 export async function seedDiseases() {
