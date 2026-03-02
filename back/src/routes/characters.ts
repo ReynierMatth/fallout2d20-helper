@@ -18,6 +18,7 @@ import {
   clothing,
   clothingLocations,
   inventoryItemMods,
+  itemCompatibleMods,
   mods,
 } from '../db/schema/index';
 
@@ -110,7 +111,7 @@ async function getCharacterInventory(characterId: number) {
     }
   }
 
-  // Fetch installed mods for all inventory items (weapon type)
+  // Fetch installed mods for all inventory items
   const allInventoryIds = inventoryRows.map(r => r.id);
   const installedModsMap: Record<number, { modInventoryId: number; modItemId: number; modName: string; slot: string; nameAddKey?: string }[]> = {};
 
@@ -142,6 +143,19 @@ async function getCharacterInventory(characterId: number) {
     }
   }
 
+  // Fetch compatible mod item IDs for each unique item
+  const moddableTypes = ['weapon', 'armor', 'powerArmor', 'clothing'];
+  const moddableItemIds = [...new Set(inventoryRows.filter(r => moddableTypes.includes(r.itemType)).map(r => r.itemId))];
+  const compatibleModsMap: Record<number, number[]> = {};
+
+  for (const itemId of moddableItemIds) {
+    const compatRows = await db
+      .select({ modItemId: itemCompatibleMods.modItemId })
+      .from(itemCompatibleMods)
+      .where(eq(itemCompatibleMods.targetItemId, itemId));
+    compatibleModsMap[itemId] = compatRows.map(r => r.modItemId);
+  }
+
   return inventoryRows.map((row) => {
     const armor = armorDetails[row.itemId];
     const powerArmor = powerArmorDetails[row.itemId];
@@ -170,6 +184,8 @@ async function getCharacterInventory(characterId: number) {
       clothingDetails: clothingDetails[row.itemId] || null,
       // Include installed mods if any
       installedMods: installedModsMap[row.id] || [],
+      // Compatible mod item IDs for moddable items
+      compatibleModItemIds: compatibleModsMap[row.itemId] || [],
     };
   });
 }
@@ -865,6 +881,21 @@ router.post('/:id/inventory/:invId/mods', async (req, res) => {
 
     if (!modInv || modInv.characterId !== characterId) {
       return res.status(404).json({ error: 'Mod inventory entry not found' });
+    }
+
+    // Check mod is compatible with target item
+    const [compat] = await db
+      .select()
+      .from(itemCompatibleMods)
+      .where(
+        and(
+          eq(itemCompatibleMods.targetItemId, targetInv.itemId),
+          eq(itemCompatibleMods.modItemId, modInv.itemId)
+        )
+      );
+
+    if (!compat) {
+      return res.status(400).json({ error: 'Mod is not compatible with this item' });
     }
 
     // Insert the mod installation record

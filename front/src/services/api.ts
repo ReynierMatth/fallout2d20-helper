@@ -400,8 +400,10 @@ export interface InventoryItemApi {
   armorDetails?: InventoryArmorDetails | null;
   powerArmorDetails?: InventoryPowerArmorDetails | null;
   clothingDetails?: InventoryClothingDetails | null;
-  // Installed mods (weapons only)
+  // Installed mods
   installedMods?: InstalledModSummary[];
+  // Compatible mod item IDs (from item_compatible_mods table)
+  compatibleModItemIds?: number[];
 }
 
 export interface CharacterApi {

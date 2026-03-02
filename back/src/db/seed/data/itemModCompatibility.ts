@@ -1,14 +1,14 @@
-// Weapon-mod compatibility for Small Guns
-// weaponName = item name in DB, modNames = mod item names in DB
+// Item-mod compatibility mapping
+// itemName = item name in DB, modNames = mod item names in DB
 
-export interface WeaponModCompatibility {
-  weaponName: string;
+export interface ItemModCompatibility {
+  itemName: string;
   modNames: string[];
 }
 
-export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
+export const SMALL_GUNS_COMPATIBILITY: ItemModCompatibility[] = [
   {
-    weaponName: '10mm Pistol',
+    itemName: '10mm Pistol',
     modNames: [
       // Culasse
       'Calibrée', 'Renforcée', 'Automatique', 'Haute sensibilité', 'Puissante', 'Avancée',
@@ -25,7 +25,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
     ],
   },
   {
-    weaponName: '.44 Pistol',
+    itemName: '.44 Pistol',
     modNames: [
       // Culasse
       'Renforcée', 'Puissante', 'Avancée',
@@ -38,7 +38,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
     ],
   },
   {
-    weaponName: 'Assault Rifle',
+    itemName: 'Assault Rifle',
     modNames: [
       // Culasse
       'Calibrée', 'Renforcée', 'Automatique', 'Haute sensibilité', 'Puissante', 'Avancée',
@@ -58,7 +58,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Carabine de combat
-    weaponName: 'Combat Rifle',
+    itemName: 'Combat Rifle',
     modNames: [
       // Culasse
       'Calibrée', 'Renforcée', 'Automatique', 'Haute sensibilité', 'Puissante', 'Avancée',
@@ -79,7 +79,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Fusil de combat (= Combat Shotgun dans la DB)
-    weaponName: 'Combat Shotgun',
+    itemName: 'Combat Shotgun',
     modNames: [
       // Culasse
       'Calibrée', 'Renforcée', 'Automatique', 'Haute sensibilité', 'Puissante', 'Avancée',
@@ -100,7 +100,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   // TODO: Gauss Rifle — nécessite les mods condensateur (à faire avec les armes à énergie)
   {
     // Fusil de chasse
-    weaponName: 'Hunting Rifle',
+    itemName: 'Hunting Rifle',
     modNames: [
       // Culasse
       'Culasse optimisée', 'Calibrée', 'Renforcée', 'Puissante', 'Culasse .38', 'Culasse .50',
@@ -120,7 +120,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Mitraillette
-    weaponName: 'Submachine Gun',
+    itemName: 'Submachine Gun',
     modNames: [
       // Culasse
       'Culasse perforante', 'Renforcée', 'Culasse rapide', 'Puissante',
@@ -139,7 +139,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   {
     // Arme à verrou de fortune (Pipe Bolt-Action)
     // Note: pas de poignée ET crosse en même temps; mod crosse → "Fusil à verrou de fortune"
-    weaponName: 'Pipe Bolt-Action',
+    itemName: 'Pipe Bolt-Action',
     modNames: [
       // Culasse
       'Calibrée', 'Renforcée', 'Puissante', 'Culasse .38', 'Culasse .50',
@@ -159,7 +159,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Fusil à double canon
-    weaponName: 'Double-Barrel Shotgun',
+    itemName: 'Double-Barrel Shotgun',
     modNames: [
       // Culasse
       'Renforcée', 'Haute sensibilité', 'Puissante', 'Avancée',
@@ -176,7 +176,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   {
     // Arme de fortune (Pipe Gun)
     // Note: pas de poignée ET crosse en même temps; mod crosse → "Fusil de fortune"
-    weaponName: 'Pipe Gun',
+    itemName: 'Pipe Gun',
     modNames: [
       // Culasse
       'Calibrée', 'Renforcée', 'Automatique', 'Haute sensibilité', 'Puissante', 'Culasse .45',
@@ -199,7 +199,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   {
     // Revolver de fortune (Pipe Revolver)
     // Note: mod crosse → "Fusil de fortune"
-    weaponName: 'Pipe Revolver',
+    itemName: 'Pipe Revolver',
     modNames: [
       // Culasse
       'Calibrée', 'Renforcée', 'Puissante', 'Culasse .38', 'Culasse .308',
@@ -219,7 +219,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Fusil à clous (Railway Rifle)
-    weaponName: 'Railway Rifle',
+    itemName: 'Railway Rifle',
     modNames: [
       // Culasse
       'Culasse automatique à piston',
@@ -237,7 +237,7 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Pistolet à seringues (Syringer)
-    weaponName: 'Syringer',
+    itemName: 'Syringer',
     modNames: [
       // Canon
       'Canon raccourci', 'Canon long',
@@ -252,10 +252,10 @@ export const SMALL_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
 ];
 
 
-export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
+export const ENERGY_WEAPONS_COMPATIBILITY: ItemModCompatibility[] = [
   {
     // Laser de l'Institut → mod crosse renomme l'arme en "Fusil de l'Institut"
-    weaponName: 'Institute Laser',
+    itemName: 'Institute Laser',
     modNames: [
       // Condensateur
       'Stimulateur de photons', 'Amplificateur d\'ondes Bêta',
@@ -272,7 +272,7 @@ export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Arme laser (pistolet par défaut) → mod crosse renomme en "Fusil laser"
-    weaponName: 'Laser Pistol',
+    itemName: 'Laser Pistol',
     modNames: [
       // Condensateur
       'Stimulateur de photons', 'Amplificateur d\'ondes Bêta',
@@ -293,7 +293,7 @@ export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Arme plasma (pistolet par défaut) → mod crosse renomme en "Fusil plasma"
-    weaponName: 'Plasma Gun',
+    itemName: 'Plasma Gun',
     modNames: [
       // Condensateur
       'Stimulateur de photons', 'Amplificateur d\'ondes Bêta',
@@ -311,7 +311,7 @@ export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Pistolet Gamma — tous les mods lui sont réservés
-    weaponName: 'Gamma Gun',
+    itemName: 'Gamma Gun',
     modNames: [
       // Parabole
       'Parabole à renfoncement',
@@ -321,7 +321,7 @@ export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Mousquet laser — condensateurs spécifiques + mods partagés
-    weaponName: 'Laser Musket',
+    itemName: 'Laser Musket',
     modNames: [
       // Condensateur (exclusifs au mousquet laser)
       'Condensateur à trois charges', 'Condensateur à quatre charges',
@@ -340,10 +340,10 @@ export const ENERGY_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
 ];
 
-export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
+export const BIG_GUNS_COMPATIBILITY: ItemModCompatibility[] = [
   {
     // Lance-flammes
-    weaponName: 'Flamer',
+    itemName: 'Flamer',
     modNames: [
       // Carburant
       'Réservoir à napalm',
@@ -357,7 +357,7 @@ export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Minigun
-    weaponName: 'Minigun',
+    itemName: 'Minigun',
     modNames: [
       // Canon
       'Canon grande vitesse', 'Triple canon (minigun)',
@@ -369,7 +369,7 @@ export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Laser Gatling
-    weaponName: 'Laser Gatling',
+    itemName: 'Laser Gatling',
     modNames: [
       // Condensateur
       'Stimulateur de photons (Gatling)', 'Amplificateur d\'ondes Bêta (Gatling)',
@@ -384,7 +384,7 @@ export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Lance-missiles
-    weaponName: 'Missile Launcher',
+    itemName: 'Missile Launcher',
     modNames: [
       // Canon
       'Triple canon', 'Quadruple canon',
@@ -397,7 +397,7 @@ export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
   {
     // Junk Jet — mods de bouche exclusifs + crosse/canon/viseur propres
-    weaponName: 'Junk Jet',
+    itemName: 'Junk Jet',
     modNames: [
       // Canon (réutilise le Canon long des armes légères — mêmes stats)
       'Canon long',
@@ -411,35 +411,35 @@ export const BIG_GUNS_COMPATIBILITY: WeaponModCompatibility[] = [
   },
 ];
 
-export const MELEE_WEAPONS_COMPATIBILITY: WeaponModCompatibility[] = [
-  { weaponName: 'Sword', modNames: ['Lame dentelée (épée)', 'Lame électrifiée', 'Lame dentelée électrifiée', 'Module d\'étourdissement'] },
-  { weaponName: 'Combat Knife', modNames: ['Lame dentelée (couteau)', 'Lame furtive'] },
-  { weaponName: 'Machete', modNames: ['Lame dentelée (machette)'] },
-  { weaponName: 'Ripper', modNames: ['Lame courbe', 'Lame rallongée'] },
-  { weaponName: 'Shishkebab', modNames: ['Jets de flammes supplémentaires'] },
-  { weaponName: 'Switchblade', modNames: ['Lame dentelée (cran)'] },
+export const MELEE_WEAPONS_COMPATIBILITY: ItemModCompatibility[] = [
+  { itemName: 'Sword', modNames: ['Lame dentelée (épée)', 'Lame électrifiée', 'Lame dentelée électrifiée', 'Module d\'étourdissement'] },
+  { itemName: 'Combat Knife', modNames: ['Lame dentelée (couteau)', 'Lame furtive'] },
+  { itemName: 'Machete', modNames: ['Lame dentelée (machette)'] },
+  { itemName: 'Ripper', modNames: ['Lame courbe', 'Lame rallongée'] },
+  { itemName: 'Shishkebab', modNames: ['Jets de flammes supplémentaires'] },
+  { itemName: 'Switchblade', modNames: ['Lame dentelée (cran)'] },
   {
-    weaponName: 'Baseball Bat',
+    itemName: 'Baseball Bat',
     modNames: ['Barbelé', 'À pointes', 'Affûté', 'À chaînes', 'À lames'],
   },
   {
-    weaponName: 'Aluminum Baseball Bat',
+    itemName: 'Aluminum Baseball Bat',
     modNames: ['Barbelé', 'À pointes', 'Affûté', 'À chaînes', 'À lames'],
   },
-  { weaponName: 'Board', modNames: ['À pointes (planche)', 'Perforant', 'À lames (planche)'] },
-  { weaponName: 'Lead Pipe', modNames: ['À pointes (tuyau)', 'Lourd'] },
-  { weaponName: 'Pipe Wrench', modNames: ['À crochets', 'Lourd (clé)', 'Perforant (clé)', 'Extralourd'] },
-  { weaponName: 'Pool Cue', modNames: ['Barbelé (queue)', 'Affûté (queue)'] },
-  { weaponName: 'Rolling Pin', modNames: ['À pointes (rouleau)', 'Affûté (rouleau)'] },
-  { weaponName: 'Baton', modNames: ['Électrifié', 'Module d\'étourdissement (matraque)'] },
-  { weaponName: 'Sledgehammer', modNames: ['Perforant (masse)', 'Lourd (masse)'] },
-  { weaponName: 'Super Sledge', modNames: ['Bobine thermique', 'Module d\'étourdissement (super masse)'] },
-  { weaponName: 'Tire Iron', modNames: ['À lames (démonte-pneu)'] },
-  { weaponName: 'Walking Cane', modNames: ['Barbelé (canne)', 'À pointes (canne)'] },
-  { weaponName: 'Boxing Glove', modNames: ['À pointes (gant)', 'Perforant (gant)', 'Revêtement en plomb'] },
-  { weaponName: 'Deathclaw Gauntlet', modNames: ['Griffe supplémentaire'] },
-  { weaponName: 'Knuckles', modNames: ['Affûté (poing)', 'À pointes (poing)', 'Perforant (poing)', 'À lames (poing)'] },
-  { weaponName: 'Power Fist', modNames: ['Perforant (poing assisté)', 'Bobine thermique (poing assisté)'] },
+  { itemName: 'Board', modNames: ['À pointes (planche)', 'Perforant', 'À lames (planche)'] },
+  { itemName: 'Lead Pipe', modNames: ['À pointes (tuyau)', 'Lourd'] },
+  { itemName: 'Pipe Wrench', modNames: ['À crochets', 'Lourd (clé)', 'Perforant (clé)', 'Extralourd'] },
+  { itemName: 'Pool Cue', modNames: ['Barbelé (queue)', 'Affûté (queue)'] },
+  { itemName: 'Rolling Pin', modNames: ['À pointes (rouleau)', 'Affûté (rouleau)'] },
+  { itemName: 'Baton', modNames: ['Électrifié', 'Module d\'étourdissement (matraque)'] },
+  { itemName: 'Sledgehammer', modNames: ['Perforant (masse)', 'Lourd (masse)'] },
+  { itemName: 'Super Sledge', modNames: ['Bobine thermique', 'Module d\'étourdissement (super masse)'] },
+  { itemName: 'Tire Iron', modNames: ['À lames (démonte-pneu)'] },
+  { itemName: 'Walking Cane', modNames: ['Barbelé (canne)', 'À pointes (canne)'] },
+  { itemName: 'Boxing Glove', modNames: ['À pointes (gant)', 'Perforant (gant)', 'Revêtement en plomb'] },
+  { itemName: 'Deathclaw Gauntlet', modNames: ['Griffe supplémentaire'] },
+  { itemName: 'Knuckles', modNames: ['Affûté (poing)', 'À pointes (poing)', 'Perforant (poing)', 'À lames (poing)'] },
+  { itemName: 'Power Fist', modNames: ['Perforant (poing assisté)', 'Bobine thermique (poing assisté)'] },
 ];
 
 // ===== Armor & Clothing Mod Compatibility =====
@@ -479,16 +479,16 @@ function armorCompat(
   armorName: string,
   location: 'head' | 'torso' | 'arm' | 'leg',
   materials: string[],
-): WeaponModCompatibility {
+): ItemModCompatibility {
   const mods = [...ALL_LOCATION_IMPROVEMENTS, ...materials];
   if (location === 'torso') mods.push(...TORSO_IMPROVEMENTS);
   if (location === 'arm') mods.push(...ARMS_IMPROVEMENTS);
   if (location === 'leg') mods.push(...LEGS_IMPROVEMENTS);
   // head: only all-location improvements + material mods (no head-specific improvements)
-  return { weaponName: armorName, modNames: mods };
+  return { itemName: armorName, modNames: mods };
 }
 
-export const ARMOR_COMPATIBILITY: WeaponModCompatibility[] = [
+export const ARMOR_COMPATIBILITY: ItemModCompatibility[] = [
   // --- Raider Armor (no helmet) ---
   armorCompat('Raider Chest Piece', 'torso', RAIDER_MATERIALS),
   armorCompat('Sturdy Raider Chest Piece', 'torso', RAIDER_MATERIALS),
@@ -556,18 +556,18 @@ export const ARMOR_COMPATIBILITY: WeaponModCompatibility[] = [
   // Vault-Tec Security Armor : PAS DE MODS
 ];
 
-export const CLOTHING_COMPATIBILITY: WeaponModCompatibility[] = [
+export const CLOTHING_COMPATIBILITY: ItemModCompatibility[] = [
   // Tissu balistique : vêtements qui le supportent
-  { weaponName: 'Military Fatigues', modNames: BALLISTIC_WEAVE },
-  { weaponName: 'Casual Clothes', modNames: BALLISTIC_WEAVE },
-  { weaponName: 'Sturdy Clothes', modNames: BALLISTIC_WEAVE },
-  { weaponName: 'Leather Clothes', modNames: BALLISTIC_WEAVE },
-  { weaponName: 'Brotherhood of Steel Uniform', modNames: BALLISTIC_WEAVE },
-  { weaponName: 'Fancy Clothes', modNames: BALLISTIC_WEAVE },
-  { weaponName: 'Casual Hat', modNames: BALLISTIC_WEAVE },
-  { weaponName: 'Fancy Hat', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Military Fatigues', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Casual Clothes', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Sturdy Clothes', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Leather Clothes', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Brotherhood of Steel Uniform', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Fancy Clothes', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Casual Hat', modNames: BALLISTIC_WEAVE },
+  { itemName: 'Fancy Hat', modNames: BALLISTIC_WEAVE },
   // Combinaison d'Abri : mods spécifiques + tissu balistique
-  { weaponName: 'Vault Jumpsuit', modNames: [...VAULT_SUIT_MODS, ...BALLISTIC_WEAVE] },
+  { itemName: 'Vault Jumpsuit', modNames: [...VAULT_SUIT_MODS, ...BALLISTIC_WEAVE] },
 ];
 
 // ===== Power Armor Mod Compatibility =====
@@ -602,39 +602,39 @@ const PA_RAIDER_SYSTEM_TORSO = [
   'Barre d\'armature soudée',
 ];
 
-export const POWER_ARMOR_COMPATIBILITY: WeaponModCompatibility[] = [
+export const POWER_ARMOR_COMPATIBILITY: ItemModCompatibility[] = [
   // --- Raider Power Armor (no plating, has improvements) ---
-  { weaponName: 'Raider Power Armor Helmet', modNames: [...PA_SYSTEM_HEAD, 'Casque Raider II'] },
-  { weaponName: 'Raider Power Armor Chest Piece', modNames: [...PA_RAIDER_SYSTEM_TORSO, 'Plastron Raider II'] },
-  { weaponName: 'Raider Power Armor Arm', modNames: [...PA_SYSTEM_ARMS.filter(m => m !== 'Bracelets Tesla'), 'Brassard Raider II'] },
-  { weaponName: 'Raider Power Armor Leg', modNames: [...PA_SYSTEM_LEGS, 'Jambière Raider II'] },
+  { itemName: 'Raider Power Armor Helmet', modNames: [...PA_SYSTEM_HEAD, 'Casque Raider II'] },
+  { itemName: 'Raider Power Armor Chest Piece', modNames: [...PA_RAIDER_SYSTEM_TORSO, 'Plastron Raider II'] },
+  { itemName: 'Raider Power Armor Arm', modNames: [...PA_SYSTEM_ARMS.filter(m => m !== 'Bracelets Tesla'), 'Brassard Raider II'] },
+  { itemName: 'Raider Power Armor Leg', modNames: [...PA_SYSTEM_LEGS, 'Jambière Raider II'] },
 
   // --- T-45 Power Armor ---
-  { weaponName: 'T-45 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING, 'Casque T-45b', 'Casque T-45c', 'Casque T-45d', 'Casque T-45e', 'Casque T-45f'] },
-  { weaponName: 'T-45 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING, 'Plastron T-45b', 'Plastron T-45c', 'Plastron T-45d', 'Plastron T-45e', 'Plastron T-45f'] },
-  { weaponName: 'T-45 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING, 'Brassard T-45b', 'Brassard T-45c', 'Brassard T-45d', 'Brassard T-45e', 'Brassard T-45f'] },
-  { weaponName: 'T-45 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING, 'Jambière T-45b', 'Jambière T-45c', 'Jambière T-45d', 'Jambière T-45e', 'Jambière T-45f'] },
+  { itemName: 'T-45 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING, 'Casque T-45b', 'Casque T-45c', 'Casque T-45d', 'Casque T-45e', 'Casque T-45f'] },
+  { itemName: 'T-45 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING, 'Plastron T-45b', 'Plastron T-45c', 'Plastron T-45d', 'Plastron T-45e', 'Plastron T-45f'] },
+  { itemName: 'T-45 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING, 'Brassard T-45b', 'Brassard T-45c', 'Brassard T-45d', 'Brassard T-45e', 'Brassard T-45f'] },
+  { itemName: 'T-45 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING, 'Jambière T-45b', 'Jambière T-45c', 'Jambière T-45d', 'Jambière T-45e', 'Jambière T-45f'] },
 
   // --- T-51 Power Armor ---
-  { weaponName: 'T-51 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING] },
-  { weaponName: 'T-51 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING] },
-  { weaponName: 'T-51 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING] },
-  { weaponName: 'T-51 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING] },
+  { itemName: 'T-51 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING, 'Casque T-51b', 'Casque T-51c', 'Casque T-51d', 'Casque T-51e', 'Casque T-51f'] },
+  { itemName: 'T-51 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING, 'Plastron T-51b', 'Plastron T-51c', 'Plastron T-51d', 'Plastron T-51e', 'Plastron T-51f'] },
+  { itemName: 'T-51 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING, 'Brassard T-51b', 'Brassard T-51c', 'Brassard T-51d', 'Brassard T-51e', 'Brassard T-51f'] },
+  { itemName: 'T-51 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING, 'Jambière T-51b', 'Jambière T-51c', 'Jambière T-51d', 'Jambière T-51e', 'Jambière T-51f'] },
 
   // --- T-60 Power Armor ---
-  { weaponName: 'T-60 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING] },
-  { weaponName: 'T-60 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING] },
-  { weaponName: 'T-60 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING] },
-  { weaponName: 'T-60 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING] },
+  { itemName: 'T-60 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING, 'Casque T-60b', 'Casque T-60c', 'Casque T-60d', 'Casque T-60e', 'Casque T-60f'] },
+  { itemName: 'T-60 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING, 'Plastron T-60b', 'Plastron T-60c', 'Plastron T-60d', 'Plastron T-60e', 'Plastron T-60f'] },
+  { itemName: 'T-60 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING, 'Brassard T-60b', 'Brassard T-60c', 'Brassard T-60d', 'Brassard T-60e', 'Brassard T-60f'] },
+  { itemName: 'T-60 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING, 'Jambière T-60b', 'Jambière T-60c', 'Jambière T-60d', 'Jambière T-60e', 'Jambière T-60f'] },
 
-  // --- X-01 Power Armor (no Revêtement antigel) ---
-  { weaponName: 'X-01 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING_X01] },
-  { weaponName: 'X-01 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING_X01] },
-  { weaponName: 'X-01 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING_X01] },
-  { weaponName: 'X-01 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING_X01] },
+  // --- X-01 Power Armor (no Revêtement antigel, + Protection IEM exclusive) ---
+  { itemName: 'X-01 Helmet', modNames: [...PA_SYSTEM_HEAD, ...PA_PLATING_X01, 'Protection IEM', 'Casque Mk II', 'Casque Mk III', 'Casque Mk IV', 'Casque Mk V', 'Casque Mk VI'] },
+  { itemName: 'X-01 Chest Piece', modNames: [...PA_SYSTEM_TORSO, ...PA_PLATING_X01, 'Protection IEM', 'Plastron Mk II', 'Plastron Mk III', 'Plastron Mk IV', 'Plastron Mk V', 'Plastron Mk VI'] },
+  { itemName: 'X-01 Arm', modNames: [...PA_SYSTEM_ARMS, ...PA_PLATING_X01, 'Protection IEM', 'Brassard Mk II', 'Brassard Mk III', 'Brassard Mk IV', 'Brassard Mk V', 'Brassard Mk VI'] },
+  { itemName: 'X-01 Leg', modNames: [...PA_SYSTEM_LEGS, ...PA_PLATING_X01, 'Protection IEM', 'Jambière Mk II', 'Jambière Mk III', 'Jambière Mk IV', 'Jambière Mk V', 'Jambière Mk VI'] },
 ];
 
-export const ALL_WEAPON_MOD_COMPATIBILITY: WeaponModCompatibility[] = [
+export const ALL_ITEM_MOD_COMPATIBILITY: ItemModCompatibility[] = [
   ...SMALL_GUNS_COMPATIBILITY,
   ...ENERGY_WEAPONS_COMPATIBILITY,
   ...BIG_GUNS_COMPATIBILITY,

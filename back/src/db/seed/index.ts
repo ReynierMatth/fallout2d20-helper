@@ -4,7 +4,7 @@ import { seedAllPerks } from './seedPerks';
 import { seedAllOrigins } from './seedOrigins';
 import { seedAllEquipmentPacks } from './seedEquipmentPacks';
 import { seedMods } from './seedMods';
-import { seedItemCompatibility } from './seedWeaponCompatibility';
+import { seedItemCompatibility } from './seedItemModCompatibility';
 
 async function seed() {
   console.log('Starting database seed...\n');

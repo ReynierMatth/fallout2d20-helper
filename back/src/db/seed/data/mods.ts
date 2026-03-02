@@ -2268,6 +2268,615 @@ export const T45_IMPROVEMENT_MODS: ModEntry[] = [
   },
 ];
 
+// ===== AMÉLIORATIONS — ARMURE ASSISTÉE T-51 =====
+
+export const T51_IMPROVEMENT_MODS: ModEntry[] = [
+  // --- T-51b ---
+  {
+    name: 'Casque T-51b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51b.casque.nameAdd',
+    weightChange: 0.5, cost: 4, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [{ effectType: 'hpBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Plastron T-51b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51b.plastron.nameAdd',
+    weightChange: 0.5, cost: 9, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Brassard T-51b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51b.brassard.nameAdd',
+    weightChange: 0.5, cost: 6, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [{ effectType: 'hpBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Jambière T-51b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51b.jambiere.nameAdd',
+    weightChange: 0.5, cost: 6, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [{ effectType: 'hpBonus', numericValue: 1 }],
+  },
+  // --- T-51c ---
+  {
+    name: 'Casque T-51c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51c.casque.nameAdd',
+    weightChange: 0.5, cost: 8, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Plastron T-51c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51c.plastron.nameAdd',
+    weightChange: 1, cost: 18, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Brassard T-51c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51c.brassard.nameAdd',
+    weightChange: 1, cost: 13, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Jambière T-51c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51c.jambiere.nameAdd',
+    weightChange: 1, cost: 13, requiredPerk: 'armorer', requiredPerkRank: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  // --- T-51d ---
+  {
+    name: 'Casque T-51d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51d.casque.nameAdd',
+    weightChange: 1, cost: 12, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Plastron T-51d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51d.plastron.nameAdd',
+    weightChange: 1.5, cost: 27, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Brassard T-51d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51d.brassard.nameAdd',
+    weightChange: 1, cost: 19, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Jambière T-51d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51d.jambiere.nameAdd',
+    weightChange: 1, cost: 19, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  // --- T-51e ---
+  {
+    name: 'Casque T-51e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51e.casque.nameAdd',
+    weightChange: 1, cost: 16, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Plastron T-51e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51e.plastron.nameAdd',
+    weightChange: 2, cost: 36, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 6 },
+    ],
+  },
+  {
+    name: 'Brassard T-51e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51e.brassard.nameAdd',
+    weightChange: 1.5, cost: 26, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Jambière T-51e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51e.jambiere.nameAdd',
+    weightChange: 1.5, cost: 26, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  // --- T-51f ---
+  {
+    name: 'Casque T-51f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51f.casque.nameAdd',
+    weightChange: 1.5, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Plastron T-51f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51f.plastron.nameAdd',
+    weightChange: 2.5, cost: 45, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 7 },
+    ],
+  },
+  {
+    name: 'Brassard T-51f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51f.brassard.nameAdd',
+    weightChange: 2, cost: 32, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Jambière T-51f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t51f.jambiere.nameAdd',
+    weightChange: 2, cost: 32, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+];
+
+// ===== AMÉLIORATIONS — ARMURE ASSISTÉE T-60 =====
+
+export const T60_IMPROVEMENT_MODS: ModEntry[] = [
+  // --- T-60b (aucune aptitude requise) ---
+  {
+    name: 'Casque T-60b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60b.casque.nameAdd',
+    weightChange: 0.5, cost: 32,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Plastron T-60b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60b.plastron.nameAdd',
+    weightChange: 0.5, cost: 37,
+    effects: [{ effectType: 'hpBonus', numericValue: 2 }],
+  },
+  {
+    name: 'Brassard T-60b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60b.brassard.nameAdd',
+    weightChange: 0.5, cost: 35,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Jambière T-60b', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60b.jambiere.nameAdd',
+    weightChange: 0.5, cost: 35,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  // --- T-60c ---
+  {
+    name: 'Casque T-60c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60c.casque.nameAdd',
+    weightChange: 1.5, cost: 64, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Plastron T-60c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60c.plastron.nameAdd',
+    weightChange: 1, cost: 74, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Brassard T-60c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60c.brassard.nameAdd',
+    weightChange: 1, cost: 70, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Jambière T-60c', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60c.jambiere.nameAdd',
+    weightChange: 1, cost: 70, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  // --- T-60d ---
+  {
+    name: 'Casque T-60d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60d.casque.nameAdd',
+    weightChange: 1, cost: 96, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Plastron T-60d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60d.plastron.nameAdd',
+    weightChange: 1.5, cost: 111, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 5 },
+    ],
+  },
+  {
+    name: 'Brassard T-60d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60d.brassard.nameAdd',
+    weightChange: 1, cost: 105, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Jambière T-60d', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60d.jambiere.nameAdd',
+    weightChange: 1, cost: 105, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  // --- T-60e ---
+  {
+    name: 'Casque T-60e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60e.casque.nameAdd',
+    weightChange: 1, cost: 128, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Plastron T-60e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60e.plastron.nameAdd',
+    weightChange: 2, cost: 148, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 7 },
+    ],
+  },
+  {
+    name: 'Brassard T-60e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60e.brassard.nameAdd',
+    weightChange: 1.5, cost: 140, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Jambière T-60e', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60e.jambiere.nameAdd',
+    weightChange: 1.5, cost: 140, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  // --- T-60f ---
+  {
+    name: 'Casque T-60f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60f.casque.nameAdd',
+    weightChange: 1.5, cost: 160, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Plastron T-60f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60f.plastron.nameAdd',
+    weightChange: 2.5, cost: 185, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 8 },
+    ],
+  },
+  {
+    name: 'Brassard T-60f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60f.brassard.nameAdd',
+    weightChange: 2, cost: 175, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Jambière T-60f', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.t60f.jambiere.nameAdd',
+    weightChange: 2, cost: 175, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+];
+
+// ===== AMÉLIORATIONS — ARMURE ASSISTÉE X-01 =====
+
+export const X01_IMPROVEMENT_MODS: ModEntry[] = [
+  // --- Mk II (aucune aptitude requise) ---
+  {
+    name: 'Casque Mk II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk2.casque.nameAdd',
+    weightChange: 0.5, cost: 7,
+    effects: [{ effectType: 'hpBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Plastron Mk II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk2.plastron.nameAdd',
+    weightChange: 0.5, cost: 14,
+    effects: [{ effectType: 'hpBonus', numericValue: 1 }],
+  },
+  {
+    name: 'Brassard Mk II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk2.brassard.nameAdd',
+    weightChange: 0.5, cost: 10,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Jambière Mk II', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk2.jambiere.nameAdd',
+    weightChange: 0.5, cost: 10,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+    ],
+  },
+  // --- Mk III ---
+  {
+    name: 'Casque Mk III', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk3.casque.nameAdd',
+    weightChange: 0.5, cost: 14, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Plastron Mk III', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk3.plastron.nameAdd',
+    weightChange: 1, cost: 28, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Brassard Mk III', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk3.brassard.nameAdd',
+    weightChange: 1, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  {
+    name: 'Jambière Mk III', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk3.jambiere.nameAdd',
+    weightChange: 1, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 1, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 1 },
+    ],
+  },
+  // --- Mk IV ---
+  {
+    name: 'Casque Mk IV', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk4.casque.nameAdd',
+    weightChange: 1, cost: 21, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Plastron Mk IV', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk4.plastron.nameAdd',
+    weightChange: 1.5, cost: 42, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Brassard Mk IV', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk4.brassard.nameAdd',
+    weightChange: 1, cost: 30, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Jambière Mk IV', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk4.jambiere.nameAdd',
+    weightChange: 1, cost: 30, requiredPerk: 'armorer', requiredPerkRank: 2, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  // --- Mk V ---
+  {
+    name: 'Casque Mk V', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk5.casque.nameAdd',
+    weightChange: 1, cost: 28, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 1 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Plastron Mk V', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk5.plastron.nameAdd',
+    weightChange: 2, cost: 56, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 1 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Brassard Mk V', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk5.brassard.nameAdd',
+    weightChange: 1.5, cost: 40, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  {
+    name: 'Jambière Mk V', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk5.jambiere.nameAdd',
+    weightChange: 1.5, cost: 40, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 1,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 2 },
+    ],
+  },
+  // --- Mk VI ---
+  {
+    name: 'Casque Mk VI', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk6.casque.nameAdd',
+    weightChange: 1.5, cost: 35, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 3 },
+    ],
+  },
+  {
+    name: 'Plastron Mk VI', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk6.plastron.nameAdd',
+    weightChange: 2.5, cost: 70, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 2 },
+      { effectType: 'hpBonus', numericValue: 5 },
+    ],
+  },
+  {
+    name: 'Brassard Mk VI', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk6.brassard.nameAdd',
+    weightChange: 2, cost: 50, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+  {
+    name: 'Jambière Mk VI', slot: 'amelioration', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.amelioration.mk6.jambiere.nameAdd',
+    weightChange: 2, cost: 50, requiredPerk: 'armorer', requiredPerkRank: 3, requiredPerk2: 'science', requiredPerkRank2: 2,
+    effects: [
+      { effectType: 'ballisticResistance', numericValue: 2 },
+      { effectType: 'energyResistance', numericValue: 3 },
+      { effectType: 'hpBonus', numericValue: 4 },
+    ],
+  },
+
+  // --- Mod de blindage exclusif X-01 : Protection IEM ---
+  {
+    name: 'Protection IEM', slot: 'blindage', applicableTo: 'powerArmor',
+    nameAddKey: 'mods.powerArmor.blindage.protectionIem.nameAdd',
+    weightChange: 0.5, cost: 20, requiredPerk: 'armorer', requiredPerkRank: 1,
+    effects: [
+      { effectType: 'energyResistance', numericValue: 2 },
+    ],
+  },
+];
+
 // All mods combined
 export const ALL_MODS: ModEntry[] = [
   ...SMALL_GUNS_MODS,
@@ -2278,4 +2887,7 @@ export const ALL_MODS: ModEntry[] = [
   ...CLOTHING_MODS,
   ...POWER_ARMOR_MODS,
   ...T45_IMPROVEMENT_MODS,
+  ...T51_IMPROVEMENT_MODS,
+  ...T60_IMPROVEMENT_MODS,
+  ...X01_IMPROVEMENT_MODS,
 ];

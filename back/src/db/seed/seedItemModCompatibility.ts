@@ -1,6 +1,6 @@
 import { db } from '../index';
 import { items, itemCompatibleMods } from '../schema/index';
-import { ALL_WEAPON_MOD_COMPATIBILITY } from './data/weaponCompatibility';
+import { ALL_ITEM_MOD_COMPATIBILITY } from './data/itemModCompatibility';
 
 export async function seedItemCompatibility() {
   console.log('Seeding item-mod compatibility...');
@@ -12,10 +12,10 @@ export async function seedItemCompatibility() {
   let pairsInserted = 0;
   let warnings = 0;
 
-  for (const entry of ALL_WEAPON_MOD_COMPATIBILITY) {
-    const targetItemId = itemIdMap.get(entry.weaponName);
+  for (const entry of ALL_ITEM_MOD_COMPATIBILITY) {
+    const targetItemId = itemIdMap.get(entry.itemName);
     if (!targetItemId) {
-      console.warn(`  [SKIP] Item not found in DB: "${entry.weaponName}"`);
+      console.warn(`  [SKIP] Item not found in DB: "${entry.itemName}"`);
       warnings++;
       continue;
     }
@@ -23,7 +23,7 @@ export async function seedItemCompatibility() {
     for (const modName of entry.modNames) {
       const modItemId = itemIdMap.get(modName);
       if (!modItemId) {
-        console.warn(`  [SKIP] Mod not found in DB: "${modName}" (for ${entry.weaponName})`);
+        console.warn(`  [SKIP] Mod not found in DB: "${modName}" (for ${entry.itemName})`);
         warnings++;
         continue;
       }

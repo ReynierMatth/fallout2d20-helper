@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -32,10 +33,13 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
   if (!isOpen) return null;
 
-  return (
+  // Render via portal to escape any ancestor transforms (e.g. SwipeableTabs)
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={onClose}
+      onPointerDown={e => e.stopPropagation()}
+      onPointerMove={e => e.stopPropagation()}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/80" />
@@ -62,6 +66,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

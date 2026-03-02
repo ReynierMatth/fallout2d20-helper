@@ -927,6 +927,7 @@ export default {
       food: 'Food',
       generalGood: 'Equipment',
       oddity: 'Oddities',
+      magazine: 'Magazines',
       mod: 'Mods',
       all: 'All',
     },
@@ -1443,6 +1444,7 @@ export default {
         antigel: { nameAdd: 'Winterized' },
         prismatique: { nameAdd: 'Prism' },
         antiexplosion: { nameAdd: 'Blast-Proof' },
+        protectionIem: { nameAdd: 'EMP Shielding' },
       },
       amelioration: {
         raider2: {
@@ -1480,6 +1482,99 @@ export default {
           plastron: { nameAdd: 'T-45f Chest Piece' },
           brassard: { nameAdd: 'T-45f Arm' },
           jambiere: { nameAdd: 'T-45f Leg' },
+        },
+        // T-51
+        t51b: {
+          casque: { nameAdd: 'T-51b Helmet' },
+          plastron: { nameAdd: 'T-51b Chest Piece' },
+          brassard: { nameAdd: 'T-51b Arm' },
+          jambiere: { nameAdd: 'T-51b Leg' },
+        },
+        t51c: {
+          casque: { nameAdd: 'T-51c Helmet' },
+          plastron: { nameAdd: 'T-51c Chest Piece' },
+          brassard: { nameAdd: 'T-51c Arm' },
+          jambiere: { nameAdd: 'T-51c Leg' },
+        },
+        t51d: {
+          casque: { nameAdd: 'T-51d Helmet' },
+          plastron: { nameAdd: 'T-51d Chest Piece' },
+          brassard: { nameAdd: 'T-51d Arm' },
+          jambiere: { nameAdd: 'T-51d Leg' },
+        },
+        t51e: {
+          casque: { nameAdd: 'T-51e Helmet' },
+          plastron: { nameAdd: 'T-51e Chest Piece' },
+          brassard: { nameAdd: 'T-51e Arm' },
+          jambiere: { nameAdd: 'T-51e Leg' },
+        },
+        t51f: {
+          casque: { nameAdd: 'T-51f Helmet' },
+          plastron: { nameAdd: 'T-51f Chest Piece' },
+          brassard: { nameAdd: 'T-51f Arm' },
+          jambiere: { nameAdd: 'T-51f Leg' },
+        },
+        // T-60
+        t60b: {
+          casque: { nameAdd: 'T-60b Helmet' },
+          plastron: { nameAdd: 'T-60b Chest Piece' },
+          brassard: { nameAdd: 'T-60b Arm' },
+          jambiere: { nameAdd: 'T-60b Leg' },
+        },
+        t60c: {
+          casque: { nameAdd: 'T-60c Helmet' },
+          plastron: { nameAdd: 'T-60c Chest Piece' },
+          brassard: { nameAdd: 'T-60c Arm' },
+          jambiere: { nameAdd: 'T-60c Leg' },
+        },
+        t60d: {
+          casque: { nameAdd: 'T-60d Helmet' },
+          plastron: { nameAdd: 'T-60d Chest Piece' },
+          brassard: { nameAdd: 'T-60d Arm' },
+          jambiere: { nameAdd: 'T-60d Leg' },
+        },
+        t60e: {
+          casque: { nameAdd: 'T-60e Helmet' },
+          plastron: { nameAdd: 'T-60e Chest Piece' },
+          brassard: { nameAdd: 'T-60e Arm' },
+          jambiere: { nameAdd: 'T-60e Leg' },
+        },
+        t60f: {
+          casque: { nameAdd: 'T-60f Helmet' },
+          plastron: { nameAdd: 'T-60f Chest Piece' },
+          brassard: { nameAdd: 'T-60f Arm' },
+          jambiere: { nameAdd: 'T-60f Leg' },
+        },
+        // X-01
+        mk2: {
+          casque: { nameAdd: 'Mk II Helmet' },
+          plastron: { nameAdd: 'Mk II Chest Piece' },
+          brassard: { nameAdd: 'Mk II Arm' },
+          jambiere: { nameAdd: 'Mk II Leg' },
+        },
+        mk3: {
+          casque: { nameAdd: 'Mk III Helmet' },
+          plastron: { nameAdd: 'Mk III Chest Piece' },
+          brassard: { nameAdd: 'Mk III Arm' },
+          jambiere: { nameAdd: 'Mk III Leg' },
+        },
+        mk4: {
+          casque: { nameAdd: 'Mk IV Helmet' },
+          plastron: { nameAdd: 'Mk IV Chest Piece' },
+          brassard: { nameAdd: 'Mk IV Arm' },
+          jambiere: { nameAdd: 'Mk IV Leg' },
+        },
+        mk5: {
+          casque: { nameAdd: 'Mk V Helmet' },
+          plastron: { nameAdd: 'Mk V Chest Piece' },
+          brassard: { nameAdd: 'Mk V Arm' },
+          jambiere: { nameAdd: 'Mk V Leg' },
+        },
+        mk6: {
+          casque: { nameAdd: 'Mk VI Helmet' },
+          plastron: { nameAdd: 'Mk VI Chest Piece' },
+          brassard: { nameAdd: 'Mk VI Arm' },
+          jambiere: { nameAdd: 'Mk VI Leg' },
         },
       },
     },

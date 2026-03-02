@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, X, Plus, Minus, Sword, Shield, Shirt, Pill, Apple, Wrench, Package } from 'lucide-react';
+import { Search, X, Plus, Minus, Sword, Shield, Shirt, Pill, Apple, Wrench, Package, Settings } from 'lucide-react';
 import { Modal } from '../../../components/Modal';
 import { Button } from '../../../components/Button';
 import { useItems } from '../../../hooks/useItems';
@@ -31,6 +31,7 @@ const itemTypeIcons: Record<ItemType, React.ElementType> = {
   generalGood: Wrench,
   oddity: Package,
   magazine: Package,
+  mod: Settings,
 };
 
 // Color mapping for item types
@@ -47,6 +48,7 @@ const itemTypeColors: Record<ItemType, string> = {
   generalGood: 'text-gray-400',
   oddity: 'text-cyan-400',
   magazine: 'text-teal-400',
+  mod: 'text-emerald-400',
 };
 
 // Rarity colors
@@ -69,6 +71,19 @@ export function ItemSelector({ isOpen, onClose, onSelect }: ItemSelectorProps) {
   const [rarityFilter, setRarityFilter] = useState<number | 'all'>('all');
   const [selectedItem, setSelectedItem] = useState<DisplayItem | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [displayCount, setDisplayCount] = useState(50);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const PAGE_SIZE = 50;
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    // Load more when scrolled near bottom (within 100px)
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+      setDisplayCount(prev => prev + PAGE_SIZE);
+    }
+  }, []);
 
   // Combine all items into a single list
   const allItems = useMemo<DisplayItem[]>(() => {
@@ -79,11 +94,16 @@ export function ItemSelector({ isOpen, onClose, onSelect }: ItemSelectorProps) {
     items.weapons.forEach(w => combined.push({ ...w, itemType: 'weapon' }));
     items.armors.forEach(a => combined.push({ ...a, itemType: 'armor' }));
     items.powerArmors?.forEach(pa => combined.push({ ...pa, itemType: 'powerArmor' }));
+    items.robotArmors?.forEach(ra => combined.push({ ...ra, itemType: 'robotArmor' }));
     items.clothing.forEach(c => combined.push({ ...c, itemType: 'clothing' }));
     items.ammunition.forEach(a => combined.push({ ...a, itemType: 'ammunition' }));
+    items.syringerAmmo?.forEach(sa => combined.push({ ...sa, itemType: 'syringerAmmo' }));
     items.chems.forEach(c => combined.push({ ...c, itemType: 'chem' }));
     items.food.forEach(f => combined.push({ ...f, itemType: 'food' }));
     items.generalGoods.forEach(g => combined.push({ ...g, itemType: 'generalGood' }));
+    items.oddities?.forEach(o => combined.push({ ...o, itemType: 'oddity' }));
+    items.magazines?.forEach(m => combined.push({ ...m, itemType: 'magazine' }));
+    items.mods?.forEach(m => combined.push({ ...m, itemType: 'mod' }));
 
     return combined;
   }, [items]);
@@ -102,6 +122,8 @@ export function ItemSelector({ isOpen, onClose, onSelect }: ItemSelectorProps) {
       case 'food': return 'food';
       case 'generalGood': return 'general';
       case 'oddity': return 'general';
+      case 'magazine': return 'magazines';
+      case 'mod': return 'mods';
       default: return '';
     }
   };
@@ -118,6 +140,9 @@ export function ItemSelector({ isOpen, onClose, onSelect }: ItemSelectorProps) {
 
   // Filter items
   const filteredItems = useMemo(() => {
+    // Reset display count when filters change
+    setDisplayCount(PAGE_SIZE);
+
     let filtered = allItems;
 
     // Type filter
@@ -166,10 +191,11 @@ export function ItemSelector({ isOpen, onClose, onSelect }: ItemSelectorProps) {
     setRarityFilter('all');
     setSelectedItem(null);
     setQuantity(1);
+    setDisplayCount(PAGE_SIZE);
     onClose();
   };
 
-  const itemTypes: (ItemType | 'all')[] = ['all', 'weapon', 'armor', 'powerArmor', 'clothing', 'ammunition', 'chem', 'food', 'generalGood'];
+  const itemTypes: (ItemType | 'all')[] = ['all', 'weapon', 'armor', 'powerArmor', 'robotArmor', 'clothing', 'ammunition', 'syringerAmmo', 'chem', 'food', 'generalGood', 'oddity', 'magazine', 'mod'];
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={t('inventory.addItem')}>
@@ -220,16 +246,20 @@ export function ItemSelector({ isOpen, onClose, onSelect }: ItemSelectorProps) {
         ) : error ? (
           <div className="text-center py-8 text-red-400">{error}</div>
         ) : (
-          <div className="max-h-60 overflow-y-auto border border-gray-700 rounded">
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="max-h-60 overflow-y-auto border border-gray-700 rounded"
+          >
             {filteredItems.length === 0 ? (
               <div className="text-center py-8 text-gray-400">{t('common.noResults')}</div>
             ) : (
               <div className="divide-y divide-gray-700">
-                {filteredItems.slice(0, 50).map(item => {
+                {filteredItems.slice(0, displayCount).map(item => {
                   const Icon = itemTypeIcons[item.itemType];
                   const iconColor = itemTypeColors[item.itemType];
                   const displayName = getTranslatedName(item);
-                  const isSelected = selectedItem?.id === item.id;
+                  const isSelected = selectedItem?.id === item.id && selectedItem?.itemType === item.itemType;
 
                   return (
                     <button
@@ -261,11 +291,6 @@ export function ItemSelector({ isOpen, onClose, onSelect }: ItemSelectorProps) {
                     </button>
                   );
                 })}
-                {filteredItems.length > 50 && (
-                  <div className="text-center py-2 text-gray-400 text-sm">
-                    +{filteredItems.length - 50} {t('inventory.moreItems')}
-                  </div>
-                )}
               </div>
             )}
           </div>

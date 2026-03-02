@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation, type TFunction } from 'react-i18next';
-import { Plus, Minus, Trash2, Check, X, Package, Coins, AlertTriangle, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings } from 'lucide-react';
+import { Plus, Minus, Trash2, Check, X, Package, Coins, AlertTriangle, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings, Search, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '../../../components/Button';
 import { ItemSelector } from './ItemSelector';
 import { ItemDetailModal } from '../../../components/ItemDetailModal';
@@ -53,8 +53,11 @@ const itemTypeColors: Record<ItemType, string> = {
 // Body locations for armor equipping
 const BODY_LOCATIONS = ['head', 'torso', 'armLeft', 'armRight', 'legLeft', 'legRight'] as const;
 
+// Item types that support mod installation
+const MODDABLE_TYPES: ItemType[] = ['weapon', 'armor', 'powerArmor', 'clothing'];
+
 // Compute the translated display name for an inventory item, accounting for installed mods
-function computeWeaponDisplayName(inv: InventoryItemApi, displayName: string, t: TFunction): string {
+function computeModdedDisplayName(inv: InventoryItemApi, displayName: string, t: TFunction): string {
   const installedMods = inv.installedMods;
   if (!installedMods || installedMods.length === 0) return displayName;
 
@@ -102,8 +105,13 @@ export function InventoryManager({
   const [capsInput, setCapsInput] = useState(String(caps));
   const [loading, setLoading] = useState<number | null>(null);
   const [selectedItemForDetail, setSelectedItemForDetail] = useState<{ itemId: number; itemType: ItemType } | null>(null);
-  // Which weapon inv ID has its mod panel open
+  // Which inventory item ID has its mod panel open
   const [modPanelOpenFor, setModPanelOpenFor] = useState<number | null>(null);
+  // Inventory filters
+  const [inventoryTypeFilter, setInventoryTypeFilter] = useState<ItemType | 'all'>('all');
+  const [inventorySearch, setInventorySearch] = useState('');
+  // Collapsed sections
+  const [collapsedSections, setCollapsedSections] = useState<Set<ItemType>>(new Set());
 
   // Calculate total weight
   const totalWeight = inventory.reduce((sum, inv) => {
@@ -152,8 +160,8 @@ export function InventoryManager({
       equipped: !inv.equipped,
     };
 
-    // For armor, include location
-    if (inv.item.itemType === 'armor' && !inv.equipped && location) {
+    // For armor / power armor, include location
+    if ((inv.item.itemType === 'armor' || inv.item.itemType === 'powerArmor') && !inv.equipped && location) {
       update.equippedLocation = location;
     } else if (inv.equipped) {
       update.equippedLocation = undefined;
@@ -183,7 +191,7 @@ export function InventoryManager({
     }
   };
 
-  // Install a mod on a weapon
+  // Install a mod on an item
   const handleInstallMod = async (targetInvId: number, modInventoryId: number) => {
     try {
       setLoading(targetInvId);
@@ -197,7 +205,7 @@ export function InventoryManager({
     }
   };
 
-  // Uninstall a mod from a weapon
+  // Uninstall a mod from an item
   const handleUninstallMod = async (targetInvId: number, modInventoryId: number) => {
     try {
       setLoading(targetInvId);
@@ -217,8 +225,20 @@ export function InventoryManager({
     setEditingCaps(false);
   };
 
+  // Filter inventory
+  const filteredInventory = inventory.filter(inv => {
+    if (inventoryTypeFilter !== 'all' && inv.item.itemType !== inventoryTypeFilter) return false;
+    if (inventorySearch.trim()) {
+      const searchLower = inventorySearch.toLowerCase();
+      const name = inv.item.name.toLowerCase();
+      const nameKey = inv.item.nameKey ? t(inv.item.nameKey).toLowerCase() : '';
+      if (!name.includes(searchLower) && !nameKey.includes(searchLower)) return false;
+    }
+    return true;
+  });
+
   // Group inventory by item type
-  const groupedInventory = inventory.reduce((groups, inv) => {
+  const groupedInventory = filteredInventory.reduce((groups, inv) => {
     const type = inv.item.itemType;
     if (!groups[type]) groups[type] = [];
     groups[type].push(inv);
@@ -226,86 +246,91 @@ export function InventoryManager({
   }, {} as Record<ItemType, InventoryItemApi[]>);
 
   // Order for display
-  const typeOrder: ItemType[] = ['weapon', 'armor', 'clothing', 'ammunition', 'chem', 'food', 'generalGood', 'robotArmor', 'syringerAmmo', 'oddity', 'mod'];
+  const typeOrder: ItemType[] = ['weapon', 'armor', 'powerArmor', 'clothing', 'ammunition', 'chem', 'food', 'generalGood', 'robotArmor', 'syringerAmmo', 'oddity', 'magazine', 'mod'];
 
   return (
     <div className="space-y-4">
-      {/* Summary header */}
-      <div className="flex flex-wrap gap-4 items-center justify-between bg-gray-800 p-3 rounded">
-        <div className="flex items-center gap-6">
+      {/* Summary + Add button row */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex flex-wrap items-center gap-x-4 gap-y-1 bg-gray-800 px-3 py-2 rounded">
           {/* Weight */}
-          <div className="flex items-center gap-2">
-            <Package size={18} className={isOverCapacity ? 'text-red-400' : 'text-gray-400'} />
-            <span className={`font-mono ${isOverCapacity ? 'text-red-400' : 'text-white'}`}>
-              {totalWeight.toFixed(1)} / {carryCapacity} {t('common.labels.lbs')}
+          <div className="flex items-center gap-1.5">
+            <Package size={16} className={isOverCapacity ? 'text-red-400' : 'text-gray-400'} />
+            <span className={`font-mono text-sm ${isOverCapacity ? 'text-red-400' : 'text-white'}`}>
+              {totalWeight.toFixed(1)}/{carryCapacity} {t('common.labels.lbs')}
             </span>
-            {isOverCapacity && (
-              <span className="flex items-center gap-1 text-red-400 text-sm">
-                <AlertTriangle size={14} />
-                {t('inventory.overCapacity')}
-              </span>
-            )}
+            {isOverCapacity && <AlertTriangle size={14} className="text-red-400" />}
           </div>
 
           {/* Value */}
-          <div className="flex items-center gap-2 text-gray-400">
-            <span className="text-sm">{t('inventory.totalValue')}:</span>
-            <span className="font-mono text-vault-yellow">{totalValue} {t('common.labels.caps')}</span>
+          <span className="font-mono text-sm text-vault-yellow">{totalValue} {t('common.labels.caps')}</span>
+
+          {/* Caps */}
+          <div className="flex items-center gap-1.5">
+            <Coins size={16} className="text-vault-yellow" />
+            {editingCaps ? (
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  value={capsInput}
+                  onChange={(e) => setCapsInput(e.target.value)}
+                  className="w-16 px-1 py-0.5 bg-gray-700 border border-vault-yellow rounded text-white text-center text-sm"
+                  autoFocus
+                />
+                <button type="button" onClick={handleSaveCaps} className="p-0.5 text-green-400 hover:bg-green-900/30 rounded">
+                  <Check size={14} />
+                </button>
+                <button type="button" onClick={() => { setCapsInput(String(caps)); setEditingCaps(false); }} className="p-0.5 text-red-400 hover:bg-red-900/30 rounded">
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setEditingCaps(true)} className="font-mono text-sm text-vault-yellow hover:underline">
+                {caps} {t('inventory.caps')}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Caps */}
-        <div className="flex items-center gap-2">
-          <Coins size={18} className="text-vault-yellow" />
-          {editingCaps ? (
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                value={capsInput}
-                onChange={(e) => setCapsInput(e.target.value)}
-                className="w-20 px-2 py-1 bg-gray-700 border border-vault-yellow rounded text-white text-center"
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={handleSaveCaps}
-                className="p-1 text-green-400 hover:bg-green-900/30 rounded"
-              >
-                <Check size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setCapsInput(String(caps));
-                  setEditingCaps(false);
-                }}
-                className="p-1 text-red-400 hover:bg-red-900/30 rounded"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setEditingCaps(true)}
-              className="font-mono text-vault-yellow hover:underline"
-            >
-              {caps} {t('inventory.caps')}
-            </button>
-          )}
-        </div>
+        {/* Compact add button */}
+        <button
+          type="button"
+          onClick={() => setIsItemSelectorOpen(true)}
+          className="flex-shrink-0 p-2 bg-vault-yellow text-vault-blue rounded hover:bg-vault-yellow-dark transition-colors"
+          title={t('inventory.addItem')}
+        >
+          <Plus size={20} />
+        </button>
       </div>
 
-      {/* Add item button */}
-      <Button type="button" onClick={() => setIsItemSelectorOpen(true)} className="w-full">
-        <Plus size={18} className="mr-2" />
-        {t('inventory.addItem')}
-      </Button>
+      {/* Filters */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={inventorySearch}
+            onChange={(e) => setInventorySearch(e.target.value)}
+            placeholder={t('inventory.searchItems')}
+            className="w-full pl-7 pr-2 py-1.5 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+          />
+        </div>
+        <select
+          value={inventoryTypeFilter}
+          onChange={(e) => setInventoryTypeFilter(e.target.value as ItemType | 'all')}
+          className="px-2 py-1.5 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+        >
+          <option value="all">{t('inventory.itemTypes.all')}</option>
+          {typeOrder.map(type => (
+            <option key={type} value={type}>{t(`inventory.itemTypes.${type}`)}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Inventory list */}
-      {inventory.length === 0 ? (
+      {filteredInventory.length === 0 ? (
         <div className="text-center py-8 text-gray-400">
-          {t('inventory.noItems')}
+          {inventory.length === 0 ? t('inventory.noItems') : t('common.noResults')}
         </div>
       ) : (
         <div className="space-y-4">
@@ -316,13 +341,29 @@ export function InventoryManager({
             const Icon = itemTypeIcons[type];
             const iconColor = itemTypeColors[type];
 
+            const isCollapsed = collapsedSections.has(type);
+            const toggleCollapse = () => {
+              setCollapsedSections(prev => {
+                const next = new Set(prev);
+                if (next.has(type)) next.delete(type);
+                else next.add(type);
+                return next;
+              });
+            };
+
             return (
               <div key={type}>
-                <h4 className="text-sm text-gray-400 uppercase tracking-wide mb-2 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={toggleCollapse}
+                  className="w-full text-sm text-gray-400 uppercase tracking-wide mb-2 flex items-center gap-2 hover:text-gray-300 transition-colors"
+                >
+                  {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
                   <Icon size={14} className={iconColor} />
                   {t(`inventory.itemTypes.${type}`)}
-                </h4>
-                <div className="space-y-1">
+                  <span className="text-xs font-mono text-gray-500">({items.length})</span>
+                </button>
+                {!isCollapsed && <div className="space-y-1">
                   {items.map(inv => {
                     // Try nameKey first, then items.categoryKey.name, then items.name, then raw name
                     const categoryKey = inv.item.itemType === 'weapon' ? 'weapons'
@@ -350,21 +391,23 @@ export function InventoryManager({
                       if (translated !== `items.${inv.item.name}`) baseName = translated;
                     }
 
-                    // For moddable items (weapons, armor, power armor), apply mod name transforms
-                    const moddableTypes = ['weapon', 'armor', 'powerArmor'];
-                    const displayName = moddableTypes.includes(inv.item.itemType)
-                      ? computeWeaponDisplayName(inv, baseName, t)
+                    // For moddable items, apply mod name transforms
+                    const displayName = MODDABLE_TYPES.includes(inv.item.itemType)
+                      ? computeModdedDisplayName(inv, baseName, t)
                       : baseName;
 
                     const isLoading = loading === inv.id;
                     const isModPanelOpen = modPanelOpenFor === inv.id;
 
-                    // Find compatible mods in inventory (items of type 'mod' not already installed on this weapon)
+                    // Find compatible mods in inventory (type 'mod', not already installed, and in compatibility list)
+                    const isModdable = MODDABLE_TYPES.includes(inv.item.itemType);
                     const installedModIds = new Set((inv.installedMods ?? []).map(m => m.modInventoryId));
-                    const availableMods = inv.item.itemType === 'weapon'
+                    const compatibleItemIds = new Set(inv.compatibleModItemIds ?? []);
+                    const availableMods = isModdable
                       ? inventory.filter(i =>
                           i.item.itemType === 'mod' &&
-                          !installedModIds.has(i.id)
+                          !installedModIds.has(i.id) &&
+                          compatibleItemIds.has(i.item.id)
                         )
                       : [];
 
@@ -417,8 +460,8 @@ export function InventoryManager({
                         </div>
 
                         {/* Equip button */}
-                        {(inv.item.itemType === 'weapon' || inv.item.itemType === 'armor' || inv.item.itemType === 'clothing') && (
-                          inv.item.itemType === 'armor' && !inv.equipped ? (
+                        {(inv.item.itemType === 'weapon' || inv.item.itemType === 'armor' || inv.item.itemType === 'powerArmor' || inv.item.itemType === 'clothing') && (
+                          (inv.item.itemType === 'armor' || inv.item.itemType === 'powerArmor') && !inv.equipped ? (
                             <select
                               onChange={(e) => {
                                 if (e.target.value) {
@@ -450,8 +493,8 @@ export function InventoryManager({
                           )
                         )}
 
-                        {/* Mod install button (weapons only) */}
-                        {inv.item.itemType === 'weapon' && (
+                        {/* Mod install button */}
+                        {isModdable && (
                           <button
                             type="button"
                             onClick={() => setModPanelOpenFor(isModPanelOpen ? null : inv.id)}
@@ -476,7 +519,7 @@ export function InventoryManager({
                         </div>{/* end flex row */}
 
                         {/* Installed mods + mod install panel */}
-                        {inv.item.itemType === 'weapon' && (
+                        {isModdable && (
                           <>
                             {/* Installed mods badges */}
                             {(inv.installedMods ?? []).length > 0 && (
@@ -529,7 +572,7 @@ export function InventoryManager({
                       </div>
                     );
                   })}
-                </div>
+                </div>}
               </div>
             );
           })}

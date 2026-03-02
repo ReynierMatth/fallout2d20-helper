@@ -926,6 +926,7 @@ export default {
       food: 'Nourriture',
       generalGood: 'Équipement',
       oddity: 'Curiosités',
+      magazine: 'Magazines',
       mod: 'Mods',
       all: 'Tous',
     },
@@ -1442,6 +1443,7 @@ export default {
         antigel: { nameAdd: 'Antigel' },
         prismatique: { nameAdd: 'Prismatique' },
         antiexplosion: { nameAdd: 'Antiexplosion' },
+        protectionIem: { nameAdd: 'Protection IEM' },
       },
       amelioration: {
         raider2: {
@@ -1479,6 +1481,99 @@ export default {
           plastron: { nameAdd: 'Plastron T-45f' },
           brassard: { nameAdd: 'Brassard T-45f' },
           jambiere: { nameAdd: 'Jambière T-45f' },
+        },
+        // T-51
+        t51b: {
+          casque: { nameAdd: 'Casque T-51b' },
+          plastron: { nameAdd: 'Plastron T-51b' },
+          brassard: { nameAdd: 'Brassard T-51b' },
+          jambiere: { nameAdd: 'Jambière T-51b' },
+        },
+        t51c: {
+          casque: { nameAdd: 'Casque T-51c' },
+          plastron: { nameAdd: 'Plastron T-51c' },
+          brassard: { nameAdd: 'Brassard T-51c' },
+          jambiere: { nameAdd: 'Jambière T-51c' },
+        },
+        t51d: {
+          casque: { nameAdd: 'Casque T-51d' },
+          plastron: { nameAdd: 'Plastron T-51d' },
+          brassard: { nameAdd: 'Brassard T-51d' },
+          jambiere: { nameAdd: 'Jambière T-51d' },
+        },
+        t51e: {
+          casque: { nameAdd: 'Casque T-51e' },
+          plastron: { nameAdd: 'Plastron T-51e' },
+          brassard: { nameAdd: 'Brassard T-51e' },
+          jambiere: { nameAdd: 'Jambière T-51e' },
+        },
+        t51f: {
+          casque: { nameAdd: 'Casque T-51f' },
+          plastron: { nameAdd: 'Plastron T-51f' },
+          brassard: { nameAdd: 'Brassard T-51f' },
+          jambiere: { nameAdd: 'Jambière T-51f' },
+        },
+        // T-60
+        t60b: {
+          casque: { nameAdd: 'Casque T-60b' },
+          plastron: { nameAdd: 'Plastron T-60b' },
+          brassard: { nameAdd: 'Brassard T-60b' },
+          jambiere: { nameAdd: 'Jambière T-60b' },
+        },
+        t60c: {
+          casque: { nameAdd: 'Casque T-60c' },
+          plastron: { nameAdd: 'Plastron T-60c' },
+          brassard: { nameAdd: 'Brassard T-60c' },
+          jambiere: { nameAdd: 'Jambière T-60c' },
+        },
+        t60d: {
+          casque: { nameAdd: 'Casque T-60d' },
+          plastron: { nameAdd: 'Plastron T-60d' },
+          brassard: { nameAdd: 'Brassard T-60d' },
+          jambiere: { nameAdd: 'Jambière T-60d' },
+        },
+        t60e: {
+          casque: { nameAdd: 'Casque T-60e' },
+          plastron: { nameAdd: 'Plastron T-60e' },
+          brassard: { nameAdd: 'Brassard T-60e' },
+          jambiere: { nameAdd: 'Jambière T-60e' },
+        },
+        t60f: {
+          casque: { nameAdd: 'Casque T-60f' },
+          plastron: { nameAdd: 'Plastron T-60f' },
+          brassard: { nameAdd: 'Brassard T-60f' },
+          jambiere: { nameAdd: 'Jambière T-60f' },
+        },
+        // X-01
+        mk2: {
+          casque: { nameAdd: 'Casque Mk II' },
+          plastron: { nameAdd: 'Plastron Mk II' },
+          brassard: { nameAdd: 'Brassard Mk II' },
+          jambiere: { nameAdd: 'Jambière Mk II' },
+        },
+        mk3: {
+          casque: { nameAdd: 'Casque Mk III' },
+          plastron: { nameAdd: 'Plastron Mk III' },
+          brassard: { nameAdd: 'Brassard Mk III' },
+          jambiere: { nameAdd: 'Jambière Mk III' },
+        },
+        mk4: {
+          casque: { nameAdd: 'Casque Mk IV' },
+          plastron: { nameAdd: 'Plastron Mk IV' },
+          brassard: { nameAdd: 'Brassard Mk IV' },
+          jambiere: { nameAdd: 'Jambière Mk IV' },
+        },
+        mk5: {
+          casque: { nameAdd: 'Casque Mk V' },
+          plastron: { nameAdd: 'Plastron Mk V' },
+          brassard: { nameAdd: 'Brassard Mk V' },
+          jambiere: { nameAdd: 'Jambière Mk V' },
+        },
+        mk6: {
+          casque: { nameAdd: 'Casque Mk VI' },
+          plastron: { nameAdd: 'Plastron Mk VI' },
+          brassard: { nameAdd: 'Brassard Mk VI' },
+          jambiere: { nameAdd: 'Jambière Mk VI' },
         },
       },
     },
