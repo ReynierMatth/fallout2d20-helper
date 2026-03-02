@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useTranslation, type TFunction } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Plus, Minus, Trash2, Check, X, Package, Coins, AlertTriangle, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings, Search, ChevronDown, ChevronRight } from 'lucide-react';
-import { Button } from '../../../components/Button';
 import { ItemSelector } from './ItemSelector';
 import { ItemDetailModal } from '../../../components/ItemDetailModal';
 import { useCharactersApi } from '../../../hooks/useCharactersApi';
