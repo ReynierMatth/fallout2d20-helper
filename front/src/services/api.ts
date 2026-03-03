@@ -430,6 +430,18 @@ export interface CharacterTraitApi {
   descriptionKey?: string | null;
 }
 
+export interface CreatureAttackApi {
+  name: string;
+  nameKey?: string;
+  skill: string;
+  damage: number;
+  damageType: string;
+  damageBonus?: number;
+  fireRate?: number | null;
+  range: string;
+  qualities: { quality: string; value?: number }[];
+}
+
 export interface CharacterApi {
   id: number;
   name: string;
@@ -450,6 +462,8 @@ export interface CharacterApi {
   statBlockType: 'normal' | 'creature';
   bestiaryEntryId?: number | null;
   creatureAttributes?: Record<string, number>;
+  creatureSkills?: Record<string, number>;
+  creatureAttacks?: CreatureAttackApi[];
   createdAt: string;
   updatedAt: string;
   // Relations

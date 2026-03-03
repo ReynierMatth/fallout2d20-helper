@@ -35,8 +35,11 @@ export function CharacterCard({
 
   const isCreature = character.statBlockType === 'creature';
 
-  const origin = character.originId
-    ? ORIGINS.find((o) => o.id === character.originId)
+  // Handle both Character types: domain/models has originId, data/characters has origin
+  const charOriginId = character.originId ?? (character as any).origin;
+
+  const origin = charOriginId
+    ? ORIGINS.find((o) => o.id === charOriginId)
     : null;
 
   // Resolve name through i18n for creatures (name may be a translation key)
@@ -58,7 +61,7 @@ export function CharacterCard({
             : 'border-vault-yellow-dark bg-vault-gray hover:bg-vault-blue/50'
         } ${onClick ? 'cursor-pointer' : ''} ${className}`}
       >
-        <OriginIcon originId={character.originId} type={character.type} size="sm" className="flex-shrink-0" />
+        <OriginIcon originId={charOriginId} type={character.type} size="sm" className="flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <span className="text-vault-yellow font-bold truncate block">
             {displayName}
@@ -83,30 +86,29 @@ export function CharacterCard({
       {/* Header */}
       <div
         onClick={onClick}
-        className="bg-vault-blue px-4 py-3 flex items-center gap-3"
+        className="bg-vault-blue px-3 py-2 flex items-center gap-2"
       >
-        <OriginIcon originId={character.originId} type={character.type} size="lg" className="flex-shrink-0" />
+        <OriginIcon originId={charOriginId} type={character.type} size="md" className="flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <h3 className="text-vault-yellow font-bold text-lg truncate">
+          <h3 className="text-vault-yellow font-bold text-sm truncate">
             {displayName}
           </h3>
-          <p className="text-sm text-gray-300">
-            {character.type === 'pc' ? t('characters.pc') : t('characters.npc')} -{' '}
-            {t('characters.level')} {character.level}
+          <p className="text-xs text-gray-300">
+            {character.type === 'pc' ? t('characters.pc') : t('characters.npc')} Nv.{character.level}
             {origin && (
-              <span className="ml-2 text-vault-yellow-dark">
+              <span className="ml-1 text-vault-yellow-dark">
                 ({t(origin.nameKey)})
               </span>
             )}
           </p>
         </div>
         {onClick && (
-          <Eye size={20} className="text-vault-yellow-dark flex-shrink-0" />
+          <Eye size={16} className="text-vault-yellow-dark flex-shrink-0" />
         )}
       </div>
 
       {/* Body */}
-      <div className="p-4 space-y-3">
+      <div className="px-3 py-2 space-y-2">
         {isCreature ? (
           <>
             {/* Creature attributes (Body / Mind) */}
@@ -125,7 +127,7 @@ export function CharacterCard({
             )}
 
             {/* Creature combat stats */}
-            <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="grid grid-cols-2 gap-1.5 text-sm">
               <div className="flex items-center gap-1">
                 <Heart size={12} style={{ color: 'var(--color-special-endurance)' }} />
                 <span className="text-gray-400">{t('characters.hp')}:</span>
@@ -177,7 +179,7 @@ export function CharacterCard({
             </div>
 
             {/* Combat Stats */}
-            <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="grid grid-cols-2 gap-1.5 text-sm">
               <div className="flex items-center gap-1">
                 <Heart size={12} style={{ color: 'var(--color-special-endurance)' }} />
                 <span className="text-gray-400">{t('characters.hp')}:</span>

@@ -361,6 +361,24 @@ router.post('/:id/instantiate', async (req, res) => {
 
     } else {
       // Creature — minimal character (just hp/defense/initiative + inventory)
+      // Store creature attributes and skills directly on character
+      // entry.attributes is already a Record<string, number> from getFullBestiaryEntry
+      const creatureAttributes = entry.attributes as Record<string, number>;
+      const creatureSkills = Object.fromEntries(
+        entry.skills.map((s) => [s.skill, s.rank])
+      );
+      const creatureAttacks = entry.attacks.map((a: any) => ({
+        name: a.item?.name ?? a.nameKey,
+        nameKey: a.item?.nameKey ?? a.nameKey,
+        skill: a.skill,
+        damage: a.damage,
+        damageType: a.damageType,
+        damageBonus: a.damageBonus ?? undefined,
+        fireRate: a.fireRate,
+        range: a.range,
+        qualities: a.qualities.map((q: any) => ({ quality: q.quality, value: q.value ?? undefined })),
+      }));
+
       const [newChar] = await db.insert(characters).values({
         name: characterName,
         type: 'npc',
@@ -375,6 +393,9 @@ router.post('/:id/instantiate', async (req, res) => {
         currentLuckPoints: entry.maxLuckPoints,
         statBlockType: entry.statBlockType,
         bestiaryEntryId: entry.id,
+        creatureAttributes,
+        creatureSkills,
+        creatureAttacks,
       }).returning();
 
       // Creatures need minimal SPECIAL to avoid errors (set defaults)

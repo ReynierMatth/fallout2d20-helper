@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Plus, Star, Sparkles, Dumbbell, Package, Check, User, BookOpen, ScrollText, AlertTriangle, Lock } from 'lucide-react';
+import { X, Plus, Star, Sparkles, Dumbbell, Package, Check, User, BookOpen, ScrollText, AlertTriangle, Lock, Heart, Shield, Zap, Swords } from 'lucide-react';
 import type {
   Character,
   SpecialAttribute,
@@ -172,6 +172,23 @@ export function CharacterForm({
   const [formDr, setFormDr] = useState<{ location: string; drPhysical: number; drEnergy: number; drRadiation: number; drPoison: number }[]>([]);
   const [formTraits, setFormTraits] = useState<{ name: string; description: string; nameKey?: string | null; descriptionKey?: string | null }[]>([]);
 
+  // Creature-specific: editable derived stats (not calculated from SPECIAL)
+  const [creatureMaxHp, setCreatureMaxHp] = useState(10);
+  const [creatureDefense, setCreatureDefense] = useState(1);
+  const [creatureInitiative, setCreatureInitiative] = useState(10);
+  const [creatureMeleeDamageBonus, setCreatureMeleeDamageBonus] = useState(0);
+  // Creature attributes (Body/Mind) and skills (Melee/Ranged/Other)
+  const [creatureBody, setCreatureBody] = useState(5);
+  const [creatureMind, setCreatureMind] = useState(5);
+  const [creatureMelee, setCreatureMelee] = useState(0);
+  const [creatureRanged, setCreatureRanged] = useState(0);
+  const [creatureOther, setCreatureOther] = useState(0);
+  // Creature attacks
+  const [formAttacks, setFormAttacks] = useState<{
+    name: string; skill: string; damage: number; damageType: string;
+    fireRate: number | null; range: string; qualities: { quality: string; value?: number }[];
+  }[]>([]);
+
   // Equipment Pack
   const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
   // Equipment choices: key = "packId-index", value = selected option index
@@ -189,6 +206,9 @@ export function CharacterForm({
   );
   const { bonuses: tagSkillBonusesApi, loading: tagBonusesLoading } = useTagSkillBonuses();
   const { bonus: levelBonusApi } = useLevelBonus(level);
+
+  // Creature NPC: skip SPECIAL/Skills/Perks steps
+  const isCreature = type === 'NPC' && statBlockType === 'creature';
 
   // Get origin data
   const currentOrigin = useMemo(
@@ -395,26 +415,43 @@ export function CharacterForm({
       });
     }
 
-    steps.push(
-      {
-        id: 'special',
-        labelKey: 'wizard.special',
-        badge: specialPointsRemaining,
-        badgeColor: specialPointsRemaining === 0 ? 'success' : specialPointsRemaining > 0 ? 'default' : 'error',
-      },
-      {
-        id: 'skills',
-        labelKey: 'characters.skills',
-        icon: <BookOpen size={16} />,
-        badge: skillPointsRemaining,
-        badgeColor: skillPointsRemaining === 0 ? 'success' : skillPointsRemaining > 0 ? 'default' : 'error',
-      },
-      {
-        id: 'perks',
-        labelKey: 'characters.traitsAndAptitudes',
-        badge: perks.length > 0 ? `${currentPerkChoices}/${maxPerkChoices}` : undefined,
-      },
-    );
+    if (isCreature) {
+      // Creature: editable derived stats step
+      steps.push({
+        id: 'creatureStats',
+        labelKey: 'characterSheet.derivedStats',
+        icon: <Heart size={16} />,
+      });
+      steps.push({
+        id: 'creatureAttacks',
+        labelKey: 'characterSheet.attacks',
+        icon: <Swords size={16} />,
+        badge: formAttacks.length > 0 ? String(formAttacks.length) : undefined,
+        badgeColor: 'default' as const,
+      });
+    } else {
+      // Normal: SPECIAL, Skills, Perks
+      steps.push(
+        {
+          id: 'special',
+          labelKey: 'wizard.special',
+          badge: specialPointsRemaining,
+          badgeColor: specialPointsRemaining === 0 ? 'success' : specialPointsRemaining > 0 ? 'default' : 'error',
+        },
+        {
+          id: 'skills',
+          labelKey: 'characters.skills',
+          icon: <BookOpen size={16} />,
+          badge: skillPointsRemaining,
+          badgeColor: skillPointsRemaining === 0 ? 'success' : skillPointsRemaining > 0 ? 'default' : 'error',
+        },
+        {
+          id: 'perks',
+          labelKey: 'characters.traitsAndAptitudes',
+          badge: perks.length > 0 ? `${currentPerkChoices}/${maxPerkChoices}` : undefined,
+        },
+      );
+    }
 
     // Conditional: Equipment Pack (PC + create mode)
     if (type === 'PC' && isCreateMode) {
@@ -427,12 +464,18 @@ export function CharacterForm({
       });
     }
 
-    // Conditional: NPC DR & Traits
+    // Conditional: NPC DR & Traits (separate steps)
     if (type === 'NPC') {
       steps.push({
-        id: 'npcDrTraits',
-        labelKey: 'characters.drAndTraits',
-        badge: formDr.length > 0 || formTraits.length > 0 ? `${formDr.length > 0 ? 'DR' : ''}${formDr.length > 0 && formTraits.length > 0 ? '+' : ''}${formTraits.length > 0 ? formTraits.length : ''}` : undefined,
+        id: 'npcDr',
+        labelKey: 'characters.drEditor',
+        badge: formDr.length > 0 ? 'DR' : undefined,
+        badgeColor: 'default' as const,
+      });
+      steps.push({
+        id: 'npcTraits',
+        labelKey: 'characters.traits',
+        badge: formTraits.length > 0 ? String(formTraits.length) : undefined,
         badgeColor: 'default' as const,
       });
     }
@@ -444,7 +487,7 @@ export function CharacterForm({
     });
 
     return steps;
-  }, [name, type, origin, survivorTraits.length, specialPointsRemaining, skillPointsRemaining, perks.length, currentPerkChoices, maxPerkChoices, isCreateMode, selectedPack, formDr.length, formTraits.length]);
+  }, [name, type, origin, survivorTraits.length, specialPointsRemaining, skillPointsRemaining, perks.length, currentPerkChoices, maxPerkChoices, isCreateMode, selectedPack, formDr.length, formTraits.length, isCreature]);
 
   // Clamp currentStep when steps change
   useEffect(() => {
@@ -505,6 +548,21 @@ export function CharacterForm({
         setPerks(character.perks);
         setNotes(character.notes);
         setStatBlockType(character.statBlockType ?? 'normal');
+        // Creature derived stats (editable)
+        setCreatureMaxHp(character.maxHp ?? 10);
+        setCreatureDefense(character.defense ?? 1);
+        setCreatureInitiative(character.initiative ?? 10);
+        setCreatureMeleeDamageBonus(character.meleeDamageBonus ?? 0);
+        // Creature attributes and skills
+        setCreatureBody(character.creatureAttributes?.body ?? 5);
+        setCreatureMind(character.creatureAttributes?.mind ?? 5);
+        setCreatureMelee(character.creatureSkills?.melee ?? 0);
+        setCreatureRanged(character.creatureSkills?.ranged ?? 0);
+        setCreatureOther(character.creatureSkills?.other ?? 0);
+        setFormAttacks((character.creatureAttacks ?? []).map(a => ({
+          name: a.name, skill: a.skill, damage: a.damage, damageType: a.damageType,
+          fireRate: a.fireRate ?? null, range: a.range, qualities: a.qualities ?? [],
+        })));
         setFormDr(character.dr ?? []);
         setFormTraits(character.traits?.map(t => ({ name: t.name, description: t.description, nameKey: t.nameKey, descriptionKey: t.descriptionKey })) ?? []);
         setSelectedPackId(null);
@@ -542,6 +600,16 @@ export function CharacterForm({
         setPerks([]);
         setNotes('');
         setStatBlockType('normal');
+        setCreatureMaxHp(10);
+        setCreatureDefense(1);
+        setCreatureInitiative(10);
+        setCreatureMeleeDamageBonus(0);
+        setCreatureBody(5);
+        setCreatureMind(5);
+        setCreatureMelee(0);
+        setCreatureRanged(0);
+        setCreatureOther(0);
+        setFormAttacks([]);
         setFormDr([]);
         setFormTraits([]);
       }
@@ -853,6 +921,22 @@ export function CharacterForm({
       ? (levelBonus.baseCaps ?? 0) + (hasBarterTagSkill ? barterBonusCaps : 0)
       : (character.caps ?? 0);
 
+    // For creatures, use the editable form values (not recalculated from SPECIAL)
+    const creatureStats = isCreature ? {
+      special: character?.special ?? special,
+      skills: character?.skills ?? skills,
+      tagSkills: character?.tagSkills ?? [],
+      maxHp: creatureMaxHp,
+      currentHp: character ? Math.min(character.currentHp, creatureMaxHp) : creatureMaxHp,
+      defense: creatureDefense,
+      initiative: creatureInitiative,
+      meleeDamageBonus: creatureMeleeDamageBonus,
+      maxLuckPoints: 0,
+      currentLuckPoints: 0,
+      carryCapacity: character?.carryCapacity ?? 150,
+      perks: character?.perks ?? [],
+    } : null;
+
     const characterData: Omit<Character, 'id' | 'createdAt' | 'updatedAt'> = {
       name: name.trim() || t('characters.unnamed'),
       type,
@@ -860,28 +944,31 @@ export function CharacterForm({
       origin: type === 'PC' ? origin : undefined,
       survivorTraits: origin === 'survivor' ? survivorTraits : [],
       giftedBonusAttributes: hasGifted ? giftedBonusAttributes : [],
-      exerciseBonuses,
-      special,
-      skills,
-      tagSkills,
-      maxHp,
-      currentHp: character ? Math.min(character.currentHp, maxHp) : maxHp,
-      defense,
-      initiative,
-      meleeDamageBonus,
-      maxLuckPoints,
-      currentLuckPoints: character
-        ? Math.min(character.currentLuckPoints, maxLuckPoints)
-        : maxLuckPoints,
-      carryCapacity,
+      exerciseBonuses: creatureStats ? [] : exerciseBonuses,
+      special: creatureStats?.special ?? special,
+      skills: creatureStats?.skills ?? skills,
+      tagSkills: creatureStats?.tagSkills ?? tagSkills,
+      maxHp: creatureStats?.maxHp ?? maxHp,
+      currentHp: creatureStats ? creatureStats.currentHp : (character ? Math.min(character.currentHp, maxHp) : maxHp),
+      defense: creatureStats?.defense ?? defense,
+      initiative: creatureStats?.initiative ?? initiative,
+      meleeDamageBonus: creatureStats?.meleeDamageBonus ?? meleeDamageBonus,
+      maxLuckPoints: creatureStats?.maxLuckPoints ?? maxLuckPoints,
+      currentLuckPoints: creatureStats ? creatureStats.currentLuckPoints : (character ? Math.min(character.currentLuckPoints, maxLuckPoints) : maxLuckPoints),
+      carryCapacity: creatureStats?.carryCapacity ?? carryCapacity,
       equippedWeapons: character?.equippedWeapons ?? [],
       equippedArmor: character?.equippedArmor ?? {},
       equippedClothing: character?.equippedClothing ?? [],
-      perks,
+      perks: creatureStats?.perks ?? perks,
       notes,
       inventory: isEditMode ? character?.inventory : inventory,
       caps: startingCaps,
       statBlockType: type === 'NPC' ? statBlockType : 'normal',
+      creatureAttributes: isCreature ? { body: creatureBody, mind: creatureMind } : undefined,
+      creatureSkills: isCreature ? { melee: creatureMelee, ranged: creatureRanged, other: creatureOther } : undefined,
+      creatureAttacks: isCreature ? formAttacks.filter(a => a.name.trim()).map(a => ({
+        ...a, name: a.name.trim(),
+      })) : undefined,
       dr: type === 'NPC' ? formDr : [],
       traits: type === 'NPC' ? formTraits.filter(t => t.name.trim()) : [],
     };
@@ -1027,6 +1114,335 @@ export function CharacterForm({
         </div>
       );
     }
+
+    // Step: Creature Stats (editable derived stats)
+    if (isCreature) {
+      panels.push(
+        <div key="creatureStats" className="space-y-6">
+          <p className="text-xs text-gray-400">{t('characters.creatureStatsDesc')}</p>
+
+          {/* Creature Attributes (Body / Mind) */}
+          <div>
+            <h4 className="text-xs text-gray-400 uppercase tracking-wide mb-2">{t('characterSheet.creatureAttributes')}</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="flex items-center gap-2 text-sm mb-1" style={{ color: 'var(--color-special-strength)' }}>
+                  {t('bestiary.creatureAttributes.body')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureBody}
+                  onChange={(e) => setCreatureBody(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm mb-1" style={{ color: 'var(--color-special-intelligence)' }}>
+                  {t('bestiary.creatureAttributes.mind')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureMind}
+                  onChange={(e) => setCreatureMind(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Creature Skills (Melee / Ranged / Other) */}
+          <div>
+            <h4 className="text-xs text-gray-400 uppercase tracking-wide mb-2">{t('characterSheet.creatureSkills')}</h4>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="flex items-center gap-2 text-sm mb-1" style={{ color: '#E8706A' }}>
+                  {t('bestiary.creatureSkills.melee')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureMelee}
+                  onChange={(e) => setCreatureMelee(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm mb-1" style={{ color: '#E8706A' }}>
+                  {t('bestiary.creatureSkills.ranged')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureRanged}
+                  onChange={(e) => setCreatureRanged(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm mb-1" style={{ color: '#E8706A' }}>
+                  {t('bestiary.creatureSkills.other')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureOther}
+                  onChange={(e) => setCreatureOther(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Derived Combat Stats */}
+          <div>
+            <h4 className="text-xs text-gray-400 uppercase tracking-wide mb-2">{t('characterSheet.derivedStats')}</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+                  <Heart size={14} style={{ color: 'var(--color-special-endurance)' }} />
+                  {t('characters.hp')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureMaxHp}
+                  onChange={(e) => setCreatureMaxHp(Math.max(1, parseInt(e.target.value) || 1))}
+                  min={1}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+                  <Shield size={14} style={{ color: 'var(--color-special-agility)' }} />
+                  {t('characters.defense')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureDefense}
+                  onChange={(e) => setCreatureDefense(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+                  <Zap size={14} style={{ color: 'var(--color-special-perception)' }} />
+                  {t('characters.initiative')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureInitiative}
+                  onChange={(e) => setCreatureInitiative(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm text-gray-400 mb-1">
+                  <Swords size={14} style={{ color: 'var(--color-special-strength)' }} />
+                  {t('characters.meleeDamageBonus')}
+                </label>
+                <input
+                  type="number"
+                  value={creatureMeleeDamageBonus}
+                  onChange={(e) => setCreatureMeleeDamageBonus(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  inputMode="numeric"
+                  className="w-full px-3 py-3 bg-gray-800 border border-vault-yellow-dark rounded text-white text-base"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Step: Creature Attacks
+    if (isCreature) {
+      const DAMAGE_TYPES = ['physical', 'energy', 'radiation', 'poison'] as const;
+      const RANGES = ['close', 'medium', 'long', 'extreme'] as const;
+      const SKILLS = ['melee', 'ranged', 'other'] as const;
+
+      const addAttack = () => {
+        setFormAttacks(prev => [...prev, {
+          name: '', skill: 'melee', damage: 1, damageType: 'physical',
+          fireRate: null, range: 'close', qualities: [],
+        }]);
+      };
+      const removeAttack = (index: number) => {
+        setFormAttacks(prev => prev.filter((_, i) => i !== index));
+      };
+      const updateAttack = (index: number, field: string, value: any) => {
+        setFormAttacks(prev => prev.map((a, i) => i === index ? { ...a, [field]: value } : a));
+      };
+      const addQuality = (attackIndex: number) => {
+        setFormAttacks(prev => prev.map((a, i) =>
+          i === attackIndex ? { ...a, qualities: [...a.qualities, { quality: 'piercing', value: 1 }] } : a
+        ));
+      };
+      const removeQuality = (attackIndex: number, qualityIndex: number) => {
+        setFormAttacks(prev => prev.map((a, i) =>
+          i === attackIndex ? { ...a, qualities: a.qualities.filter((_, qi) => qi !== qualityIndex) } : a
+        ));
+      };
+      const updateQuality = (attackIndex: number, qualityIndex: number, field: string, value: any) => {
+        setFormAttacks(prev => prev.map((a, i) =>
+          i === attackIndex ? { ...a, qualities: a.qualities.map((q, qi) =>
+            qi === qualityIndex ? { ...q, [field]: value } : q
+          ) } : a
+        ));
+      };
+
+      panels.push(
+        <div key="creatureAttacks" className="space-y-4">
+          <p className="text-xs text-gray-400">{t('characters.creatureAttacksDesc')}</p>
+
+          {formAttacks.map((attack, idx) => (
+            <div key={idx} className="bg-gray-800 rounded-lg p-4 space-y-3 border border-gray-700">
+              <div className="flex items-center justify-between">
+                <span className="text-vault-yellow font-bold text-sm">{t('characterSheet.attacks')} #{idx + 1}</span>
+                <button type="button" onClick={() => removeAttack(idx)} className="text-red-400 hover:text-red-300 cursor-pointer p-1">
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Name + Skill */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{t('common.labels.name')}</label>
+                  <input
+                    type="text"
+                    value={attack.name}
+                    onChange={(e) => updateAttack(idx, 'name', e.target.value)}
+                    placeholder={t('characters.attackNamePlaceholder')}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded text-white text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{t('characters.attackSkill')}</label>
+                  <select
+                    value={attack.skill}
+                    onChange={(e) => updateAttack(idx, 'skill', e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded text-white text-sm"
+                  >
+                    {SKILLS.map(s => (
+                      <option key={s} value={s}>{t(`bestiary.creatureSkills.${s}`)}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Damage + Type + Range */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{t('characters.attackDamage')}</label>
+                  <input
+                    type="number"
+                    value={attack.damage}
+                    onChange={(e) => updateAttack(idx, 'damage', Math.max(0, parseInt(e.target.value) || 0))}
+                    min={0}
+                    inputMode="numeric"
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded text-white text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{t('characters.attackDamageType')}</label>
+                  <select
+                    value={attack.damageType}
+                    onChange={(e) => updateAttack(idx, 'damageType', e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded text-white text-sm"
+                  >
+                    {DAMAGE_TYPES.map(dt => (
+                      <option key={dt} value={dt}>{t(`bestiary.damageTypeShort.${dt}`)}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{t('characters.attackRange')}</label>
+                  <select
+                    value={attack.range}
+                    onChange={(e) => updateAttack(idx, 'range', e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded text-white text-sm"
+                  >
+                    {RANGES.map(r => (
+                      <option key={r} value={r}>{t(`ranges.${r}`)}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Fire Rate */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">{t('bestiary.fireRateShort')}</label>
+                  <input
+                    type="number"
+                    value={attack.fireRate ?? ''}
+                    onChange={(e) => updateAttack(idx, 'fireRate', e.target.value ? parseInt(e.target.value) : null)}
+                    min={0}
+                    inputMode="numeric"
+                    placeholder="—"
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded text-white text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Qualities */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-gray-400">{t('characters.attackQualities')}</label>
+                  <button type="button" onClick={() => addQuality(idx)} className="text-xs text-vault-yellow hover:underline cursor-pointer">
+                    + {t('common.actions.add')}
+                  </button>
+                </div>
+                {attack.qualities.map((q, qi) => (
+                  <div key={qi} className="flex items-center gap-2 mb-1">
+                    <input
+                      type="text"
+                      value={q.quality}
+                      onChange={(e) => updateQuality(idx, qi, 'quality', e.target.value)}
+                      placeholder="piercing"
+                      className="flex-1 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white text-xs"
+                    />
+                    <input
+                      type="number"
+                      value={q.value ?? ''}
+                      onChange={(e) => updateQuality(idx, qi, 'value', e.target.value ? parseInt(e.target.value) : undefined)}
+                      placeholder="—"
+                      inputMode="numeric"
+                      className="w-16 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white text-xs"
+                    />
+                    <button type="button" onClick={() => removeQuality(idx, qi)} className="text-red-400 hover:text-red-300 cursor-pointer p-0.5">
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={addAttack}
+            className="w-full py-3 border border-dashed border-vault-yellow-dark text-vault-yellow rounded-lg hover:bg-vault-blue/30 transition-colors cursor-pointer text-sm flex items-center justify-center gap-2"
+          >
+            <Plus size={16} /> {t('characters.addAttack')}
+          </button>
+        </div>
+      );
+    }
+
+    // Steps: SPECIAL, Skills, Perks — skipped for creatures
+    if (!isCreature) {
 
     // Step: SPECIAL
     panels.push(
@@ -1632,6 +2048,8 @@ export function CharacterForm({
       </div>
     );
 
+    } // end if (!isCreature)
+
     // Step: Equipment Pack (conditional: PC + create mode)
     if (type === 'PC' && isCreateMode) {
       panels.push(
@@ -1789,10 +2207,16 @@ export function CharacterForm({
       );
     }
 
-    // Step: NPC DR & Traits (conditional)
+    // Step: NPC DR (conditional)
     if (type === 'NPC') {
       const ALL_LOCATIONS = ['head', 'torso', 'armLeft', 'armRight', 'legLeft', 'legRight'] as const;
       const DR_TYPES = ['drPhysical', 'drEnergy', 'drRadiation', 'drPoison'] as const;
+      const DR_COLORS: Record<string, string> = {
+        drPhysical: 'text-gray-300',
+        drEnergy: 'text-blue-400',
+        drRadiation: 'text-yellow-400',
+        drPoison: 'text-green-400',
+      };
 
       const initializeDr = () => {
         if (formDr.length === 0) {
@@ -1820,6 +2244,72 @@ export function CharacterForm({
         }));
       };
 
+      panels.push(
+        <div key="npcDr" className="space-y-4">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-sm font-bold text-vault-yellow uppercase">{t('characters.drEditor')}</h3>
+            {formDr.length === 0 ? (
+              <button
+                type="button"
+                onClick={initializeDr}
+                className="flex items-center gap-1 px-3 py-1.5 bg-vault-blue text-vault-yellow border border-vault-yellow-dark rounded text-sm hover:bg-vault-blue/80 cursor-pointer"
+              >
+                <Plus size={14} />
+                {t('common.add')}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setFormDr([])}
+                className="text-xs text-red-400 hover:text-red-300 cursor-pointer"
+              >
+                {t('common.clear')}
+              </button>
+            )}
+          </div>
+
+          {formDr.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {formDr.map(row => (
+                <div key={row.location} className="p-3 bg-gray-800 rounded border border-gray-700">
+                  <h4 className="text-vault-yellow font-bold text-xs mb-2">{t(`bodyLocations.${row.location}`)}</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {DR_TYPES.map(dt => {
+                      const val = (row as any)[dt] as number;
+                      const isImmune = val === -1;
+                      return (
+                        <div key={dt} className="flex flex-col gap-1">
+                          <span className={`text-[10px] font-bold ${DR_COLORS[dt]}`}>{t(`bodyResistance.${dt}`)}</span>
+                          <input
+                            type="number"
+                            value={isImmune ? '' : val}
+                            onChange={(e) => updateDrValue(row.location, dt, parseInt(e.target.value) || 0)}
+                            disabled={isImmune}
+                            min={0}
+                            inputMode="numeric"
+                            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded text-white text-center text-sm disabled:opacity-40"
+                          />
+                          <label className="flex items-center gap-1 cursor-pointer self-center">
+                            <input
+                              type="checkbox"
+                              checked={isImmune}
+                              onChange={() => toggleImmune(row.location, dt)}
+                              className="w-3 h-3 accent-purple-500"
+                            />
+                            <span className="text-[10px] text-purple-400">{t('characters.immune')}</span>
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+
+      // Step: NPC Traits
       const addTrait = () => {
         setFormTraits(prev => [...prev, { name: '', description: '' }]);
       };
@@ -1833,128 +2323,51 @@ export function CharacterForm({
       };
 
       panels.push(
-        <div key="npcDrTraits" className="space-y-6">
-          {/* DR Section */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-vault-yellow uppercase">{t('characters.drEditor')}</h3>
-              {formDr.length === 0 && (
-                <button
-                  type="button"
-                  onClick={initializeDr}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-vault-blue text-vault-yellow border border-vault-yellow-dark rounded text-sm hover:bg-vault-blue/80 cursor-pointer"
-                >
-                  <Plus size={14} />
-                  {t('common.add')}
-                </button>
-              )}
-            </div>
-
-            {formDr.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-700">
-                      <th className="text-left text-gray-400 py-1 px-2">{t('bodyResistance.title')}</th>
-                      {DR_TYPES.map(dt => (
-                        <th key={dt} className="text-center text-gray-400 py-1 px-1 text-xs">{t(`bodyResistance.${dt}`)}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {formDr.map(row => (
-                      <tr key={row.location} className="border-b border-gray-800">
-                        <td className="py-1.5 px-2 text-vault-yellow font-bold text-xs">{t(`bodyLocations.${row.location}`)}</td>
-                        {DR_TYPES.map(dt => {
-                          const val = (row as any)[dt] as number;
-                          const isImmune = val === -1;
-                          return (
-                            <td key={dt} className="py-1.5 px-1 text-center">
-                              <div className="flex flex-col items-center gap-0.5">
-                                <input
-                                  type="number"
-                                  value={isImmune ? '' : val}
-                                  onChange={(e) => updateDrValue(row.location, dt, parseInt(e.target.value) || 0)}
-                                  disabled={isImmune}
-                                  min={0}
-                                  inputMode="numeric"
-                                  className="w-12 px-1 py-1 bg-gray-800 border border-gray-700 rounded text-white text-center text-xs disabled:opacity-40"
-                                />
-                                <label className="flex items-center gap-0.5 cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={isImmune}
-                                    onChange={() => toggleImmune(row.location, dt)}
-                                    className="w-3 h-3 accent-purple-500"
-                                  />
-                                  <span className="text-[10px] text-purple-400">{t('characters.immune')}</span>
-                                </label>
-                              </div>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <button
-                  type="button"
-                  onClick={() => setFormDr([])}
-                  className="mt-2 text-xs text-red-400 hover:text-red-300 cursor-pointer"
-                >
-                  {t('common.clear')}
-                </button>
-              </div>
-            )}
+        <div key="npcTraits" className="space-y-4">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-sm font-bold text-vault-yellow uppercase">{t('characters.traits')}</h3>
+            <button
+              type="button"
+              onClick={addTrait}
+              className="flex items-center gap-1 px-3 py-1.5 bg-vault-blue text-vault-yellow border border-vault-yellow-dark rounded text-sm hover:bg-vault-blue/80 cursor-pointer"
+            >
+              <Plus size={14} />
+              {t('characters.addTrait')}
+            </button>
           </div>
 
-          {/* Traits Section */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-vault-yellow uppercase">{t('characters.traits')}</h3>
-              <button
-                type="button"
-                onClick={addTrait}
-                className="flex items-center gap-1 px-3 py-1.5 bg-vault-blue text-vault-yellow border border-vault-yellow-dark rounded text-sm hover:bg-vault-blue/80 cursor-pointer"
-              >
-                <Plus size={14} />
-                {t('characters.addTrait')}
-              </button>
-            </div>
+          {formTraits.length === 0 && (
+            <p className="text-gray-500 text-sm italic">{t('characters.noTraits')}</p>
+          )}
 
-            {formTraits.length === 0 && (
-              <p className="text-gray-500 text-sm italic">{t('characters.noTraits')}</p>
-            )}
-
-            <div className="space-y-3">
-              {formTraits.map((trait, idx) => (
-                <div key={idx} className="p-3 bg-gray-800 rounded border border-gray-700 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={trait.name}
-                      onChange={(e) => updateTrait(idx, 'name', e.target.value)}
-                      placeholder={t('characters.traitName')}
-                      className="flex-1 px-2 py-2 bg-gray-700 border border-gray-600 rounded text-white text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeTrait(idx)}
-                      className="p-1.5 text-red-400 hover:bg-red-900/30 rounded cursor-pointer"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                  <textarea
-                    value={trait.description}
-                    onChange={(e) => updateTrait(idx, 'description', e.target.value)}
-                    placeholder={t('characters.traitDescription')}
-                    rows={2}
-                    className="w-full px-2 py-2 bg-gray-700 border border-gray-600 rounded text-white text-sm resize-none"
+          <div className="space-y-3">
+            {formTraits.map((trait, idx) => (
+              <div key={idx} className="p-3 bg-gray-800 rounded border border-gray-700 space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={trait.name}
+                    onChange={(e) => updateTrait(idx, 'name', e.target.value)}
+                    placeholder={t('characters.traitName')}
+                    className="flex-1 px-2 py-2 bg-gray-700 border border-gray-600 rounded text-white text-sm"
                   />
+                  <button
+                    type="button"
+                    onClick={() => removeTrait(idx)}
+                    className="p-1.5 text-red-400 hover:bg-red-900/30 rounded cursor-pointer"
+                  >
+                    <X size={16} />
+                  </button>
                 </div>
-              ))}
-            </div>
+                <textarea
+                  value={trait.description}
+                  onChange={(e) => updateTrait(idx, 'description', e.target.value)}
+                  placeholder={t('characters.traitDescription')}
+                  rows={2}
+                  className="w-full px-2 py-2 bg-gray-700 border border-gray-600 rounded text-white text-sm resize-none"
+                />
+              </div>
+            ))}
           </div>
         </div>
       );

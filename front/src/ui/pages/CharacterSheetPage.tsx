@@ -65,7 +65,7 @@ export function CharacterSheetPage() {
     }
   }, [character?.statBlockType, character?.bestiaryEntryId]);
 
-  const isCreature = character?.statBlockType === 'creature' && bestiaryEntry != null;
+  const isCreature = character?.statBlockType === 'creature';
 
   // Get origin data
   const origin = useMemo(() => {
@@ -192,20 +192,32 @@ export function CharacterSheetPage() {
                 <div className="space-y-6">
                   {isCreature ? (
                     <>
-                      {/* Creature Attributes (Body / Mind) */}
-                      <Card title={t('characterSheet.creatureAttributes')}>
-                        <div className="flex gap-4">
-                          {Object.entries(bestiaryEntry.attributes).map(([key, val]) => {
-                            const color = CREATURE_ATTR_COLORS[key] ?? '#4DBDB8';
-                            return (
-                              <div key={key} className="flex flex-col items-center p-2 bg-gray-800 rounded min-w-[64px]" style={{ borderBottom: `2px solid ${color}` }}>
-                                <span className="text-xs font-bold" style={{ color }}>{t(`bestiary.creatureAttributes.${key}`)}</span>
-                                <span className="text-2xl text-white font-mono font-bold">{val}</span>
+                      {/* Creature Attributes & Skills side by side */}
+                      <div className="grid grid-cols-2 gap-6">
+                        <Card title={t('characterSheet.creatureAttributes')}>
+                          <div className="flex gap-4">
+                            {Object.entries(character.creatureAttributes ?? {}).map(([key, val]) => {
+                              const color = CREATURE_ATTR_COLORS[key] ?? '#4DBDB8';
+                              return (
+                                <div key={key} className="flex flex-col items-center p-2 bg-gray-800 rounded min-w-[64px]" style={{ borderBottom: `2px solid ${color}` }}>
+                                  <span className="text-xs font-bold" style={{ color }}>{t(`bestiary.creatureAttributes.${key}`)}</span>
+                                  <span className="text-2xl text-white font-mono font-bold">{val}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </Card>
+                        <Card title={t('characterSheet.creatureSkills')}>
+                          <div className="flex gap-3 flex-wrap">
+                            {Object.entries(character.creatureSkills ?? {}).map(([skill, rank]) => (
+                              <div key={skill} className="flex flex-col items-center p-2 bg-gray-800 rounded min-w-[64px]" style={{ borderBottom: '2px solid #E8706A' }}>
+                                <span className="text-xs font-bold" style={{ color: '#E8706A' }}>{t(`bestiary.creatureSkills.${skill}`)}</span>
+                                <span className="text-2xl text-white font-mono font-bold">{rank}</span>
                               </div>
-                            );
-                          })}
-                        </div>
-                      </Card>
+                            ))}
+                          </div>
+                        </Card>
+                      </div>
 
                       {/* Derived Stats */}
                       <Card title={t('characterSheet.derivedStats')}>
@@ -219,38 +231,26 @@ export function CharacterSheetPage() {
                         </div>
                       </Card>
 
-                      {/* Creature Skills (Melee / Ranged / Other) */}
-                      <Card title={t('characterSheet.creatureSkills')}>
-                        <div className="flex gap-3 flex-wrap">
-                          {bestiaryEntry.skills.map(s => (
-                            <div key={s.skill} className="flex flex-col items-center p-2 bg-gray-800 rounded min-w-[64px]" style={{ borderBottom: '2px solid #E8706A' }}>
-                              <span className="text-xs font-bold" style={{ color: '#E8706A' }}>{t(`bestiary.creatureSkills.${s.skill}`)}</span>
-                              <span className="text-2xl text-white font-mono font-bold">{s.rank}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-
-                      {/* Attacks */}
-                      {bestiaryEntry.attacks.length > 0 && (
+                      {/* Attacks (from character's own creatureAttacks) */}
+                      {character.creatureAttacks && character.creatureAttacks.length > 0 && (
                         <Card title={t('characterSheet.attacks')}>
                           <div className="space-y-2">
-                            {bestiaryEntry.attacks.map(attack => {
-                              const attackName = attack.item
-                                ? (attack.item.nameKey ? (t(attack.item.nameKey) !== attack.item.nameKey ? t(attack.item.nameKey) : attack.item.name) : attack.item.name)
-                                : t(attack.nameKey);
-                              const bodyAttr = bestiaryEntry.attributes['body'] ?? 0;
-                              const skillData = bestiaryEntry.skills.find(s => s.skill === attack.skill);
-                              const tn = bodyAttr + (skillData?.rank ?? 0);
+                            {character.creatureAttacks.map((attack, idx) => {
+                              const attackName = attack.nameKey
+                                ? (t(attack.nameKey) !== attack.nameKey ? t(attack.nameKey) : attack.name)
+                                : attack.name;
+                              const bodyAttr = character.creatureAttributes?.body ?? 0;
+                              const skillRank = character.creatureSkills?.[attack.skill] ?? 0;
+                              const tn = bodyAttr + skillRank;
                               const attrLabel = t('bestiary.creatureAttributes.body');
                               const skillLabel = t(`bestiary.creatureSkills.${attack.skill}`);
-                              const qualitiesParts = attack.qualities.map(q => {
+                              const qualitiesParts = (attack.qualities ?? []).map(q => {
                                 const name = t(`qualities.${q.quality}.name`);
                                 return q.value ? `${name} ${q.value}` : name;
                               });
 
                               return (
-                                <div key={attack.id} className="bg-vault-blue/50 rounded p-3">
+                                <div key={idx} className="bg-vault-blue/50 rounded p-3">
                                   <div className="text-sm">
                                     <span className="text-vault-yellow font-bold uppercase">{attackName}</span>
                                     <span className="text-gray-400"> : </span>

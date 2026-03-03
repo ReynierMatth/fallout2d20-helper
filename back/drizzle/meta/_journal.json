@@ -120,6 +120,20 @@
       "when": 1772569418246,
       "tag": "0016_gorgeous_whirlwind",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1772700000000,
+      "tag": "0017_creature_attributes_on_character",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1772800000000,
+      "tag": "0018_creature_attacks_on_character",
+      "breakpoints": true
     }
   ]
 }

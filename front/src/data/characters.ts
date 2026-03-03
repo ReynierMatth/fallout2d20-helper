@@ -337,8 +337,10 @@ export interface Character {
   // Bestiary entry ID (for creatures instantiated from bestiary)
   bestiaryEntryId?: number | null;
 
-  // Creature attributes (body/mind) from bestiary
+  // Creature attributes (body/mind) and skills (melee/ranged/other)
   creatureAttributes?: Record<string, number>;
+  creatureSkills?: Record<string, number>;
+  creatureAttacks?: { name: string; nameKey?: string; skill: string; damage: number; damageType: string; damageBonus?: number; fireRate?: number | null; range: string; qualities: { quality: string; value?: number }[] }[];
 
   // Fixed DR for NPCs
   dr?: { location: string; drPhysical: number; drEnergy: number; drRadiation: number; drPoison: number }[];

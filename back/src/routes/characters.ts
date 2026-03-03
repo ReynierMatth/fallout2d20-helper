@@ -214,9 +214,10 @@ async function getFullCharacter(characterId: number) {
 
   const inventory = await getCharacterInventory(characterId);
 
-  // Fetch creature attributes from bestiary if applicable
-  let creatureAttributes: Record<string, number> | undefined;
-  if (character.statBlockType === 'creature' && character.bestiaryEntryId) {
+  // Creature attributes: prefer character's own data, fall back to bestiary
+  let creatureAttributes: Record<string, number> | undefined = character.creatureAttributes ?? undefined;
+  let creatureSkills: Record<string, number> | undefined = character.creatureSkills ?? undefined;
+  if (!creatureAttributes && character.statBlockType === 'creature' && character.bestiaryEntryId) {
     const attrRows = await db
       .select({ attribute: bestiaryAttributes.attribute, value: bestiaryAttributes.value })
       .from(bestiaryAttributes)
@@ -237,6 +238,8 @@ async function getFullCharacter(characterId: number) {
     inventory,
     radiationDamage: character.radiationDamage ?? 0,
     creatureAttributes,
+    creatureSkills,
+    creatureAttacks: character.creatureAttacks ?? undefined,
     dr: drRows.map((d) => ({
       location: d.location,
       drPhysical: d.drPhysical,
@@ -323,6 +326,9 @@ router.post('/', async (req, res) => {
         caps: data.caps ?? 0,
         radiationDamage: data.radiationDamage ?? 0,
         statBlockType: data.statBlockType ?? 'normal',
+        creatureAttributes: data.creatureAttributes ?? null,
+        creatureSkills: data.creatureSkills ?? null,
+        creatureAttacks: data.creatureAttacks ?? null,
       })
       .returning();
 
@@ -488,6 +494,9 @@ router.put('/:id', async (req, res) => {
         caps: data.caps,
         radiationDamage: data.radiationDamage,
         statBlockType: data.statBlockType,
+        creatureAttributes: data.creatureAttributes !== undefined ? data.creatureAttributes : undefined,
+        creatureSkills: data.creatureSkills !== undefined ? data.creatureSkills : undefined,
+        creatureAttacks: data.creatureAttacks !== undefined ? data.creatureAttacks : undefined,
         updatedAt: new Date(),
       })
       .where(eq(characters.id, id));
@@ -711,6 +720,10 @@ router.post('/:id/duplicate', async (req, res) => {
         currentLuckPoints: character.currentLuckPoints,
         caps: character.caps,
         statBlockType: character.statBlockType,
+        bestiaryEntryId: character.bestiaryEntryId,
+        creatureAttributes: character.creatureAttributes,
+        creatureSkills: character.creatureSkills,
+        creatureAttacks: character.creatureAttacks,
       })
       .returning();
 

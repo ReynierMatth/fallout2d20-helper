@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, boolean, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, boolean, text, timestamp, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import {
   specialAttributeEnum,
@@ -106,6 +106,20 @@ export const characters = pgTable('characters', {
   statBlockType: statBlockTypeEnum('stat_block_type').default('normal').notNull(),
   // Bestiary reference (for NPCs instantiated from bestiary)
   bestiaryEntryId: integer('bestiary_entry_id'),
+  // Creature data (stored directly on character, e.g. { body: 9, mind: 6 })
+  creatureAttributes: jsonb('creature_attributes').$type<Record<string, number>>(),
+  creatureSkills: jsonb('creature_skills').$type<Record<string, number>>(),
+  creatureAttacks: jsonb('creature_attacks').$type<{
+    name: string;
+    nameKey?: string;
+    skill: string;
+    damage: number;
+    damageType: string;
+    damageBonus?: number;
+    fireRate?: number | null;
+    range: string;
+    qualities: { quality: string; value?: number }[];
+  }[]>(),
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

@@ -12,7 +12,6 @@ import {
   characterInventory,
   items,
   weapons,
-  bestiaryAttributes,
 } from '../db/schema/index';
 
 const router = Router();
@@ -40,6 +39,7 @@ async function getParticipantWithCharacter(participantId: number) {
       currentLuckPoints: characters.currentLuckPoints,
       statBlockType: characters.statBlockType,
       bestiaryEntryId: characters.bestiaryEntryId,
+      creatureAttributes: characters.creatureAttributes,
     })
     .from(sessionParticipants)
     .innerJoin(characters, eq(sessionParticipants.characterId, characters.id))
@@ -92,16 +92,6 @@ async function getParticipantWithCharacter(participantId: number) {
     .innerJoin(weapons, eq(items.id, weapons.itemId))
     .where(eq(characterInventory.characterId, participant.characterId));
 
-  // Fetch creature attributes from bestiary if applicable
-  let creatureAttributes: Record<string, number> | undefined;
-  if (participant.statBlockType === 'creature' && participant.bestiaryEntryId) {
-    const attrRows = await db
-      .select({ attribute: bestiaryAttributes.attribute, value: bestiaryAttributes.value })
-      .from(bestiaryAttributes)
-      .where(eq(bestiaryAttributes.bestiaryEntryId, participant.bestiaryEntryId));
-    creatureAttributes = Object.fromEntries(attrRows.map((a) => [a.attribute, a.value]));
-  }
-
   return {
     id: participant.id,
     sessionId: participant.sessionId,
@@ -126,7 +116,7 @@ async function getParticipantWithCharacter(participantId: number) {
       skills,
       conditions: conditions.map(c => c.condition),
       equippedWeapons: equippedWeaponRows,
-      creatureAttributes,
+      creatureAttributes: participant.creatureAttributes ?? undefined,
     },
   };
 }
@@ -157,6 +147,7 @@ async function getFullSession(sessionId: number) {
       currentLuckPoints: characters.currentLuckPoints,
       statBlockType: characters.statBlockType,
       bestiaryEntryId: characters.bestiaryEntryId,
+      creatureAttributes: characters.creatureAttributes,
     })
     .from(sessionParticipants)
     .innerJoin(characters, eq(sessionParticipants.characterId, characters.id))
@@ -171,17 +162,6 @@ async function getFullSession(sessionId: number) {
   const equippedWeaponsByCharacter: Record<number, Array<{
     name: string; skill: string; damage: number; damageType: string; fireRate: number; range: string;
   }>> = {};
-  const creatureAttributesByCharacter: Record<number, Record<string, number>> = {};
-
-  // Batch-fetch creature attributes for all creature participants
-  const creatureParticipants = participantRows.filter(p => p.statBlockType === 'creature' && p.bestiaryEntryId);
-  for (const cp of creatureParticipants) {
-    const attrRows = await db
-      .select({ attribute: bestiaryAttributes.attribute, value: bestiaryAttributes.value })
-      .from(bestiaryAttributes)
-      .where(eq(bestiaryAttributes.bestiaryEntryId, cp.bestiaryEntryId!));
-    creatureAttributesByCharacter[cp.characterId] = Object.fromEntries(attrRows.map(a => [a.attribute, a.value]));
-  }
 
   for (const charId of characterIds) {
     // Conditions
@@ -253,7 +233,7 @@ async function getFullSession(sessionId: number) {
       skills: skillsByCharacter[p.characterId] || {},
       conditions: conditionsByCharacter[p.characterId] || [],
       equippedWeapons: equippedWeaponsByCharacter[p.characterId] || [],
-      creatureAttributes: creatureAttributesByCharacter[p.characterId],
+      creatureAttributes: p.creatureAttributes ?? undefined,
     },
   }));
 
