@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Users, UserPlus, Bot, Search, Loader2 } from 'lucide-react';
 import { Card, Button, CharacterCard, CharacterForm } from '../../components';
+import { ConfirmModal } from '../components/ConfirmModal';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
 import type { Character } from '../../data/characters';
 
@@ -28,6 +29,7 @@ export function CharactersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCharacter, setEditingCharacter] = useState<Character | undefined>();
   const [defaultType, setDefaultType] = useState<'PC' | 'NPC'>('PC');
+  const [deleteTarget, setDeleteTarget] = useState<Character | null>(null);
 
   // Filtered characters
   const filteredCharacters = (() => {
@@ -77,14 +79,18 @@ export function CharactersPage() {
     }
   };
 
-  const handleDelete = async (character: Character) => {
-    if (window.confirm(t('characters.confirmDelete', { name: character.name }))) {
-      try {
-        await deleteCharacter(character.id);
-      } catch (err) {
-        console.error('Failed to delete character:', err);
-      }
+  const handleDelete = (character: Character) => {
+    setDeleteTarget(character);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteCharacter(deleteTarget.id);
+    } catch (err) {
+      console.error('Failed to delete character:', err);
     }
+    setDeleteTarget(null);
   };
 
   const handleDuplicate = async (character: Character) => {
@@ -194,6 +200,17 @@ export function CharactersPage() {
         character={editingCharacter}
         onSave={handleSave}
         defaultType={defaultType}
+      />
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title={t('common.confirmDelete')}
+        description={t('characters.confirmDelete', { name: deleteTarget?.name ?? '' })}
+        confirmLabel={t('common.delete')}
+        variant="danger"
       />
     </div>
   );

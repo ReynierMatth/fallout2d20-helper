@@ -49,6 +49,7 @@ function apiToFrontend(apiChar: CharacterApi): Character {
     inventory: apiChar.inventory ?? [],
     perks: apiChar.perks,
     notes: '',
+    emoji: apiChar.emoji ?? null,
     statBlockType: apiChar.statBlockType ?? 'normal',
     bestiaryEntryId: apiChar.bestiaryEntryId ?? null,
     creatureAttributes: apiChar.creatureAttributes,

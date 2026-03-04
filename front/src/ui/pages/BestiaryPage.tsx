@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bug, Search, Filter, Plus } from 'lucide-react';
+import { Bug, Search, Plus } from 'lucide-react';
 import { Card } from '../../components/Card';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../primitives/Select';
 import { useBestiary } from '../../hooks/useBestiary';
 import { BestiaryDetailModal } from '../components/bestiary/BestiaryDetailModal';
 import { BestiaryCreateModal } from '../components/bestiary/BestiaryCreateModal';
@@ -113,51 +114,37 @@ export function BestiaryPage() {
               />
             </div>
 
-            {/* Category filter */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-vault-yellow shrink-0">
-                <Filter size={18} />
-                <span className="font-medium text-sm">{t('common.labels.category')}:</span>
+            {/* Filters */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="text-vault-yellow text-sm font-medium mb-1 block">{t('common.labels.category')}</label>
+                <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as CreatureCategory | 'all')}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map(cat => (
+                      <SelectItem key={cat} value={cat}>
+                        {t(`bestiary.categories.${cat}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="flex gap-1.5 flex-wrap">
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setCategoryFilter(cat)}
-                    className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
-                      categoryFilter === cat
-                        ? 'bg-vault-yellow text-vault-blue'
-                        : 'bg-vault-blue border border-vault-yellow-dark text-vault-yellow-dark hover:border-vault-yellow hover:text-vault-yellow'
-                    }`}
-                  >
-                    {t(`bestiary.categories.${cat}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Type filter */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-vault-yellow shrink-0">
-                <Filter size={18} />
-                <span className="font-medium text-sm">{t('common.labels.type')}:</span>
-              </div>
-              <div className="flex gap-1.5 flex-wrap">
-                {STAT_BLOCK_TYPES.map(typ => (
-                  <button
-                    key={typ}
-                    type="button"
-                    onClick={() => setTypeFilter(typ)}
-                    className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
-                      typeFilter === typ
-                        ? 'bg-vault-yellow text-vault-blue'
-                        : 'bg-vault-blue border border-vault-yellow-dark text-vault-yellow-dark hover:border-vault-yellow hover:text-vault-yellow'
-                    }`}
-                  >
-                    {t(`bestiary.statBlockTypes.${typ}`)}
-                  </button>
-                ))}
+              <div className="flex-1">
+                <label className="text-vault-yellow text-sm font-medium mb-1 block">{t('common.labels.type')}</label>
+                <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as StatBlockType | 'all')}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STAT_BLOCK_TYPES.map(typ => (
+                      <SelectItem key={typ} value={typ}>
+                        {t(`bestiary.statBlockTypes.${typ}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>

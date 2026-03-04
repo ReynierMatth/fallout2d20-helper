@@ -331,6 +331,9 @@ export interface Character {
   // Notes
   notes: string;
 
+  // Emoji (from bestiary entry)
+  emoji?: string | null;
+
   // Stat block type (normal or creature)
   statBlockType?: 'normal' | 'creature';
 

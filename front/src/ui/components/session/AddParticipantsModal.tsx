@@ -211,7 +211,7 @@ export function AddParticipantsModal({
                           }`}>
                             {isSelected && <Check size={16} className="text-vault-blue" />}
                           </div>
-                          <OriginIcon originId={character.origin} type={character.type} size="sm" />
+                          <OriginIcon originId={character.origin} emoji={character.emoji} type={character.type} size="sm" />
                           <div className="flex-1 min-w-0">
                             <div className="text-vault-yellow font-medium truncate text-base">
                               {character.name}

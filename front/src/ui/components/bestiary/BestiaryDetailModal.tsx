@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '../../../components/Modal';
+import { ConfirmModal } from '../ConfirmModal';
 import { ItemDetailModal } from '../../../components/ItemDetailModal';
 import { Shield, Swords, Sparkles, Package, Heart, Zap, Star, Dice6, Edit2, Trash2 } from 'lucide-react';
 import { SPECIAL_COLORS } from '../../../data/specialColors';
@@ -42,6 +43,7 @@ export function BestiaryDetailModal({ entry, isOpen, onClose, onInstantiate, onE
   const [itemModalOpen, setItemModalOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [selectedItemType, setSelectedItemType] = useState<ItemType | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   if (!entry) return null;
 
@@ -310,11 +312,7 @@ export function BestiaryDetailModal({ entry, isOpen, onClose, onInstantiate, onE
                 )}
                 {onDelete && (
                   <button
-                    onClick={() => {
-                      if (window.confirm(t('bestiary.form.confirmDelete'))) {
-                        onDelete(entry);
-                      }
-                    }}
+                    onClick={() => setConfirmDeleteOpen(true)}
                     className="flex-1 flex items-center justify-center gap-1 py-2 rounded border border-red-600 text-red-400 hover:bg-red-900/30 transition-colors text-sm"
                   >
                     <Trash2 size={14} />
@@ -342,6 +340,19 @@ export function BestiaryDetailModal({ entry, isOpen, onClose, onInstantiate, onE
         itemId={selectedItemId}
         itemType={selectedItemType}
       />
+
+      {/* Delete Confirm Modal */}
+      {onDelete && (
+        <ConfirmModal
+          isOpen={confirmDeleteOpen}
+          onClose={() => setConfirmDeleteOpen(false)}
+          onConfirm={() => onDelete(entry)}
+          title={t('common.confirmDelete')}
+          description={t('bestiary.form.confirmDelete')}
+          confirmLabel={t('common.delete')}
+          variant="danger"
+        />
+      )}
     </>
   );
 }

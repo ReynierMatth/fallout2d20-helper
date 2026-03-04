@@ -14,6 +14,7 @@ export interface BestiaryEntryData {
   carryCapacity?: number;
   maxLuckPoints?: number;
   wealth?: number;
+  emoji?: string;
   source?: string;
   attributes: Record<string, number>;
   skills: { skill: string; rank: number; isTagSkill?: boolean }[];
@@ -40,6 +41,7 @@ export const BESTIARY_ENTRIES: BestiaryEntryData[] = [
     slug: 'railroadAgent',
     nameKey: 'bestiary.creatures.railroadAgent.name',
     descriptionKey: 'bestiary.creatures.railroadAgent.description',
+    emoji: '🕵️',
     statBlockType: 'normal',
     category: 'human',
     bodyType: 'humanoid',
@@ -120,6 +122,7 @@ export const BESTIARY_ENTRIES: BestiaryEntryData[] = [
     slug: 'zetan',
     nameKey: 'bestiary.creatures.zetan.name',
     descriptionKey: 'bestiary.creatures.zetan.description',
+    emoji: '👽',
     statBlockType: 'creature',
     category: 'alien',
     bodyType: 'humanoid',
@@ -171,6 +174,7 @@ export const BESTIARY_ENTRIES: BestiaryEntryData[] = [
     slug: 'radroach',
     nameKey: 'bestiary.creatures.radroach.name',
     descriptionKey: 'bestiary.creatures.radroach.description',
+    emoji: '🪳',
     statBlockType: 'creature',
     category: 'insect',
     bodyType: 'insect',
@@ -214,6 +218,7 @@ export const BESTIARY_ENTRIES: BestiaryEntryData[] = [
     slug: 'deathclaw',
     nameKey: 'bestiary.creatures.deathclaw.name',
     descriptionKey: 'bestiary.creatures.deathclaw.description',
+    emoji: '🦎',
     statBlockType: 'creature',
     category: 'abomination',
     bodyType: 'humanoid',
@@ -262,6 +267,7 @@ export const BESTIARY_ENTRIES: BestiaryEntryData[] = [
     slug: 'feralGhoul',
     nameKey: 'bestiary.creatures.feralGhoul.name',
     descriptionKey: 'bestiary.creatures.feralGhoul.description',
+    emoji: '🧟',
     statBlockType: 'creature',
     category: 'ghoul',
     bodyType: 'humanoid',
@@ -309,6 +315,7 @@ export const BESTIARY_ENTRIES: BestiaryEntryData[] = [
     slug: 'yaoGuai',
     nameKey: 'bestiary.creatures.yaoGuai.name',
     descriptionKey: 'bestiary.creatures.yaoGuai.description',
+    emoji: '🐻',
     statBlockType: 'creature',
     category: 'animal',
     bodyType: 'quadruped',
@@ -361,6 +368,7 @@ export const BESTIARY_ENTRIES: BestiaryEntryData[] = [
     slug: 'superMutant',
     nameKey: 'bestiary.creatures.superMutant.name',
     descriptionKey: 'bestiary.creatures.superMutant.description',
+    emoji: '💪',
     statBlockType: 'normal',
     category: 'superMutant',
     bodyType: 'humanoid',

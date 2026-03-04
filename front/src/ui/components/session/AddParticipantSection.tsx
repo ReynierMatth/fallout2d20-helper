@@ -159,7 +159,7 @@ export function AddParticipantSection({
                     disabled={isAdding}
                     className="w-full flex items-center gap-3 p-2 bg-vault-gray border border-vault-yellow-dark rounded hover:border-vault-yellow transition-colors text-left disabled:opacity-50"
                   >
-                    <OriginIcon originId={character.origin} type={character.type} size="sm" className="flex-shrink-0" />
+                    <OriginIcon originId={character.origin} emoji={character.emoji} type={character.type} size="sm" className="flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="text-vault-yellow font-medium truncate">
                         {character.name}

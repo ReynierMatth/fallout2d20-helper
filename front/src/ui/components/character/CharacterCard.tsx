@@ -61,7 +61,7 @@ export function CharacterCard({
             : 'border-vault-yellow-dark bg-vault-gray hover:bg-vault-blue/50'
         } ${onClick ? 'cursor-pointer' : ''} ${className}`}
       >
-        <OriginIcon originId={charOriginId} type={character.type} size="sm" className="flex-shrink-0" />
+        <OriginIcon originId={charOriginId} emoji={character.emoji} type={character.type} size="sm" className="flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <span className="text-vault-yellow font-bold truncate block">
             {displayName}
@@ -88,7 +88,7 @@ export function CharacterCard({
         onClick={onClick}
         className="bg-vault-blue px-3 py-2 flex items-center gap-2"
       >
-        <OriginIcon originId={charOriginId} type={character.type} size="md" className="flex-shrink-0" />
+        <OriginIcon originId={charOriginId} emoji={character.emoji} type={character.type} size="md" className="flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <h3 className="text-vault-yellow font-bold text-sm truncate">
             {displayName}

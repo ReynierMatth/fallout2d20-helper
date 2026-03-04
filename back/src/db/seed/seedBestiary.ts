@@ -39,6 +39,7 @@ export async function seedBestiary() {
         maxLuckPoints: entry.maxLuckPoints ?? 0,
         wealth: entry.wealth,
         source: entry.source ?? 'core',
+        emoji: entry.emoji,
       })
       .onConflictDoUpdate({
         target: bestiaryEntries.slug,
@@ -58,6 +59,7 @@ export async function seedBestiary() {
           maxLuckPoints: sql`excluded.max_luck_points`,
           wealth: sql`excluded.wealth`,
           source: sql`excluded.source`,
+          emoji: sql`excluded.emoji`,
         },
       })
       .returning({ id: bestiaryEntries.id });

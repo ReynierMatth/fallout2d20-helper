@@ -142,7 +142,7 @@ export function CharacterSheetPage() {
           >
             <ArrowLeft size={18} />
           </button>
-          <OriginIcon originId={character.origin} type={character.type} size="sm" className="flex-shrink-0" />
+          <OriginIcon originId={character.origin} emoji={character.emoji} type={character.type} size="sm" className="flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-bold text-vault-yellow leading-tight truncate">
               {character.name || t('characters.unnamed')}

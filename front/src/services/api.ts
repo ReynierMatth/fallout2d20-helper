@@ -464,6 +464,7 @@ export interface CharacterApi {
   creatureAttributes?: Record<string, number>;
   creatureSkills?: Record<string, number>;
   creatureAttacks?: CreatureAttackApi[];
+  emoji?: string | null;
   createdAt: string;
   updatedAt: string;
   // Relations

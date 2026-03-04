@@ -95,6 +95,7 @@ export interface Character {
   conditions: Condition[];
   inventory: InventoryItem[];
   notes?: string;
+  emoji?: string | null;
   statBlockType?: 'normal' | 'creature';
   bestiaryEntryId?: number | null;
   creatureAttributes?: Record<string, number>;

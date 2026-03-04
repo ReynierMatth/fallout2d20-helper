@@ -39,6 +39,8 @@ export default {
     all: 'All',
     edit: 'Edit',
     delete: 'Delete',
+    confirm: 'Confirm',
+    confirmDelete: 'Confirm deletion',
     duplicate: 'Duplicate',
     save: 'Save',
     cancel: 'Cancel',

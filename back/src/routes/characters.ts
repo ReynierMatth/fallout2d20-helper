@@ -23,6 +23,7 @@ import {
   itemCompatibleMods,
   mods,
   bestiaryAttributes,
+  sessionParticipants,
 } from '../db/schema/index';
 
 const router = Router();
@@ -678,6 +679,9 @@ router.delete('/:id', async (req, res) => {
     if (!existing) {
       return res.status(404).json({ error: 'Character not found' });
     }
+
+    // Remove from any sessions first (no cascade on this FK)
+    await db.delete(sessionParticipants).where(eq(sessionParticipants.characterId, id));
 
     // Delete character (cascade will handle related tables)
     await db.delete(characters).where(eq(characters.id, id));
