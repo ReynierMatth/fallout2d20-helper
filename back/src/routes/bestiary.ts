@@ -10,7 +10,10 @@ import {
   bestiaryAttackQualities,
   bestiaryAbilities,
   bestiaryInventory,
+  bestiaryInventoryMods,
   items,
+  mods,
+  inventoryItemMods,
   characters,
   characterSpecial,
   characterSkills,
@@ -183,16 +186,34 @@ async function getFullBestiaryEntry(entryId: number) {
       nameKey: a.nameKey,
       descriptionKey: a.descriptionKey,
     })),
-    inventory: inventory.map(i => ({
-      itemId: i.itemId,
-      quantity: i.quantity,
-      equipped: i.equipped,
-      item: {
-        id: i.itemId,
-        name: i.itemName,
-        nameKey: i.itemNameKey,
-        itemType: i.itemType,
-      },
+    inventory: await Promise.all(inventory.map(async (i) => {
+      // Get installed mods for this inventory entry
+      const invMods = await db
+        .select({
+          modItemId: bestiaryInventoryMods.modItemId,
+          modItemName: items.name,
+          modItemNameKey: items.nameKey,
+        })
+        .from(bestiaryInventoryMods)
+        .innerJoin(items, eq(bestiaryInventoryMods.modItemId, items.id))
+        .where(eq(bestiaryInventoryMods.bestiaryInventoryId, i.id));
+
+      return {
+        itemId: i.itemId,
+        quantity: i.quantity,
+        equipped: i.equipped,
+        item: {
+          id: i.itemId,
+          name: i.itemName,
+          nameKey: i.itemNameKey,
+          itemType: i.itemType,
+        },
+        installedMods: invMods.map(m => ({
+          modItemId: m.modItemId,
+          modItemName: m.modItemName,
+          modItemNameKey: m.modItemNameKey,
+        })),
+      };
     })),
   };
 }
@@ -335,14 +356,31 @@ router.post('/:id/instantiate', async (req, res) => {
         }
       }
 
-      // Insert inventory
+      // Insert inventory (with pre-installed mods)
       for (const inv of entry.inventory) {
-        await db.insert(characterInventory).values({
+        const [insertedInv] = await db.insert(characterInventory).values({
           characterId: newChar.id,
           itemId: inv.itemId,
           quantity: inv.quantity,
           equipped: inv.equipped,
-        });
+        }).returning({ id: characterInventory.id });
+
+        // If this item has pre-installed mods, create mod inventory entries and link them
+        if (inv.installedMods && inv.installedMods.length > 0) {
+          for (const mod of inv.installedMods) {
+            const [modInv] = await db.insert(characterInventory).values({
+              characterId: newChar.id,
+              itemId: mod.modItemId,
+              quantity: 1,
+              equipped: true,
+            }).returning({ id: characterInventory.id });
+
+            await db.insert(inventoryItemMods).values({
+              targetInventoryId: insertedInv.id,
+              modInventoryId: modInv.id,
+            });
+          }
+        }
       }
 
       // Copy DR from bestiary
@@ -411,14 +449,30 @@ router.post('/:id/instantiate', async (req, res) => {
         }))
       );
 
-      // Insert inventory
+      // Insert inventory (with pre-installed mods)
       for (const inv of entry.inventory) {
-        await db.insert(characterInventory).values({
+        const [insertedInv] = await db.insert(characterInventory).values({
           characterId: newChar.id,
           itemId: inv.itemId,
           quantity: inv.quantity,
           equipped: inv.equipped,
-        });
+        }).returning({ id: characterInventory.id });
+
+        if (inv.installedMods && inv.installedMods.length > 0) {
+          for (const mod of inv.installedMods) {
+            const [modInv] = await db.insert(characterInventory).values({
+              characterId: newChar.id,
+              itemId: mod.modItemId,
+              quantity: 1,
+              equipped: true,
+            }).returning({ id: characterInventory.id });
+
+            await db.insert(inventoryItemMods).values({
+              targetInventoryId: insertedInv.id,
+              modInventoryId: modInv.id,
+            });
+          }
+        }
       }
 
       // Copy DR from bestiary

@@ -263,7 +263,7 @@ export const ENERGY_WEAPONS_COMPATIBILITY: ItemModCompatibility[] = [
       // Canon
       'Canon long', 'Canon automatique', 'Canon amélioré',
       // Crosse
-      'Crosse standard',
+      'Crosse standard', 'Crosse complète (énergie)',
       // Viseur
       'Viseur laser', 'Lunette courte', 'Lunette longue',
       'Lunette de vision nocturne courte', 'Lunette de vision nocturne longue',

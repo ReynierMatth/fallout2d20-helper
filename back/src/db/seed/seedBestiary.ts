@@ -9,6 +9,7 @@ import {
   bestiaryAttackQualities,
   bestiaryAbilities,
   bestiaryInventory,
+  bestiaryInventoryMods,
   items,
 } from '../schema/index';
 import { BESTIARY_ENTRIES } from './data/bestiary';
@@ -71,6 +72,11 @@ export async function seedBestiary() {
     await db.delete(bestiarySkills).where(eq(bestiarySkills.bestiaryEntryId, entryId));
     await db.delete(bestiaryDr).where(eq(bestiaryDr.bestiaryEntryId, entryId));
     await db.delete(bestiaryAbilities).where(eq(bestiaryAbilities.bestiaryEntryId, entryId));
+    // Delete inventory mods first (FK on inventory)
+    const invRows = await db.select({ id: bestiaryInventory.id }).from(bestiaryInventory).where(eq(bestiaryInventory.bestiaryEntryId, entryId));
+    for (const inv of invRows) {
+      await db.delete(bestiaryInventoryMods).where(eq(bestiaryInventoryMods.bestiaryInventoryId, inv.id));
+    }
     await db.delete(bestiaryInventory).where(eq(bestiaryInventory.bestiaryEntryId, entryId));
 
     // Delete attacks (and their qualities via cascade)
@@ -165,19 +171,37 @@ export async function seedBestiary() {
       );
     }
 
-    // 8. Insert inventory
+    // 8. Insert inventory (with optional installed mods)
     for (const inv of entry.inventory) {
       const [found] = await db
         .select({ id: items.id })
         .from(items)
         .where(eq(items.name, inv.itemName));
       if (found) {
-        await db.insert(bestiaryInventory).values({
+        const [insertedInv] = await db.insert(bestiaryInventory).values({
           bestiaryEntryId: entryId,
           itemId: found.id,
           quantity: inv.quantity,
           equipped: inv.equipped,
-        });
+        }).returning({ id: bestiaryInventory.id });
+
+        // Insert pre-installed mods for this inventory item
+        if (inv.installedMods && inv.installedMods.length > 0) {
+          for (const modName of inv.installedMods) {
+            const [modItem] = await db
+              .select({ id: items.id })
+              .from(items)
+              .where(eq(items.name, modName));
+            if (modItem) {
+              await db.insert(bestiaryInventoryMods).values({
+                bestiaryInventoryId: insertedInv.id,
+                modItemId: modItem.id,
+              });
+            } else {
+              console.warn(`  ⚠ Mod item not found: "${modName}" for ${entry.slug}`);
+            }
+          }
+        }
       }
     }
 

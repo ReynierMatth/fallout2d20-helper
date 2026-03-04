@@ -1307,6 +1307,7 @@ export default {
         sixCharges: { nameAdd: 'Six Charges' },
       },
       canon: {
+        canonLong: { nameAdd: 'Long' },
         diviseur: { nameAdd: 'Scattershot' },
         canonAutomatique: { nameAdd: 'Auto' },
         canonAmeliore: { nameAdd: 'Improved' },
@@ -1823,9 +1824,77 @@ export default {
       robot: 'Robot',
     },
     creatures: {
+      bosKnight: {
+        name: 'Knight',
+        description: 'Within the Brotherhood of Steel, the rank of Knight is highly respected. Knights are generally responsible for maintaining the weapons, armor, and technology owned by the organization. It is not easy to reach this position and it takes years of sacrifice and hard work. Many knights are ambitious and hope to reach the rank of paladin.',
+      },
+      merchant: {
+        name: 'Merchant/Caravan',
+        description: 'Merchants and caravan traders are often found around large settlements and travel most of the major routes that crisscross the Wasteland. Some settle permanently in one town or another, opening shop in abandoned buildings or makeshift stalls to sell their wares. Others prefer to see the country and buy and sell as they travel or when they encounter a fellow traveler. Merchants are almost always accompanied by an escort, using brahmin as pack animals and mercenaries as guards. Even stationary merchants employ some form of security and keep a trusted weapon close at hand for "emergencies."',
+      },
+      wastelander: {
+        name: 'Wastelander',
+        description: '"Wastelanders" is the name given to the very many individuals who wander, travel, and settle throughout the territory. Many of them are unremarkable and simply seek to survive at all costs. Some stand out and know how to handle weapons, for example, while others may master unique skills, reflecting their life experience and background. They can come from any village in the Commonwealth and from all walks of life.',
+      },
+      vaultDweller: {
+        name: 'Vault Dweller',
+        description: 'In the Wasteland, some Vaults house or have housed residents. These are called Vault Dwellers by the outside populations. It is rare to catch a glimpse of the bright blue of Vault-Tec jumpsuits: many Vaults are still sealed or met a grim fate following the horrible experiments conducted within. Other Commonwealth bunkers open their doors to outsiders for trade, and not all human groups that fell into the hands of the anti-radiation shelter manufacturers have disappeared.',
+      },
+      childOfAtom: {
+        name: 'Child of Atom',
+        description: 'Some claim that the Children of Atom are fanatics, others that they are just another cult... Whatever the case, they can be found throughout the Wasteland and they worship radioactive materials and their effects. They often gather in a specific, highly radioactive location or better yet: a site with a physical focal point before which they can pray, such as a nuclear bomb crater. Strangely, the Children of Atom seem to suffer little from radiation, even at levels sometimes hundreds of times higher than what would kill a normal human. They don\'t seem to fall ill or become ghouls. When encountered, they always try to spread the good word of Atom, but some groups are paranoid and hostile to strangers.',
+      },
+      gunner: {
+        name: 'Gunner',
+        description: 'Gunners are perhaps the most prolific group in all of the Wasteland, right after raiders. They present themselves as mercenaries, but approaching them to offer caps in exchange for a mission can prove difficult. They often choose collapsed bridges as bases of operations and sometimes install elevators to reach higher "floors" and stay off the ground. Gunners are extremely territorial, fiercely defend their homes, and are known for having programmed Assaultrons, which are an integral part of their arsenal.',
+      },
+      instituteScientist: {
+        name: 'Institute Scientist',
+        description: 'Most individuals living in the Institute are scientists with diverse backgrounds and areas of expertise. They can oversee projects requiring knowledge in robotics, biology, synthetic tissue creation, physics, and genetics, to name but a few. They represent the Institute\'s main resource, enabling it to improve and develop the technology at its disposal.',
+      },
+      mercenary: {
+        name: 'Mercenary',
+        description: 'Gunners are not the only ones selling their services: many other individuals and groups sell their weapons and violence for a handful of caps. They can sometimes be found escorting merchants and protecting them from the dangers of raiders and wildlife, but others also guard settlements or survivors. A well-trained mercenary, familiar with the region and its dangers, commands top dollar... and many of them won\'t hesitate to turn on you for a handful of caps.',
+      },
+      raiderVeteran: {
+        name: 'Veteran Raider',
+        description: 'Managing to stay alive against all odds often earns you at least a modicum of respect among your peers, and this is certainly the case with veteran raiders. Their improved armor and powerful weapons demonstrate their ability not only to survive but to thrive in the Wasteland... making them formidable enemies. Both skilled in combat and intelligent, it would be risky to underestimate them.',
+      },
+      raiderScavenger: {
+        name: 'Scavenger Raider',
+        description: 'These battle-hardened fighters are generally recognized by their thick armor and aggressive behavior. Raider gangs that endure, or those composed of experienced members, are often made up almost entirely of Scavenger Raiders. A single Scavenger can already be a formidable nuisance; an entire group can very easily take the life (and possessions) of any traveler in the Wasteland.',
+      },
+      raiderPsycho: {
+        name: 'Psycho Raider',
+        description: 'These raiders, named after their Psycho addiction, are among the most hostile and aggressive members of their group. In combat, they happily wield melee weapons, fueling their rage and pain resistance with their favorite drug. Identifying them is not always obvious at first glance, but one can note that they carry few firearms and their armor mostly covers their skull, arms, and torso to protect them in close combat.',
+      },
+      raiderBoss: {
+        name: 'Raider Boss',
+        description: 'Raider bosses lead their gangs. They generally possess better weapons and armor than their followers and tend to be hardened fighters. They reached their position through strength, leadership, and bloodshed, and it is these same qualities that help them keep their rank.',
+      },
+      raider: {
+        name: 'Raider',
+        description: 'A lone raider is about as threatening as a Nuka-Cola cap under your sole, but unfortunately for travelers, they know it and almost never travel alone. Raiders generally wear patchwork armor, with various parts stolen from previous victims, as well as weapons obtained the same way. Raiders are hostile toward anyone not part of their group and will even fight against rival gangs.',
+      },
+      bosLancer: {
+        name: 'Lancer',
+        description: 'Lancers are the Brotherhood members who pilot vertibirds. They undergo special training to learn how to fly and maintain the fleet owned by the organization. They are the ones who enable troop transport and air support. Not only must lancers know their vehicle inside and out, but they must also know how to fly under sustained fire. They focus on aerial combat, but they also carry laser weapons in case they find themselves on the ground in the middle of a skirmish.',
+      },
+      bosScribe: {
+        name: 'Scribe',
+        description: 'Scribes are the keepers of knowledge and the scholars of the Brotherhood of Steel. They know how to fight and follow the same basic training as any other member of the organization; however, their role is not that of a combatant. They manage catalogues, repairs, acquisition, and study of technological artifacts that fall into the Brotherhood\'s hands. When their expertise is needed, they sometimes accompany troops in the field, for example to recover or locate important objects, but most scribes remain at their chapter\'s base of operations.',
+      },
+      bosPaladin: {
+        name: 'Paladin',
+        description: 'Paladins are the elite troops of the Brotherhood of Steel. Equipped with power armor and the best weapons the organization has to offer, these veterans are often renowned warriors. Reaching the rank of paladin requires total devotion to the Brotherhood as well as impressive credentials: it is a rank that many dream of attaining.',
+      },
+      bosElder: {
+        name: 'Elder',
+        description: 'The elders form the leadership council of the Brotherhood of Steel. To reach their elevated position, they must climb every rank of the organization and, before being named Elder, must at least be a paladin. While the Council of Elders is responsible for the entire organization, one or more Elders can lead their own chapter in various parts of the Wasteland.',
+      },
       railroadAgent: {
         name: 'Railroad Agent',
-        description: 'An agent of the Railroad, a secret organization dedicated to freeing synths.',
+        description: 'The secret Railroad faction seeks to free the third-generation synths controlled by the Institute. Its agents often work in the shadows, acting and dressing as discreetly as possible. They prefer to rely on subterfuge to carry out their missions. That doesn\'t stop them from drawing their weapons when someone gets in their way or sides with their enemies, such as the Brotherhood of Steel.',
       },
       zetan: {
         name: 'Zetan',
@@ -1850,6 +1919,50 @@ export default {
       yaoGuai: {
         name: 'Yao Guai',
         description: 'These terrifying creatures are all that remains of the bear population in the post-war world. The yao guai has undergone enormous mutations: larger claws and far greater muscle mass than its ancestor.',
+      },
+      synth: {
+        name: 'Synth',
+        description: 'These first-generation synths are generally found in groups of at least four, in areas under the Institute\'s control or protection. They have nothing human about them except their silhouette and bearing, and often lack even synthetic skin. They are merely terrifying robotic caricatures: their "organs" are just mechanisms, their bones metallic supports. Though intelligent and capable fighters, they lack the cunning of third-generation synths.',
+      },
+      synthStrider: {
+        name: 'Synth Strider',
+        description: 'Synth striders are similar to common synths in that they lack the consciousness of third-generation models and are found within the Institute\'s perimeter, serving as protectors. Striders, however, are second-generation synths and look more human than their first-generation counterparts. They are often covered with a layer of material partially concealing their mechanical organs and limbs: an archaic attempt at creating synthetic skin. Unfortunately, it has aged poorly and torn in places, revealing their robotic components. Synth striders\' faces also have near-human features, but few have a complete face... as for hair, they are all bald. They are stronger and tougher than first-generation synths and fight much better.',
+      },
+      synthSoldier: {
+        name: 'Synth Soldier',
+        description: 'Used by the Institute as "recruits," synth soldiers are second-generation robots designed for sustained combat. Although they share many characteristics with other second-generation synths, such as a complete "skin" and vaguely human features, they are far from the perfection of the third generation. They do possess notable enhancements, including the ability to use ranged and melee weapons, as well as armor built onto their bodies, making them far more resilient during skirmishes. At least one soldier is often found among groups of synths and striders, where they are in charge of the Institute\'s weapons.',
+      },
+      turretMkI: {
+        name: 'Machine Gun Turret MK I',
+        description: 'Used by the American military as automated defenses and by certain private institutions to protect against intruders, turrets can be found anywhere, such as in government buildings or military bases. Some have been dismantled and reprogrammed to defend settler camps or raider outposts. All turrets, whether freestanding or wall-mounted, are equipped with targeting chips and biometric scanners allowing them to distinguish allies from enemies. Thanks to its tripod, this automatic turret can be placed on any flat surface large enough to accommodate it. It is covered in armor often painted dark green and sometimes still bears its original "MK I" markings. Turrets are extremely intimidating and fire 5.56mm rounds at a sustained rate. Thanks to their advanced targeting systems, their accuracy is deadly. However, their controls can be hacked and reprogrammed... if the turret is connected to a terminal.',
+      },
+      turretWallMounted: {
+        name: 'Machine Gun Turret (Wall-Mounted)',
+        description: 'Wall-mounted turrets are much smaller than their tripod-mounted counterparts. They are placed in small semi-spherical housings that can be attached to walls or ceilings... and easily go unnoticed. These smaller turrets fire 10mm ammunition but make up for this with the high velocity of their bursts and the presence of other turrets placed in the same room. Despite their size, they have the same advanced targeting technologies and biometric scanners as their tripod-mounted counterparts.',
+      },
+      turretMkV: {
+        name: 'Machine Gun Turret MK V',
+        description: 'The MK V version resembles its predecessors in many ways. However, these turrets are designed not only to spray enemies with bullets but also to stun them, making them more vulnerable to sustained fire. MK V turrets fire incendiary 5.56mm rounds and can be identified by their dark grey-green paint.',
+      },
+      turretMkIII: {
+        name: 'Machine Gun Turret MK III',
+        description: 'An upgrade of the MK I model, the MK III was designed to be much sturdier. It features stronger armor and high-powered 5.56mm ammunition. Like the MK I, it is painted dark green, mounted on a tripod, and benefits from the same targeting systems.',
+      },
+      turretWallMounted3Burst: {
+        name: '3-Burst Machine Gun Turret (Wall-Mounted)',
+        description: 'The 3-burst version of this turret is capable of providing a more sustained rate of fire, making it essentially a minigun of reduced size mounted on a wall. It only fires 10mm rounds, but firing three bullets at once causes more damage to its targets, especially at close range.',
+      },
+      turretLaserWallMounted: {
+        name: 'Laser Turret (Wall-Mounted)',
+        description: 'Laser turrets have no tripod-mounted equivalent, but are built like other wall-mounted machines. Instead of 10mm ammunition, they fire a laser beam similar to those of laser pistols and rifles. This model fires single energy beams but in rapid succession. Like other turrets, they guard Vaults, government buildings, and military bases.',
+      },
+      turretLaser3BurstWallMounted: {
+        name: '3-Burst Laser Turret (Wall-Mounted)',
+        description: 'A variant of the laser turret, this 3-burst model fires almost as fast as a Gatling laser, even if what is gained in damage is lost in accuracy. It covers a wider beam than the single-burst turret, giving it the ability to hit multiple targets at once.',
+      },
+      synthCourser: {
+        name: 'Synth Courser',
+        description: 'Everyone who knows about synth coursers fears them. These third-generation synths work for the Institute, specifically the Synth Retention Bureau. Their mission is to recapture fugitive synths, but their tasks don\'t stop there. Coursers undergo high-level training and possess superior strength and constitution. When a third-generation synth is selected to become a courser, their neurological implants are enhanced and they are trained in specialized weapons, combat, and espionage. The Institute also implants a courser chip that allows them to be tracked and gives them the ability to teleport in and out of the Institute. Courser designation numbers always begin with an "X".',
       },
       superMutantSuicider: {
         name: 'Super Mutant Suicider',
@@ -1964,6 +2077,8 @@ export default {
       claws: 'Claws',
       rush: 'Rush',
       heavyObject: 'Heavy Object',
+      instituteLaser: 'Institute Laser',
+      shockBaton: 'Shock Baton',
       modifiedMiniNuke: 'Modified Mini-Nuke',
       minigun: 'Minigun',
       fireHydrantBat: 'Fire Hydrant Bat',
@@ -1972,6 +2087,9 @@ export default {
       pipeBoltAction: 'Pipe Bolt-Action',
       superSledge: 'Super Sledge',
       machineGun: 'Machine Gun',
+      turretMachineGun: 'Machine Gun',
+      turretSubmachineGun: 'Submachine Gun',
+      turretLaser: 'Laser Weapon',
       missileLauncher: 'Missile Launcher',
       armLasers: 'Arm Lasers',
       autoPistol10mm: '10mm Auto Pistol',
@@ -1989,8 +2107,104 @@ export default {
     },
     abilities: {
       railroadAgent: {
-        name: 'Secret Agent',
-        description: 'Can hide among civilians. +2d20 to Sneak tests in urban environments.',
+        name: 'Railroad Agent',
+        description: 'When working undercover and lying, the Railroad Agent gains an additional 1d20 to all Speech tests.',
+      },
+      chainOfCohesion: {
+        name: 'Chain of Cohesion',
+        description: 'For a major action, an Elder can order a Brotherhood of Steel character of a lower level to take a major action. The Elder assists this action with a CHA + Speech test.',
+      },
+      wellEquippedKnight: {
+        name: 'Well Equipped',
+        description: 'Twice per combat, the Knight can fire a burst with their long-barreled laser rifle. They add the fire rate (2) to the weapon\'s damage for that single attack (for a total of 7 CD).',
+      },
+      powerArmorPaladin: {
+        name: 'Power Armor',
+        description: 'A Brotherhood of Steel paladin wears power armor. The paladin uses the armor\'s STR (11) instead of their own. They are immune to fall damage and deal 3 CD of physical damage to all creatures within range upon landing. They can breathe underwater and in toxic environments. See page 137.',
+      },
+      wellEquippedPaladin: {
+        name: 'Well Equipped',
+        description: 'Twice per combat, the paladin can fire a burst with their long laser rifle. They add the fire rate (2) to the weapon\'s damage for that single attack (for a total of 8 CD).',
+      },
+      preWarExpertise: {
+        name: 'Pre-War Expertise',
+        description: 'The Scribe gains 1d20 bonus when making a test to examine, identify, or use pre-war technology.',
+      },
+      vertibirdTraining: {
+        name: 'Vertibird Training',
+        description: 'The lancer gains 1d20 when making tests to pilot a vertibird.',
+      },
+      letLooseRaider: {
+        name: 'Let Loose',
+        description: 'Once per combat, the raider can "let loose" and fire a burst from their pipe gun. They add the fire rate (2) to the weapon\'s damage for that single attack (for a total of 5 CD).',
+      },
+      aggressiveRaiderBoss: {
+        name: 'Aggressive',
+        description: 'The raider boss is quick to attack when they sense prey. When they enter the scene, they immediately generate 1 action point. If the raider boss is an ally, this point is placed in the group\'s pool. If they are an enemy, the point goes to the GM\'s pool.',
+      },
+      pcpOrTnt: {
+        name: 'PCP or TNT',
+        description: 'A psycho raider always carries either a Molotov Cocktail or a dose of Psycho. What they have in their pockets depends on the first action they take from the two provided below: after using one of these items, they cannot use the other.',
+      },
+      molotovRaider: {
+        name: 'Molotov',
+        description: 'Once per combat, a psycho raider can throw a Molotov cocktail, using the provided characteristics.',
+      },
+      psychoDrug: {
+        name: 'Psycho',
+        description: 'A psycho raider can use a dose of Psycho as a minor action. For the rest of the combat, the psycho raider adds +2 CD to all damage rolls and +2 to their physical and energy damage resistances.',
+      },
+      aggressiveRaiderScavenger: {
+        name: 'Aggressive',
+        description: 'The scavenger raider is quick to attack when they sense prey. When they enter the scene, they immediately generate 1 action point. If the scavenger raider is an ally, this point is placed in the group\'s pool. If they are an enemy, the point goes to the GM\'s pool.',
+      },
+      iGiveTheOrders: {
+        name: 'I Give the Orders',
+        description: 'A veteran raider can use a minor action to order a lower-ranking raider within Close range to immediately take a minor action. They can also use a major action to order another raider to immediately take a major action.',
+      },
+      letLooseVeteran: {
+        name: 'Let Loose',
+        description: 'Once per combat, the veteran raider can "let loose" and fire a burst from their combat shotgun. They add the fire rate (2) to the weapon\'s damage for that single attack (for a total of 7 CD).',
+      },
+      letLooseGunner: {
+        name: 'Let Loose',
+        description: 'Once per combat, the gunner can "let loose" and fire a burst from their combat rifle. They add the fire rate (2) to the weapon\'s damage for that single attack (for a total of 7 CD).',
+      },
+      longLiveTheAtom: {
+        name: 'Long Live the Atom',
+        description: 'The Children of Atom are accustomed to living in the most irradiated places in the Wasteland and suffer almost no consequences. Whether by luck, genetic disposition, or genuine proof of the Atom\'s existence, they gain +2 to their Radiation DR.',
+      },
+      vaultChild: {
+        name: 'Vault Child',
+        description: 'Their healthy youth in the hands of competent doctors and sophisticated auto-docs means the vault dweller reduces the difficulty of all END tests to resist the effects of diseases. The GM decides for their NPC what type of experiments took place in their Vault. Once per quest, the GM may introduce a complication that reflects the nature of this experimentation, in which the vault dweller participated against their will or related to their youth spent in isolation within their Vault. In this case, they immediately regain a luck point.',
+      },
+      educated: {
+        name: 'Educated',
+        description: 'The vault dweller possesses an additional tag skill.',
+      },
+      gifted: {
+        name: 'Gifted',
+        description: 'Choose two S.P.E.C.I.A.L. attributes and increase them by +1.',
+      },
+      letLooseMerchant: {
+        name: 'Let Loose',
+        description: 'Once per combat, the Merchant can "let loose" and fire a burst from their 10mm automatic pistol. They add the fire rate (4) to the weapon\'s damage for that single attack (for a total of 7 CD).',
+      },
+      masterMerchant: {
+        name: 'Master Merchant',
+        description: 'When making an opposed Barter test, the merchant generates an automatic success in addition to those obtained on their dice.',
+      },
+      wellStocked: {
+        name: 'Well Stocked',
+        description: 'The merchant is accompanied by a group of brahmin or runs a shop. They carry 6d20 caps and the GM determines what merchandise they have available.',
+      },
+      letLooseMercenary: {
+        name: 'Let Loose',
+        description: 'Once per combat, the Mercenary can "let loose" and fire a burst from their combat rifle. They add the fire rate (2) to their weapon\'s damage for this single attack (for a total of 7 CD).',
+      },
+      labCoat: {
+        name: 'Lab Coat',
+        description: 'Thanks to its practical design, and also because you simply feel smarter when you put one on, wearing a lab coat allows you to reroll once per scene a single d20 on an INT-based skill test you make.',
       },
       alien: {
         name: 'Alien Technology',
@@ -2031,6 +2245,70 @@ export default {
       mutantBrute: {
         name: 'Mutant Brute',
         description: 'Melee attacks deal +2 CD extra damage.',
+      },
+      robotSynth: {
+        name: 'Robot',
+        description: 'The synth is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      lootSynth: {
+        name: 'Loot',
+        description: 'Institute laser rifle (photon agitator, improved barrel), shock baton, 3d20 fusion cells, synth legs x2, synth arms x2, synth helmet.',
+      },
+      robotSynthStrider: {
+        name: 'Robot',
+        description: 'The synth is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      lootSynthStrider: {
+        name: 'Loot',
+        description: 'Institute laser weapon (improved photon agitator, long barrel, short scope), shock baton, 3d20 fusion cells, sturdy synth helmet, sturdy synth chest piece, sturdy synth leg pieces x2, sturdy synth arm pieces x2.',
+      },
+      robotSynthCourser: {
+        name: 'Robot',
+        description: 'The synth is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      instituteAccess: {
+        name: 'Institute Access',
+        description: 'The synth courser can use the teleportation technology employed by the Institute and enter or leave the Institute at will.',
+      },
+      thirdGenSynth: {
+        name: 'Third-Generation Synth',
+        description: 'The synth can pass as a human and any inspection concludes that it is indeed human. A third-generation synth can only be identified as such after death, by recovering its synth component. When impersonating a known person, the third-generation synth gains a bonus of 2d20 to imitate that person, including their mannerisms, as well as to recall their knowledge.',
+      },
+      lootSynthCourser: {
+        name: 'Loot',
+        description: 'Synth component, heavy synth chest piece, heavy synth arm piece, heavy synth leg piece, Institute laser rifle (full stock, improved photon agitator, improved long barrel).',
+      },
+      robotSynthSoldier: {
+        name: 'Robot',
+        description: 'The synth is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      aggressiveSynthSoldier: {
+        name: 'Aggressive',
+        description: 'The synth soldier is quick to attack when it senses prey. When it enters the scene, it immediately generates 1 action point. If the synth soldier is an ally, this point is placed in the group\'s reserve. If it is an enemy, the point joins the GM\'s reserve.',
+      },
+      lootSynthSoldier: {
+        name: 'Loot',
+        description: 'Institute laser weapon (improved photon agitator, long barrel, short scope), shock baton, 3d20 fusion cells, sturdy synth helmet, sturdy synth chest piece, sturdy synth leg pieces x2, sturdy synth arm pieces x2.',
+      },
+      smallTurret: {
+        name: 'Small',
+        description: 'The turret is smaller than most characters. The turret\'s normal HP equals its Body plus half its level (rounded up), but its defense increases by 1. Additionally, the turret is killed if it suffers any injury.',
+      },
+      salvageTurretWall: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed turret with a successful INT + Science test at difficulty 1. On success, they recover 3d20 rounds of 10mm ammunition and 2 CD uncommon components.',
+      },
+      salvageTurretWallLaser: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed turret with a successful INT + Science test at difficulty 1. On success, they recover 3d20 Fusion Cells and 2 CD uncommon components.',
+      },
+      robotTurret: {
+        name: 'Robot',
+        description: 'The turret is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      salvageTurret: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed turret with a successful INT + Science test at difficulty 1. On success, they recover 3d20 rounds of 5.56mm ammunition and 2 CD uncommon components.',
       },
       modifiedMiniNukeAbility: {
         name: 'Modified Mini-Nuke',

@@ -474,6 +474,15 @@ export const ENERGY_WEAPONS_MODS: ModEntry[] = [
     ],
   },
   {
+    name: 'Canon long', slot: 'canon', applicableTo: 'energyWeapons',
+    nameAddKey: 'mods.energyWeapons.canon.canonLong.nameAdd',
+    weightChange: 1, cost: 20,
+    effects: [
+      { effectType: 'loseQuality', qualityName: 'closeQuarters' },
+      { effectType: 'rangeChange', numericValue: 1 },
+    ],
+  },
+  {
     name: 'Canon long à fixation', slot: 'canon', applicableTo: 'energyWeapons',
     weightChange: 1, cost: 25, requiredPerk: 'science', requiredPerkRank: 1,
     effects: [

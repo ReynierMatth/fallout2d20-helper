@@ -105,6 +105,14 @@ export const bestiaryInventory = pgTable('bestiary_inventory', {
   equipped: boolean('equipped').notNull().default(false),
 });
 
+// ===== BESTIARY INVENTORY MODS =====
+// Links a mod (item) to a bestiary inventory weapon entry — pre-installed mods
+export const bestiaryInventoryMods = pgTable('bestiary_inventory_mods', {
+  id: serial('id').primaryKey(),
+  bestiaryInventoryId: integer('bestiary_inventory_id').references(() => bestiaryInventory.id, { onDelete: 'cascade' }).notNull(),
+  modItemId: integer('mod_item_id').references(() => items.id).notNull(),
+});
+
 // ===== RELATIONS =====
 
 export const bestiaryEntriesRelations = relations(bestiaryEntries, ({ many }) => ({
@@ -163,13 +171,25 @@ export const bestiaryAbilitiesRelations = relations(bestiaryAbilities, ({ one })
   }),
 }));
 
-export const bestiaryInventoryRelations = relations(bestiaryInventory, ({ one }) => ({
+export const bestiaryInventoryRelations = relations(bestiaryInventory, ({ one, many }) => ({
   entry: one(bestiaryEntries, {
     fields: [bestiaryInventory.bestiaryEntryId],
     references: [bestiaryEntries.id],
   }),
   item: one(items, {
     fields: [bestiaryInventory.itemId],
+    references: [items.id],
+  }),
+  installedMods: many(bestiaryInventoryMods),
+}));
+
+export const bestiaryInventoryModsRelations = relations(bestiaryInventoryMods, ({ one }) => ({
+  bestiaryInventory: one(bestiaryInventory, {
+    fields: [bestiaryInventoryMods.bestiaryInventoryId],
+    references: [bestiaryInventory.id],
+  }),
+  modItem: one(items, {
+    fields: [bestiaryInventoryMods.modItemId],
     references: [items.id],
   }),
 }));
