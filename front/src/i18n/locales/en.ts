@@ -1833,23 +1833,127 @@ export default {
       },
       radroach: {
         name: 'Radroach',
-        description: 'A giant cockroach mutated by radiation, a common nuisance of the Wasteland.',
+        description: 'In pre-war America, cockroaches were already common vermin. After the bombs fell and nuclear apocalypse, nothing really changed. Nicknamed radroaches due to their radioactive bite, these creatures are larger than their ancestors but remain vermin nonetheless. Radroaches often infest ruined buildings, trash heaps, and other damp, dark places.',
       },
       deathclaw: {
         name: 'Deathclaw',
-        description: 'The most feared predator of the Wasteland, a massive mutated creature with devastating claws.',
+        description: 'Famous throughout the Wasteland, the deathclaw is a creature feared by many, and rightly so. The pre-war US government created these monstrosities by splicing the genome of the Jackson Chameleon, intending to replace soldiers on the battlefield. Armed with fearsome claws and horns, far larger than most humans, deathclaws are killing machines significantly faster than other creatures their size.',
+      },
+      glowingOne: {
+        name: 'Glowing One',
+        description: 'These green, glowing ghouls result from an excess of radiation in a feral ghoul or a human predisposed to ghoulification: the feral ghoul becomes a conduit for radiation. It glows a deep green and emits extreme radiation, even after death. It can even project its radiation as a toxic cloud, which can heal other ghouls and deal heavy radiation damage to other creatures.',
       },
       feralGhoul: {
         name: 'Feral Ghoul',
-        description: 'An irradiated human who has lost all reason, becoming a violent and aggressive creature.',
+        description: 'A centuries-old ghoul or unlucky human whose ghoulification rapidly degraded body and mind, feral ghouls are what remains when a subject\'s humanity disappears. These violent creatures attack their victims by rushing at them to tear them apart. It is impossible to reason with them, as they have lost the ability to understand speech and seem to possess no trace of intelligence.',
       },
       yaoGuai: {
         name: 'Yao Guai',
         description: 'These terrifying creatures are all that remains of the bear population in the post-war world. The yao guai has undergone enormous mutations: larger claws and far greater muscle mass than its ancestor.',
       },
+      superMutantSuicider: {
+        name: 'Super Mutant Suicider',
+        description: 'While most super mutants aren\'t truly afraid of death, super mutant suiciders have absolutely no survival instinct when pursuing their prey. These super mutants often accompany patrols or serve as guards. Extremely hostile, as soon as they spot a target, they arm the mini-nuke they carry under their arm and rush at the intruder to reach them before detonation.',
+      },
+      superMutantMaster: {
+        name: 'Super Mutant Master',
+        description: 'Super mutant masters rank higher in the hierarchy than brutes and generally possess the armor, weapons, and experience to earn their title. These super mutants are almost always hostile and equipped with devastating firepower, such as missile launchers and miniguns. This type of super mutant rarely belongs to small groups, but is almost always present in larger communities.',
+      },
+      superMutantBrute: {
+        name: 'Super Mutant Brute',
+        description: 'Super mutant brutes are tougher than the standard super mutants from the Institute. They have retained much of their intelligence, possess some eloquence, and resort to more subtle combat tactics, such as seeking cover or understanding their enemies\' weaknesses. They tend to wield more powerful weapons and wear more resistant armor.',
+      },
+      superMutantBehemoth: {
+        name: 'Super Mutant Behemoth',
+        description: 'These are the strongest and oldest super mutants. Having undergone severe mutations, behemoths stand nearly four meters tall. Years of continued mutation have robbed them of speech, and they communicate only through monstrous roars. Even other super mutants fear behemoths: they are big, strong… and hostile. Behemoths carry shopping carts on their backs and wield enormous bats made from fire hydrants.',
+      },
       superMutant: {
         name: 'Super Mutant',
-        description: 'A human transformed by the Forced Evolutionary Virus, becoming a massive and resistant brute.',
+        description: 'Seven feet tall, green-skinned, and heavily muscled, super mutants are impossible to miss. Their stupidity is proverbial, but they are competent warriors and know how to use weapons and armor. They are often found in groups of a few individuals following a leader\'s orders. Sometimes they are accompanied by mutant hounds.',
+      },
+      radstag: {
+        name: 'Radstag',
+        description: 'These creatures are the mutant descendants of the common deer. Though their anatomy has changed little, they underwent the same mutation as brahmin and thus have two heads. Radstags have also developed another strange and visible mutation: two undeveloped extra legs hang from their torso. These creatures travel in herds and are mostly docile if not threatened.',
+      },
+      radscorpion: {
+        name: 'Radscorpion',
+        description: 'This mutated version of the emperor scorpion is one of the most terrifying creatures of the Wasteland. Radscorpions are probably the animals that have undergone the most significant size mutation: the largest specimen nearly reaches the size of a small car. Their solid shell, fearsome pincers, imposing stinger, and blinding speed make them particularly difficult to kill.',
+      },
+      moleRat: {
+        name: 'Mole Rat',
+        description: 'These rodents are the mutant form of pre-war naked mole-rats. They thrive throughout nearly the entire Wasteland despite their many predators. About the size of a dog, they are much larger than their ancestors and generally far more fierce when hunting or defending their burrows. Mole rats are gregarious animals that hunt in packs, using their burrowing ability for the element of surprise.',
+      },
+      mutantHound: {
+        name: 'Mutant Hound',
+        description: 'These mutant dogs bear little resemblance to their domestic or feral counterparts. Mutant hounds are not natural creatures: they were created through exposure to the Forced Evolutionary Virus. Much larger than a normal dog, they have overdeveloped musculature and greatly increased aggression. They are almost always found in the company of super mutants who use them as guard dogs.',
+      },
+      mirelurkSpawn: {
+        name: 'Mirelurk Spawn',
+        description: 'The term "mirelurk spawn" refers to all non-adult mirelurks. Mirelurks lay eggs, often in a well-protected nest. Mirelurk spawn don\'t pose much of a threat to a competent individual, as long as the swarm isn\'t too large. At this stage of their evolution, mirelurks have a soft shell and are about the size of a radroach.',
+      },
+      mirelurk: {
+        name: 'Mirelurk',
+        description: 'The most common specimens of the mirelurk family are referred to by this generic term. These creatures resemble horseshoe crabs, with imposing pincers capable of breaking bone. They are found in groups near large bodies of water. Sometimes their shell has barnacles, a net, or other debris attached, making them easier to spot.',
+      },
+      mirelurkHunter: {
+        name: 'Mirelurk Hunter',
+        description: 'Hunters appear to descend from lobsters rather than crabs, given their elongated form and flared tail. Like their cousins, they have powerful pincers, but unlike the crab-descended mirelurk, they are more aggressive, their shell is generally sturdier, and they have developed the ability to spit an acidic substance at their prey.',
+      },
+      mirelurkQueen: {
+        name: 'Mirelurk Queen',
+        description: 'Queens are a rare variant of the classic crab mirelurks and are far more terrifying and dangerous. Their size exceeds that of any other member of the species and can sometimes rival that of a behemoth. They are among the most aggressive mirelurk variants. Like all mirelurks, their shell is nearly indestructible, but their soft head remains their weak point.',
+      },
+      misterHandy: {
+        name: 'Mister Handy',
+        description: 'The base model of the line, the Mister Handy was originally designed as a repair, construction, and maintenance unit, but eventually became an essential part of pre-war American life. In homes, a Mister Handy served as a butler, capable of maintaining the household, cooking, and even caring for children and pets. Many of these robots now wander the Wasteland, their nuclear cores still functioning centuries after the Great War.',
+      },
+      sentryBot: {
+        name: 'Sentry Bot',
+        description: 'The sentry bot is one of the most imposing and dangerous military robots in the Wasteland. Designed for perimeter defense and heavy assault, it is equipped with a devastating arsenal including a machine gun, missile launcher, and powerful mechanical arms. Even when severely damaged, the sentry bot remains a deadly threat thanks to its self-destruct capability.',
+      },
+      protectron: {
+        name: 'Protectron',
+        description: 'Another successful line of RobCo robots, the Protectron was designed as a multi-purpose worker. Protectrons can assist in construction, offices, and public services. Although these units have a laser weapon, it is intended for the robot\'s protection rather than combat. Protectrons can also self-destruct to destroy their attacker. Various personalities can be programmed into the unit: firefighter, police officer, construction worker, medic, or metro agent.',
+      },
+      misterGutsy: {
+        name: 'Mister Gutsy',
+        description: 'The US Army did not fail to notice the potential of Mister Handy robots: its leaders commissioned General Atomics International to create a combat model from the Mister Handy line. Thus the Mister Gutsy model was conceived. Equipped with integrated armor plating, a wide range of lethal combat attachments, enhanced sensory analysis systems, and increased speed, it became a fully competent robotic bodyguard.',
+      },
+      missNanny: {
+        name: 'Miss Nanny',
+        description: 'Following the popularity boom of the Mister Handy in households, the Miss Nanny model was launched. Designed with infant and child care in mind, it received several programming modifications to reflect this purpose. This Mister Handy robot model can also be altered to serve in the medical field.',
+      },
+      assaultron: {
+        name: 'Assaultron',
+        description: 'Designed by RobCo Industries, the Assaultron is an impressive military robot built to fight on the front lines and devastate enemy forces. Powerful mechanical legs propel this machine at incredible speed toward its targets. Its arms are designed to accommodate a variety of attachments to adapt the robot to any combat situation. Even when severely damaged, the Assaultron relentlessly pursues its mission.',
+      },
+      eyebot: {
+        name: 'Eyebot',
+        description: 'The eyebot is one of the smallest robots designed by RobCo Industries. Spotting its spherical form floating above the ground is commonplace in the Wasteland. Despite its compact size, it contains many useful devices: long-range antennas, a facial and voice recognition system, and even a laser weapon. They are often friendly but will defend themselves if attacked.',
+      },
+      bloodyBug: {
+        name: 'Bloodbug',
+        description: 'Bloodbugs are mutant mosquitoes found in swamps, stagnant water areas, or near carrion. As adults, they have a dark brown-red body over fifty centimeters long, and their sharp proboscis can pierce certain types of armor. They typically spit irradiated blood to blind their prey before piercing the disoriented victim with their proboscis to drink their blood.',
+      },
+      bloatfly: {
+        name: 'Bloatfly',
+        description: 'Bloatflies are the mutated form of pre-war scorpionflies and are another common species of flying insects in the Wasteland. They often nest in the same areas as bloatflies or ticks. Bloatflies have developed a venomous stinger as deadly as it is painful. These creatures are incredibly fast and agile, making them formidable opponents in swarms.',
+      },
+      dog: {
+        name: 'Dog',
+        description: 'Dogs are common in the Wasteland and are one of the rare species that haven\'t completely mutated. Non-mutant dogs exist in many communities as pets or guard animals. However, not all dogs are friendly. Packs of mutant dogs, rabid and irradiated, roam the Wasteland.',
+      },
+      mongrel: {
+        name: 'Mongrel',
+        description: 'A mongrel is a mutant, brutal version of man\'s best friend. More aggressive and radiation-resistant, mongrels are a formidable threat to unwary travelers.',
+      },
+      brahmin: {
+        name: 'Brahmin',
+        description: 'Essential in most communities, brahmin are among the most common creatures in the Wasteland. These mutant cattle share many characteristics with pre-war cows, though they have developed a second head and oversized udders due to nuclear fallout. They provide milk, meat, and leather.',
+      },
+      dogmeat: {
+        name: 'Dogmeat',
+        description: 'A loyal canine companion of the Wasteland. Dogmeat is a brave and faithful dog, always ready to protect its master.',
       },
     },
     attacks: {
@@ -1858,7 +1962,30 @@ export default {
       alienBlasterPistol: 'Alien Blaster Pistol',
       bite: 'Bite',
       claws: 'Claws',
+      rush: 'Rush',
+      heavyObject: 'Heavy Object',
+      modifiedMiniNuke: 'Modified Mini-Nuke',
+      minigun: 'Minigun',
+      fireHydrantBat: 'Fire Hydrant Bat',
+      boulderThrow: 'Boulder Throw',
+      board: 'Board',
+      pipeBoltAction: 'Pipe Bolt-Action',
       superSledge: 'Super Sledge',
+      machineGun: 'Machine Gun',
+      missileLauncher: 'Missile Launcher',
+      armLasers: 'Arm Lasers',
+      autoPistol10mm: '10mm Auto Pistol',
+      circularSaw: 'Circular Saw',
+      flamethrower: 'Flamethrower',
+      selfDestruct: 'Self-Destruct',
+      laser: 'Laser',
+      proboscis: 'Proboscis',
+      antlers: 'Antlers',
+      stinger: 'Stinger',
+      pincers: 'Pincers',
+      acidSpray: 'Acid Spray',
+      sharpStinger: 'Sharp Stinger',
+      headbutt: 'Headbutt',
     },
     abilities: {
       railroadAgent: {
@@ -1881,13 +2008,41 @@ export default {
         name: 'Fast',
         description: 'Can move 2 zones with a single move action.',
       },
+      shredding: {
+        name: 'Shredding',
+        description: 'The deathclaw can choose to make a devastating Claws attack by increasing the attack difficulty by +1. On success, add +2 CD to damage.',
+      },
+      weakPoint: {
+        name: 'Weak Point',
+        description: 'If an attacker chooses to aim at the creature\'s torso, they ignore its DR. This does not apply if the attack hits the torso by chance.',
+      },
+      extraordinaryStrength: {
+        name: 'Extraordinary Strength',
+        description: 'The deathclaw can lift and throw objects as heavy as a standard car.',
+      },
+      butcheringDeathclaw: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead deathclaw by passing an END + Survival test at difficulty 1. They recover 2 CD pieces of deathclaw meat.',
+      },
       feral: {
         name: 'Feral',
-        description: 'Frantically attacks the nearest enemy. Cannot be reasoned with.',
+        description: 'The feral ghoul lacks intelligence and is guided only by primal instincts. It cannot be persuaded or influenced by Speech tests. It moves toward the nearest enemy and attacks. If it detects no enemies, it moves toward the nearest source of bright light or loud noise. If it perceives nothing, it moves randomly or simply lies still.',
       },
       mutantBrute: {
         name: 'Mutant Brute',
         description: 'Melee attacks deal +2 CD extra damage.',
+      },
+      modifiedMiniNukeAbility: {
+        name: 'Modified Mini-Nuke',
+        description: 'The super mutant suicider carries a modified mini-nuke. Once within close range of its target, it makes an AGI + Explosives test (TN 11) to detonate it. Everyone within close range of the suicider, including itself, suffers the effects. If the suicider is killed before arming and detonating the mini-nuke, 1 mini-nuke can be found on the body. If the suicider is killed by the explosion, no mini-nuke can be found on the corpse, but 1 rare component can be recovered.',
+      },
+      lootBehemoth: {
+        name: 'Loot',
+        description: 'Once the behemoth is dead, players can find several items and caps on its body. Roll 3d20 for the number of caps and 4 CD for the number of junk items. The body may also contain up to two weapons and 2d20 corresponding ammunition, at the GM\'s discretion.',
+      },
+      barbaric: {
+        name: 'Barbaric',
+        description: 'DR +2 against physical and energy damage (already included).',
       },
       radImmune: {
         name: 'Radiation Immune',
@@ -1900,6 +2055,234 @@ export default {
       aggressive: {
         name: 'Aggressive',
         description: 'The yao guai is quick to attack when it senses prey. When it enters the scene, it immediately generates 1 action point. If the yao guai is an ally, this point goes to the group pool. If it is an enemy, the point goes to the GM pool.',
+      },
+      robotSentryBot: {
+        name: 'Robot',
+        description: 'The sentry bot is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      selfDestructSentryBot: {
+        name: 'Self-Destruct',
+        description: 'If both arms of the sentry bot are injured or if its HP has fallen to half or less of maximum, the robot moves toward the nearest enemy and takes a major action to trigger its self-destruct. This is an attack centered on the robot, which is destroyed after this action.',
+      },
+      salvageSentryBot: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed sentry bot with an INT + Science test at difficulty 1. On success, they recover 1 fusion reactor, 2 CD common components, +1 CD per AP spent. For each Effect rolled, they also recover 1 uncommon component.',
+      },
+      robotProtectron: {
+        name: 'Robot',
+        description: 'The Protectron is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      armLasersAbility: {
+        name: 'Arm Lasers',
+        description: 'If the Protectron\'s arms suffer an injury, its arm lasers\' fire rate decreases by 2. If both arms are injured, the robot can no longer attack with its lasers.',
+      },
+      letLoose: {
+        name: 'Let Loose',
+        description: 'Once per combat, the Protectron can "let loose" and fire a burst from its arm lasers. It adds the fire rate (4) to its weapon damage for this single attack (for a total of 7 CD) and can benefit from the Burst damage effect without spending ammunition. If one of the Protectron\'s arm lasers has suffered an injury, this special attack only deals 5 CD.',
+      },
+      selfDestructProtectron: {
+        name: 'Self-Destruct',
+        description: 'If both of the Protectron\'s arms are injured, or if its HP has fallen to half or less of maximum, the Protectron moves toward the nearest enemy and takes a major action to trigger its self-destruct. This is an attack centered on the robot, which is destroyed after this action.',
+      },
+      salvageProtectron: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed Protectron with an INT + Science test at difficulty 1. On success, they recover 2 CD common components, +1 CD per AP spent. For each Effect rolled, they also recover 1 uncommon component.',
+      },
+      robotMisterGutsy: {
+        name: 'Robot',
+        description: 'The Mister Gutsy is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      misterGutsyAbility: {
+        name: 'Mister Gutsy',
+        description: 'These robots are designed for combat. Attacks made by a Mister Gutsy gain +1 CD damage. They have Mister Gutsy armor plating as standard armor. Additionally, if a character attempts a Speech test to interrogate a Mister Gutsy, argue with it, or give it orders, the test difficulty increases by 2 if that character is not wearing a military uniform.',
+      },
+      salvageMisterGutsy: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed Mister Gutsy with an INT + Science test at difficulty 1. On success, they recover flamethrower fuel for 2d20 shots, 2d20 10mm rounds, 2 CD common components, +1 CD per AP spent. For each Effect rolled, they also recover 1 uncommon component.',
+      },
+      robotMisterHandy: {
+        name: 'Robot',
+        description: 'The Mister Handy is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      misterHandyAbility: {
+        name: 'Mister Handy',
+        description: 'The Mister Handy has 360° vision and enhanced sensory systems that allow it to detect odors, chemicals, and radiation, resulting in a difficulty reduction of 1 for all PER tests based on sight and smell. It moves by propulsion, hovering above the ground, and is therefore unaffected by difficult terrain or obstacles.',
+      },
+      salvageMisterHandy: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed Mister Handy with an INT + Science test at difficulty 1. On success, they recover flamethrower fuel for 2d20 shots, 2 CD common components, +1 CD per AP spent. For each Effect rolled, they also recover 1 uncommon component.',
+      },
+      robotAssaultron: {
+        name: 'Robot',
+        description: 'The Assaultron is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      selfDestructAbility: {
+        name: 'Self-Destruct',
+        description: 'If the Assaultron\'s legs and arms are injured, or if its HP has fallen to half or less of maximum, the Assaultron moves toward the nearest enemy and takes a major action to trigger its self-destruct. This is an attack centered on the robot, which is destroyed after this action.',
+      },
+      nightVision: {
+        name: 'Night Vision',
+        description: 'The Assaultron can see in total darkness. It ignores any difficulty increase due to low light or darkness and can attempt any skill test that would otherwise be impossible in such conditions.',
+      },
+      salvageAssaultron: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed Assaultron with an INT + Science test at difficulty 1. On success, they recover 3 CD fusion cells, +1 CD per AP spent. For each Effect rolled, they also recover 1 uncommon component.',
+      },
+      robot: {
+        name: 'Robot',
+        description: 'The eyebot is a robot. It is immune to the effects of hunger, thirst, and suffocation. It is also immune to radiation and poison damage. However, machines cannot consume food, drinks, or other consumables, they do not heal naturally, and the Medicine skill cannot be used to treat them. Damage they suffer must be repaired.',
+      },
+      diseaseImmune: {
+        name: 'Disease Immune',
+        description: 'The creature is immune to the effects of all diseases and will never show symptoms.',
+      },
+      radioTransmission: {
+        name: 'Radio Transmission',
+        description: 'The eyebot can receive and transmit radio broadcasts, and can also broadcast them. In this case, the eyebot can be heard at long range.',
+      },
+      salvageEyebot: {
+        name: 'Salvage',
+        description: 'Scavengers can search the remains of a destroyed eyebot with an INT + Science test at difficulty 1. On success, they recover 2 CD common components. For each Effect rolled, they also recover 1 uncommon component.',
+      },
+      butcheringBloodyBug: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead bloodbug by passing an END + Survival test at difficulty 0. They recover 1 piece of bloodbug meat and 1 uncommon component.',
+      },
+      ghoul: {
+        name: 'Ghoul',
+        description: 'Radiation heals the ghoul. It recovers 1 HP for every 3 points of radiation damage it takes.',
+      },
+      playingDead: {
+        name: 'Playing Dead',
+        description: 'A feral ghoul lying still on the ground looks exactly like a corpse. Passing a PER + Survival test at difficulty 2 allows distinguishing a ghoul from an actual corpse. These creatures often use this technique to ambush inattentive passersby.',
+      },
+      radiationPulse: {
+        name: 'Radiation Pulse',
+        description: 'Once per combat, the glowing one can emit a radiation pulse that deals 5 CD radiation damage to every creature within close range or less. If the pulse deals at least 3 points of damage, then every defeated ghoul within range recovers 1 HP and rejoins the fight.',
+      },
+      luminescence: {
+        name: 'Luminescence',
+        description: 'Radiation saturates the glowing one so much that it glows. It emits a strange light and irradiates its surroundings. The glowing one deals 2 CD radiation damage to anyone within reach. Additionally, all its melee attacks gain the Radioactive damage effect. If they already have it, they deal 2 additional radiation damage per Effect rolled.',
+      },
+      lootGlowingOne: {
+        name: 'Loot',
+        description: '2 CD junk items can be found on a dead glowing one\'s body and can be recovered normally.',
+      },
+      lootFeralGhoul: {
+        name: 'Loot',
+        description: '2 CD junk items can be found on a dead ghoul\'s body and can be recovered normally.',
+      },
+      butcheringRadstag: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead radstag by passing an END + Survival test at difficulty 0. They recover 2 CD pieces of radstag meat. On an Effect, they also recover a radstag hide.',
+      },
+      burrowingRadscorpion: {
+        name: 'Burrowing',
+        description: 'As a major action, the radscorpion can dig a tunnel underground to surprise its attackers. While underground, it is not visible and cannot be targeted by attacks. As a major action, it digs a tunnel up to two zones away. Emerging from the ground only requires a minor action. The radscorpion cannot burrow through stone, metal, or wood.',
+      },
+      weakPointHead: {
+        name: 'Weak Point',
+        description: 'If an attacker chooses to aim at the creature\'s head, they ignore its DR. This does not apply if the attack hits the head by chance.',
+      },
+      butcheringRadscorpion: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead radscorpion by passing an END + Survival test at difficulty 1. They recover 2 CD pieces of radscorpion meat. On an Effect, they also recover a rare component, or a radscorpion egg on two Effects.',
+      },
+      burrowingMoleRat: {
+        name: 'Burrowing',
+        description: 'As a major action, the mole rat can dig a tunnel to escape enemies and prepare for its next assault. On its next turn, it can take a minor action to emerge at medium range or less from where it burrowed. By spending 1 AP, it can also add 1 CD to its bite damage when emerging.',
+      },
+      butcheringMoleRat: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead mole rat by passing an END + Survival test at difficulty 0. They recover 1 piece of mole rat meat and 1 common component.',
+      },
+      stealthy: {
+        name: 'Stealthy',
+        description: 'The creature\'s Sneak tests have a TN of 10, and it rolls +1d20 on its stealth attacks.',
+      },
+      butcheringRadroach: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead radroach by passing an END + Survival test at difficulty 0. They recover 1 piece of radroach meat.',
+      },
+      alertBark: {
+        name: 'Alert Bark',
+        description: 'During the first round of combat, the mutant hound can bark as a major action. Every super mutant and mutant hound within long range or less can take a second minor action on their next turn. No NPC can benefit from this ability more than once per combat.',
+      },
+      butcheringMutantHound: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead mutant hound by passing an END + Survival test at difficulty 1. They recover 1 CD pieces of mutant hound meat. On an Effect, they also recover 1 common component.',
+      },
+      aquatic: {
+        name: 'Aquatic',
+        description: 'The creature can swim and fully submerge without needing to breathe. Underwater, its attacks and movements suffer no difficulty increase.',
+      },
+      tinyWeakPoint: {
+        name: 'Tiny Weak Point',
+        description: 'The creature\'s body is covered in a solid shell, but its head remains its weak point. The area is small and hard to aim at: the defense of this specific location is 2.',
+      },
+      mirelurkBrood: {
+        name: 'Mirelurk Brood',
+        description: 'Once per round, the GM may spend 4 AP as a major action to hatch 4 mirelurk spawn eggs. In this case, the mirelurk queen cannot make an attack as a major action in the same round.',
+      },
+      fearImmune: {
+        name: 'Fear Immune',
+        description: 'The mirelurk queen can never be intimidated or threatened. She ignores or attacks anyone who attempts to intimidate or threaten her.',
+      },
+      lootMirelurkQueen: {
+        name: 'Loot',
+        description: 'Upon the death of a mirelurk queen, players can find many items and caps in its body and lair. Roll 4d20 to determine the number of caps found. Then roll 4 CD: for each Effect, roll on the random junk table. At the GM\'s discretion, the lair or body may also contain up to three weapons, as well as 3d20 ammunition for those weapons.',
+      },
+      butcheringMirelurk: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead mirelurk spawn by passing an END + Survival test at difficulty 0. They recover 1 piece of mirelurk meat.',
+      },
+      butcheringMirelurkAdult: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead mirelurk by passing an END + Survival test at difficulty 0. They recover 2 CD pieces of mirelurk meat. For each Effect rolled, they also recover 1 piece of softshell mirelurk meat.',
+      },
+      butcheringMirelurkQueen: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead mirelurk queen by passing an END + Survival test at difficulty 0. They recover 5 pieces of mirelurk queen meat.',
+      },
+      poisonImmune: {
+        name: 'Poison Immune',
+        description: 'The bloatfly reduces all poison damage to 0 and cannot suffer any damage or effect caused by poison.',
+      },
+      small: {
+        name: 'Small',
+        description: 'The creature is smaller than most characters. Its normal HP equals its Body plus half its level (rounded up), but its defense increases by 1. Additionally, the creature is killed if it suffers any injury.',
+      },
+      flight: {
+        name: 'Flight',
+        description: 'The creature can move freely through the air. It ignores ground-level obstacles and difficult terrain effects, and can fly over empty zones on the battlefield. Each turn, it must dedicate at least a minor action to moving, and if knocked prone, it crashes to the ground taking 3 CD physical Stun damage, +2 CD per zone traversed during the fall.',
+      },
+      diveAttack: {
+        name: 'Dive Attack',
+        description: 'If the creature moves within close range of an opponent and attacks in melee in the same turn, it may reroll 1d20 from the result. After the attack, it may spend 1 AP to move one zone.',
+      },
+      butcheringBloatfly: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead bloatfly by passing an END + Survival test at difficulty 0. They recover 1 CD pieces of bloatfly meat.',
+      },
+      butcheringDog: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead dog by passing an END + Survival test at difficulty 0. They recover 1 piece of mongrel dog meat.',
+      },
+      butchering: {
+        name: 'Butchering',
+        description: 'Scavengers can butcher a dead brahmin by passing an END + Survival test at difficulty 0. They recover 1 piece of brahmin meat and 2 uncommon components.',
+      },
+      keenSenses: {
+        name: 'Keen Senses',
+        description: 'At least one of Dogmeat\'s senses is particularly keen. Dogmeat can try to detect creatures or objects that other characters couldn\'t spot and reduces the difficulty of all PER tests by 1 (to a minimum of 0).',
+      },
+      attackDog: {
+        name: 'Attack Dog',
+        description: 'When Dogmeat assists you in an attack, it must place itself within close range of your target. If the attack succeeds, it deals its own melee damage to the target.',
+      },
+      companion: {
+        name: 'Companion',
+        description: 'Dogmeat\'s level equals yours and increases at the same rate. When you reach level 3, and every 2 levels after, increase Dogmeat\'s Body or Mind by +1. At each new level, and each Body increase, Dogmeat gains +1 HP. Dogmeat\'s bite damage increases by +1 CD at level 5 and every 5 levels after.',
       },
     },
   },
