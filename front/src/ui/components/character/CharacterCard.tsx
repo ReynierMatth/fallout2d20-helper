@@ -1,6 +1,6 @@
 import { Edit2, Copy, Trash2, Swords, Eye, Heart, Shield, Zap, Sparkles, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Character } from '../../../domain/models/character';
+import type { Character } from '../../../data/characters';
 import { ORIGINS } from '../../../domain/rules/originRules';
 import { SPECIAL_COLORS } from '../../../data/specialColors';
 import { OriginIcon } from './OriginIcon';
@@ -35,8 +35,7 @@ export function CharacterCard({
 
   const isCreature = character.statBlockType === 'creature';
 
-  // Handle both Character types: domain/models has originId, data/characters has origin
-  const charOriginId = character.originId ?? (character as any).origin;
+  const charOriginId = character.origin;
 
   const origin = charOriginId
     ? ORIGINS.find((o) => o.id === charOriginId)

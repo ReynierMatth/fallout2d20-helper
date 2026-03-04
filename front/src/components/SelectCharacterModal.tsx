@@ -2,7 +2,11 @@ import { useState, useMemo } from 'react';
 import { X, Search, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
-import type { PcOption } from '../ui/components/items/ItemTable';
+
+export interface PcOption {
+  id: string;
+  name: string;
+}
 
 interface SelectCharacterModalProps {
   isOpen: boolean;

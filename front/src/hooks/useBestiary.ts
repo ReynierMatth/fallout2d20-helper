@@ -12,7 +12,7 @@ export function useBestiary() {
   const [entries, setEntries] = useState<BestiarySummaryApi[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const lastFiltersRef = useRef<{ category?: CreatureCategory; statBlockType?: StatBlockType } | undefined>();
+  const lastFiltersRef = useRef<{ category?: CreatureCategory; statBlockType?: StatBlockType } | undefined>(undefined);
 
   const loadEntries = useCallback(async (filters?: { category?: CreatureCategory; statBlockType?: StatBlockType }) => {
     lastFiltersRef.current = filters;

@@ -506,6 +506,9 @@ export interface CreateCharacterData {
   giftedBonusAttributes?: string[];
   exerciseBonuses?: string[];
   inventory?: { itemId: number; quantity?: number; equipped?: boolean; equippedLocation?: string }[];
+  creatureAttributes?: Record<string, number>;
+  creatureSkills?: Record<string, number>;
+  creatureAttacks?: CreatureAttackApi[];
   dr?: { location: string; drPhysical: number; drEnergy: number; drRadiation: number; drPoison: number }[];
   traits?: { name: string; description: string; nameKey?: string; descriptionKey?: string }[];
 }
