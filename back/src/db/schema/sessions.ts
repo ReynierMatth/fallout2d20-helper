@@ -27,7 +27,7 @@ export const sessions = pgTable('sessions', {
 export const sessionParticipants = pgTable('session_participants', {
   id: serial('id').primaryKey(),
   sessionId: integer('session_id').references(() => sessions.id, { onDelete: 'cascade' }).notNull(),
-  characterId: integer('character_id').references(() => characters.id).notNull(),
+  characterId: integer('character_id').references(() => characters.id, { onDelete: 'cascade' }).notNull(),
   // Combat-specific data
   turnOrder: integer('turn_order'), // Initiative result (null if not in combat yet)
   combatStatus: combatantStatusEnum('combat_status').notNull().default('active'),

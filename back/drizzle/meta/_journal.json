@@ -148,6 +148,13 @@
       "when": 1772700000006,
       "tag": "0020_bestiary_inventory_mods",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1772701955816,
+      "tag": "0021_numerous_joseph",
+      "breakpoints": true
     }
   ]
 }
