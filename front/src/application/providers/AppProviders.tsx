@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RepositoryProvider, type Repositories } from './RepositoryProvider';
 import { ApiItemRepository } from '../../infrastructure/adapters/ApiItemRepository';
 import { ApiCharacterRepository } from '../../infrastructure/adapters/ApiCharacterRepository';
@@ -16,6 +17,21 @@ const repositories: Repositories = {
   generator: new ApiGeneratorService(),
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      gcTime: 5 * 60_000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
 export function AppProviders({ children }: { children: ReactNode }) {
-  return <RepositoryProvider repositories={repositories}>{children}</RepositoryProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RepositoryProvider repositories={repositories}>{children}</RepositoryProvider>
+    </QueryClientProvider>
+  );
 }

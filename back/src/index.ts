@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 
 import itemsRouter from './routes/items';
 import charactersRouter from './routes/characters';
@@ -15,6 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
+app.use(compression());
 app.use(cors());
 app.use(express.json());
 

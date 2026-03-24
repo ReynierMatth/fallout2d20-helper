@@ -1,132 +1,55 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { equipmentPacksApi, type EquipmentPackApi, type TagSkillBonusEntryApi, type LevelBonusApi } from '../services/api';
 
+const REFERENCE_STALE_TIME = 5 * 60_000;
+
 export function useEquipmentPacks() {
-  const [packs, setPacks] = useState<EquipmentPackApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: packs = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['equipmentPacks'],
+    queryFn: () => equipmentPacksApi.list(),
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchPacks = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await equipmentPacksApi.list();
-      setPacks(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch equipment packs');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchPacks();
-  }, [fetchPacks]);
-
-  return { packs, loading, error, refetch: fetchPacks };
+  return { packs, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useEquipmentPacksForOrigin(originId: string | undefined) {
-  const [packs, setPacks] = useState<EquipmentPackApi[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data: packs = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['equipmentPacks', 'origin', originId],
+    queryFn: () => equipmentPacksApi.getForOrigin(originId!),
+    enabled: !!originId,
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchPacks = useCallback(async () => {
-    if (!originId) {
-      setPacks([]);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await equipmentPacksApi.getForOrigin(originId);
-      setPacks(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch equipment packs');
-    } finally {
-      setLoading(false);
-    }
-  }, [originId]);
-
-  useEffect(() => {
-    fetchPacks();
-  }, [fetchPacks]);
-
-  return { packs, loading, error, refetch: fetchPacks };
+  return { packs, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useTagSkillBonuses() {
-  const [bonuses, setBonuses] = useState<Record<string, TagSkillBonusEntryApi[]>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: bonuses = {}, isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['tagSkillBonuses'],
+    queryFn: () => equipmentPacksApi.getTagSkillBonuses(),
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchBonuses = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await equipmentPacksApi.getTagSkillBonuses();
-      setBonuses(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch tag skill bonuses');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchBonuses();
-  }, [fetchBonuses]);
-
-  return { bonuses, loading, error, refetch: fetchBonuses };
+  return { bonuses, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useLevelBonuses() {
-  const [bonuses, setBonuses] = useState<LevelBonusApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: bonuses = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['levelBonuses'],
+    queryFn: () => equipmentPacksApi.getLevelBonuses(),
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchBonuses = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await equipmentPacksApi.getLevelBonuses();
-      setBonuses(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch level bonuses');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchBonuses();
-  }, [fetchBonuses]);
-
-  return { bonuses, loading, error, refetch: fetchBonuses };
+  return { bonuses, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useLevelBonus(level: number) {
-  const [bonus, setBonus] = useState<LevelBonusApi | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data: bonus = null, isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['levelBonuses', level],
+    queryFn: () => equipmentPacksApi.getLevelBonus(level),
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchBonus = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await equipmentPacksApi.getLevelBonus(level);
-      setBonus(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch level bonus');
-    } finally {
-      setLoading(false);
-    }
-  }, [level]);
-
-  useEffect(() => {
-    fetchBonus();
-  }, [fetchBonus]);
-
-  return { bonus, loading, error, refetch: fetchBonus };
+  return { bonus, loading, error: queryError?.message ?? null, refetch: () => {} };
 }

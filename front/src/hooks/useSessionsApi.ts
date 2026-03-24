@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { sessionsApi } from '../services/api';
 import type {
   SessionApi,
@@ -10,63 +11,57 @@ import type {
   CombatantStatus,
 } from '../services/api';
 
+const SESSIONS_KEY = ['sessions'] as const;
+const sessionKey = (id: number) => ['sessions', id] as const;
+
 export function useSessionsApi() {
-  const [sessions, setSessions] = useState<SessionApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Load all sessions
+  const { data: sessions = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: SESSIONS_KEY,
+    queryFn: () => sessionsApi.list({ full: true }),
+    staleTime: 30_000,
+  });
+
+  const error = queryError?.message ?? null;
+
   const loadSessions = useCallback(async (filters?: { status?: SessionStatus }) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await sessionsApi.list({ ...filters, full: true });
-      setSessions(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load sessions');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+  }, [queryClient]);
 
-  // Initial load
-  useEffect(() => {
-    loadSessions();
-  }, [loadSessions]);
-
-  // Create session
   const createSession = useCallback(async (data: CreateSessionData): Promise<SessionApi> => {
     const newSession = await sessionsApi.create(data);
-    // Reload to get full session with participants
     const full = await sessionsApi.get(newSession.id);
-    setSessions(prev => [...prev, full]);
+    queryClient.setQueryData<SessionApi[]>(SESSIONS_KEY, (old) => [...(old ?? []), full]);
     return full;
-  }, []);
+  }, [queryClient]);
 
-  // Update session
   const updateSession = useCallback(async (id: number, data: UpdateSessionData): Promise<SessionApi> => {
     const updated = await sessionsApi.update(id, data);
-    setSessions(prev => prev.map(s => s.id === id ? updated : s));
+    queryClient.setQueryData<SessionApi[]>(SESSIONS_KEY, (old) =>
+      old?.map(s => s.id === id ? updated : s)
+    );
     return updated;
-  }, []);
+  }, [queryClient]);
 
-  // Delete session
   const deleteSession = useCallback(async (id: number): Promise<void> => {
     await sessionsApi.delete(id);
-    setSessions(prev => prev.filter(s => s.id !== id));
-  }, []);
+    queryClient.setQueryData<SessionApi[]>(SESSIONS_KEY, (old) =>
+      old?.filter(s => s.id !== id)
+    );
+  }, [queryClient]);
 
-  // Get single session
   const getSession = useCallback(async (id: number): Promise<SessionApi> => {
     return sessionsApi.get(id);
   }, []);
 
-  // Refresh single session in list
   const refreshSession = useCallback(async (id: number): Promise<SessionApi> => {
     const updated = await sessionsApi.get(id);
-    setSessions(prev => prev.map(s => s.id === id ? updated : s));
+    queryClient.setQueryData<SessionApi[]>(SESSIONS_KEY, (old) =>
+      old?.map(s => s.id === id ? updated : s)
+    );
     return updated;
-  }, []);
+  }, [queryClient]);
 
   return {
     sessions,
@@ -83,170 +78,115 @@ export function useSessionsApi() {
 
 // Hook for working with a single session
 export function useSession(sessionId: number | null) {
-  const [session, setSession] = useState<SessionApi | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Load session
+  const { data: session = null, isLoading: loading, error: queryError } = useQuery({
+    queryKey: sessionId ? sessionKey(sessionId) : ['sessions', 'none'],
+    queryFn: () => sessionId ? sessionsApi.get(sessionId) : null,
+    enabled: !!sessionId,
+    staleTime: 10_000,
+  });
+
+  const error = queryError?.message ?? null;
+
+  // Helper to update session in cache
+  const setSession = useCallback((updater: (prev: SessionApi | null) => SessionApi | null) => {
+    if (!sessionId) return;
+    queryClient.setQueryData<SessionApi | null>(sessionKey(sessionId), (old) => updater(old ?? null));
+  }, [sessionId, queryClient]);
+
+  // Helper to refresh session from server
+  const refreshAndSet = useCallback(async (): Promise<SessionApi | null> => {
+    if (!sessionId) return null;
+    const updated = await sessionsApi.get(sessionId);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
+
   const loadSession = useCallback(async () => {
     if (!sessionId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await sessionsApi.get(sessionId);
-      setSession(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load session');
-    } finally {
-      setLoading(false);
-    }
-  }, [sessionId]);
+    await queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
+  }, [sessionId, queryClient]);
 
-  useEffect(() => {
-    loadSession();
-  }, [loadSession]);
-
-  // Update session
   const updateSession = useCallback(async (data: UpdateSessionData): Promise<SessionApi | null> => {
     if (!sessionId) return null;
-    try {
-      const updated = await sessionsApi.update(sessionId, data);
-      setSession(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update session');
-      throw err;
-    }
-  }, [sessionId]);
+    const updated = await sessionsApi.update(sessionId, data);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
 
   // ===== PARTICIPANTS =====
 
   const addParticipant = useCallback(async (characterId: number): Promise<SessionParticipantApi | null> => {
     if (!sessionId) return null;
-    try {
-      const participant = await sessionsApi.addParticipant(sessionId, characterId);
-      // Refresh session to get updated participants list
-      const updated = await sessionsApi.get(sessionId);
-      setSession(updated);
-      return participant;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add participant');
-      throw err;
-    }
-  }, [sessionId]);
+    const participant = await sessionsApi.addParticipant(sessionId, characterId);
+    await refreshAndSet();
+    return participant;
+  }, [sessionId, refreshAndSet]);
 
   const addQuickNpc = useCallback(async (data: AddQuickNpcData): Promise<SessionParticipantApi | null> => {
     if (!sessionId) return null;
-    try {
-      const participant = await sessionsApi.addQuickNpc(sessionId, data);
-      const updated = await sessionsApi.get(sessionId);
-      setSession(updated);
-      return participant;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add quick NPC');
-      throw err;
-    }
-  }, [sessionId]);
+    const participant = await sessionsApi.addQuickNpc(sessionId, data);
+    await refreshAndSet();
+    return participant;
+  }, [sessionId, refreshAndSet]);
 
   const removeParticipant = useCallback(async (participantId: number): Promise<void> => {
     if (!sessionId) return;
-    try {
-      await sessionsApi.removeParticipant(sessionId, participantId);
-      const updated = await sessionsApi.get(sessionId);
-      setSession(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to remove participant');
-      throw err;
-    }
-  }, [sessionId]);
+    await sessionsApi.removeParticipant(sessionId, participantId);
+    await refreshAndSet();
+  }, [sessionId, refreshAndSet]);
 
   const setCombatStatus = useCallback(async (participantId: number, status: CombatantStatus): Promise<void> => {
     if (!sessionId) return;
-    try {
-      await sessionsApi.setCombatStatus(sessionId, participantId, status);
-      const updated = await sessionsApi.get(sessionId);
-      setSession(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to set combat status');
-      throw err;
-    }
-  }, [sessionId]);
+    await sessionsApi.setCombatStatus(sessionId, participantId, status);
+    await refreshAndSet();
+  }, [sessionId, refreshAndSet]);
 
   const setInitiative = useCallback(async (participantId: number, turnOrder: number): Promise<void> => {
     if (!sessionId) return;
-    try {
-      await sessionsApi.setInitiative(sessionId, participantId, turnOrder);
-      const updated = await sessionsApi.get(sessionId);
-      setSession(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to set initiative');
-      throw err;
-    }
-  }, [sessionId]);
+    await sessionsApi.setInitiative(sessionId, participantId, turnOrder);
+    await refreshAndSet();
+  }, [sessionId, refreshAndSet]);
 
   // ===== COMBAT =====
 
   const startCombat = useCallback(async (participantIds?: number[]): Promise<SessionApi | null> => {
     if (!sessionId) return null;
-    try {
-      const updated = await sessionsApi.startCombat(sessionId, participantIds);
-      setSession(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start combat');
-      throw err;
-    }
-  }, [sessionId]);
+    const updated = await sessionsApi.startCombat(sessionId, participantIds);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
 
   const endCombat = useCallback(async (): Promise<SessionApi | null> => {
     if (!sessionId) return null;
-    try {
-      const updated = await sessionsApi.endCombat(sessionId);
-      setSession(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to end combat');
-      throw err;
-    }
-  }, [sessionId]);
+    const updated = await sessionsApi.endCombat(sessionId);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
 
   const nextTurn = useCallback(async (): Promise<SessionApi | null> => {
     if (!sessionId) return null;
-    try {
-      const updated = await sessionsApi.nextTurn(sessionId);
-      setSession(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to advance turn');
-      throw err;
-    }
-  }, [sessionId]);
+    const updated = await sessionsApi.nextTurn(sessionId);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
 
   const prevTurn = useCallback(async (): Promise<SessionApi | null> => {
     if (!sessionId) return null;
-    try {
-      const updated = await sessionsApi.prevTurn(sessionId);
-      setSession(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to go to previous turn');
-      throw err;
-    }
-  }, [sessionId]);
+    const updated = await sessionsApi.prevTurn(sessionId);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
 
   // ===== GROUP AP (Players) =====
 
   const updateGroupAP = useCallback(async (data: { groupAP?: number; maxGroupAP?: number }): Promise<SessionApi | null> => {
     if (!sessionId) return null;
-    try {
-      const updated = await sessionsApi.updateGroupAP(sessionId, data);
-      setSession(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update AP');
-      throw err;
-    }
-  }, [sessionId]);
+    const updated = await sessionsApi.updateGroupAP(sessionId, data);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
 
   const spendGroupAP = useCallback(async (amount: number): Promise<SessionApi | null> => {
     if (!session) return null;
@@ -264,15 +204,10 @@ export function useSession(sessionId: number | null) {
 
   const updateGmAP = useCallback(async (gmAP: number): Promise<SessionApi | null> => {
     if (!sessionId) return null;
-    try {
-      const updated = await sessionsApi.updateGmAP(sessionId, gmAP);
-      setSession(updated);
-      return updated;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update GM AP');
-      throw err;
-    }
-  }, [sessionId]);
+    const updated = await sessionsApi.updateGmAP(sessionId, gmAP);
+    queryClient.setQueryData(sessionKey(sessionId), updated);
+    return updated;
+  }, [sessionId, queryClient]);
 
   const spendGmAP = useCallback(async (amount: number): Promise<SessionApi | null> => {
     if (!session) return null;
@@ -282,14 +217,12 @@ export function useSession(sessionId: number | null) {
 
   const gainGmAP = useCallback(async (amount: number): Promise<SessionApi | null> => {
     if (!session) return null;
-    // GM AP has no max limit
     const newAP = session.gmAP + amount;
     return updateGmAP(newAP);
   }, [session, updateGmAP]);
 
   // ===== OPTIMISTIC UPDATES =====
 
-  // Update a participant's character data locally (optimistic update)
   const updateParticipantCharacter = useCallback((
     characterId: number,
     updates: Partial<SessionParticipantApi['character']>
@@ -305,16 +238,16 @@ export function useSession(sessionId: number | null) {
         ),
       };
     });
-  }, []);
+  }, [setSession]);
 
   // ===== COMPUTED VALUES =====
 
-  // Get sorted participants by initiative (for combat)
-  const sortedParticipants = session?.participants
-    .filter(p => p.turnOrder !== null)
-    .sort((a, b) => (b.turnOrder ?? 0) - (a.turnOrder ?? 0)) ?? [];
+  const sortedParticipants = useMemo(() =>
+    session?.participants
+      .filter(p => p.turnOrder !== null)
+      .sort((a, b) => (b.turnOrder ?? 0) - (a.turnOrder ?? 0)) ?? []
+  , [session?.participants]);
 
-  // Get current active participant
   const currentParticipant = session?.combatActive && sortedParticipants.length > 0
     ? sortedParticipants[session.currentTurnIndex] ?? null
     : null;
