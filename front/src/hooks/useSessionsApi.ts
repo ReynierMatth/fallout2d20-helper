@@ -19,7 +19,7 @@ export function useSessionsApi() {
 
   const { data: sessions = [], isLoading: loading, error: queryError } = useQuery({
     queryKey: SESSIONS_KEY,
-    queryFn: () => sessionsApi.list({ full: true }),
+    queryFn: () => sessionsApi.list(),
     staleTime: 30_000,
   });
 

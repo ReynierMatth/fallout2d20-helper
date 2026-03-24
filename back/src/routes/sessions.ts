@@ -391,7 +391,7 @@ router.get('/', async (req, res) => {
       results = await db.select().from(sessions);
     }
 
-    // Optionally fetch with participants
+    // Optionally fetch with full participant details (heavy)
     if (req.query.full === 'true') {
       const fullSessions = await Promise.all(
         results.map(s => getFullSession(s.id))
@@ -399,7 +399,32 @@ router.get('/', async (req, res) => {
       return res.json(fullSessions);
     }
 
-    res.json(results);
+    // Default: include lightweight participant info (name, type, id only)
+    const sessionsWithParticipants = await Promise.all(
+      results.map(async (s) => {
+        const participants = await db
+          .select({
+            id: sessionParticipants.id,
+            characterId: sessionParticipants.characterId,
+            turnOrder: sessionParticipants.turnOrder,
+            combatStatus: sessionParticipants.combatStatus,
+            character: {
+              id: characters.id,
+              name: characters.name,
+              type: characters.type,
+              level: characters.level,
+              emoji: characters.emoji,
+              originId: characters.originId,
+            },
+          })
+          .from(sessionParticipants)
+          .innerJoin(characters, eq(sessionParticipants.characterId, characters.id))
+          .where(eq(sessionParticipants.sessionId, s.id));
+        return { ...s, participants };
+      })
+    );
+
+    res.json(sessionsWithParticipants);
   } catch (error) {
     console.error('Error fetching sessions:', error);
     res.status(500).json({ error: 'Failed to fetch sessions' });
