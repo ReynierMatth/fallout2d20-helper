@@ -943,6 +943,8 @@ export default {
     quantity: 'Quantity',
     selectLocation: 'Location',
     overCapacity: 'Over capacity!',
+    addToCharacter: 'Add to character',
+    pickCharacter: 'Pick a character',
     caps: 'Caps',
     itemTypes: {
       weapon: 'Weapons',

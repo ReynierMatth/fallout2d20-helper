@@ -141,7 +141,7 @@ export function CharacterSheetPage() {
           <OriginIcon originId={character.origin} emoji={character.emoji} type={character.type} size="sm" className="flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-bold text-vault-yellow leading-tight truncate">
-              {character.name || t('characters.unnamed')}
+              {(() => { const tr = t(character.name); return tr !== character.name ? tr : character.name; })() || t('characters.unnamed')}
             </h1>
             <p className="text-xs text-gray-400 truncate">
               {character.type === 'PC' ? t('characters.pc') : t('characters.npc')} · {t('characters.level')} {character.level}

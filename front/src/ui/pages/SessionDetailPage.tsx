@@ -365,7 +365,7 @@ export function SessionDetailPage() {
                         <span className="w-6 text-center font-bold text-vault-yellow text-sm">
                           {p.character.initiative}
                         </span>
-                        <span className="text-white text-sm truncate">{p.character.name}</span>
+                        <span className="text-white text-sm truncate">{(() => { const tr = t(p.character.name); return tr !== p.character.name ? tr : p.character.name; })()}</span>
                       </label>
                     );
                   };
@@ -415,7 +415,7 @@ export function SessionDetailPage() {
 
                   <div className="flex-1 min-w-0 px-2">
                     <span className="text-vault-yellow font-bold text-lg truncate">
-                      {currentParticipant?.character.name ?? '—'}
+                      {currentParticipant ? (() => { const tr = t(currentParticipant.character.name); return tr !== currentParticipant.character.name ? tr : currentParticipant.character.name; })() : '—'}
                     </span>
                     <span className="text-gray-400 text-sm ml-2">
                       — {t('sessions.combat.round', { number: session.currentRound })}
