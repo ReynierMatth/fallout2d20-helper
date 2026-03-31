@@ -14,6 +14,7 @@
     "db:seed": "tsx src/db/seed/index.ts"
   },
   "dependencies": {
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.38.3",
@@ -21,6 +22,7 @@
     "postgres": "^3.4.5"
   },
   "devDependencies": {
+    "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.7",

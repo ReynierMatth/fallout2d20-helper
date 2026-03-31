@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db/index';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import {
   characters,
   characterSpecial,
@@ -62,118 +62,125 @@ async function getCharacterInventory(characterId: number) {
     .filter(r => r.itemType === 'clothing')
     .map(r => r.itemId);
 
-  // Get armor details
+  // Batch fetch armor details (single query instead of N queries)
   const armorDetails: Record<number, { location: string; drPhysical: number; drEnergy: number; drRadiation: number; drPoison: number | null; hp: number | null }> = {};
   if (armorItemIds.length > 0) {
-    for (const itemId of armorItemIds) {
-      const [armor] = await db.select().from(armors).where(eq(armors.itemId, itemId));
-      if (armor) {
-        armorDetails[itemId] = {
-          location: armor.location,
-          drPhysical: armor.drPhysical,
-          drEnergy: armor.drEnergy,
-          drRadiation: armor.drRadiation,
-          drPoison: armor.drPoison,
-          hp: armor.hp,
-        };
-      }
+    const armorRows = await db.select().from(armors).where(inArray(armors.itemId, armorItemIds));
+    for (const armor of armorRows) {
+      armorDetails[armor.itemId] = {
+        location: armor.location,
+        drPhysical: armor.drPhysical,
+        drEnergy: armor.drEnergy,
+        drRadiation: armor.drRadiation,
+        drPoison: armor.drPoison,
+        hp: armor.hp,
+      };
     }
   }
 
-  // Get power armor details
+  // Batch fetch power armor details
   const powerArmorDetails: Record<number, { set: string; location: string; drPhysical: number; drEnergy: number; drRadiation: number; hp: number }> = {};
   if (powerArmorItemIds.length > 0) {
-    for (const itemId of powerArmorItemIds) {
-      const [pa] = await db.select().from(powerArmors).where(eq(powerArmors.itemId, itemId));
-      if (pa) {
-        powerArmorDetails[itemId] = {
-          set: pa.set,
-          location: pa.location,
-          drPhysical: pa.drPhysical,
-          drEnergy: pa.drEnergy,
-          drRadiation: pa.drRadiation,
-          hp: pa.hp,
-        };
-      }
+    const paRows = await db.select().from(powerArmors).where(inArray(powerArmors.itemId, powerArmorItemIds));
+    for (const pa of paRows) {
+      powerArmorDetails[pa.itemId] = {
+        set: pa.set,
+        location: pa.location,
+        drPhysical: pa.drPhysical,
+        drEnergy: pa.drEnergy,
+        drRadiation: pa.drRadiation,
+        hp: pa.hp,
+      };
     }
   }
 
-  // Get clothing details with locations
+  // Batch fetch clothing details + locations (2 queries instead of 2*N)
   const clothingDetails: Record<number, { locations: string[]; drPhysical: number; drEnergy: number; drRadiation: number; drPoison: number | null }> = {};
   if (clothingItemIds.length > 0) {
-    for (const itemId of clothingItemIds) {
-      const [cloth] = await db.select().from(clothing).where(eq(clothing.itemId, itemId));
-      const locations = await db.select().from(clothingLocations).where(eq(clothingLocations.itemId, itemId));
-      if (cloth) {
-        clothingDetails[itemId] = {
-          locations: locations.map(l => l.location),
-          drPhysical: cloth.drPhysical ?? 0,
-          drEnergy: cloth.drEnergy ?? 0,
-          drRadiation: cloth.drRadiation ?? 0,
-          drPoison: cloth.drPoison,
-        };
-      }
+    const [clothRows, locRows] = await Promise.all([
+      db.select().from(clothing).where(inArray(clothing.itemId, clothingItemIds)),
+      db.select().from(clothingLocations).where(inArray(clothingLocations.itemId, clothingItemIds)),
+    ]);
+    const locsByItemId: Record<number, string[]> = {};
+    for (const loc of locRows) {
+      (locsByItemId[loc.itemId] ??= []).push(loc.location);
+    }
+    for (const cloth of clothRows) {
+      clothingDetails[cloth.itemId] = {
+        locations: locsByItemId[cloth.itemId] ?? [],
+        drPhysical: cloth.drPhysical ?? 0,
+        drEnergy: cloth.drEnergy ?? 0,
+        drRadiation: cloth.drRadiation ?? 0,
+        drPoison: cloth.drPoison,
+      };
     }
   }
 
-  // Fetch installed mods for all inventory items
+  // Batch fetch installed mods for ALL inventory items (2 queries instead of N*M)
   const allInventoryIds = inventoryRows.map(r => r.id);
   const installedModsMap: Record<number, { modInventoryId: number; modItemId: number; modName: string; slot: string; nameAddKey?: string; effects: { effectType: string; numericValue: number | null; qualityName: string | null; qualityValue: number | null; ammoType: string | null; descriptionKey: string | null }[] }[]> = {};
 
   if (allInventoryIds.length > 0) {
-    for (const invId of allInventoryIds) {
-      const modRows = await db
-        .select({
-          modInventoryId: inventoryItemMods.modInventoryId,
-          modItemId: characterInventory.itemId,
-          modName: items.name,
-          slot: mods.slot,
-          nameAddKey: mods.nameAddKey,
-          modTableId: mods.id,
-        })
-        .from(inventoryItemMods)
-        .innerJoin(characterInventory, eq(inventoryItemMods.modInventoryId, characterInventory.id))
-        .innerJoin(items, eq(characterInventory.itemId, items.id))
-        .innerJoin(mods, eq(mods.itemId, characterInventory.itemId))
-        .where(eq(inventoryItemMods.targetInventoryId, invId));
+    const allModRows = await db
+      .select({
+        targetInventoryId: inventoryItemMods.targetInventoryId,
+        modInventoryId: inventoryItemMods.modInventoryId,
+        modItemId: characterInventory.itemId,
+        modName: items.name,
+        slot: mods.slot,
+        nameAddKey: mods.nameAddKey,
+        modTableId: mods.id,
+      })
+      .from(inventoryItemMods)
+      .innerJoin(characterInventory, eq(inventoryItemMods.modInventoryId, characterInventory.id))
+      .innerJoin(items, eq(characterInventory.itemId, items.id))
+      .innerJoin(mods, eq(mods.itemId, characterInventory.itemId))
+      .where(inArray(inventoryItemMods.targetInventoryId, allInventoryIds));
 
-      if (modRows.length > 0) {
-        const modsWithEffects = await Promise.all(
-          modRows.map(async (r) => {
-            const effects = await db.select().from(modEffects).where(eq(modEffects.modId, r.modTableId));
-            return {
-              modInventoryId: r.modInventoryId,
-              modItemId: r.modItemId,
-              modName: r.modName,
-              slot: r.slot,
-              nameAddKey: r.nameAddKey ?? undefined,
-              effects: effects.map(e => ({
-                effectType: e.effectType,
-                numericValue: e.numericValue,
-                qualityName: e.qualityName,
-                qualityValue: e.qualityValue,
-                ammoType: e.ammoType,
-                descriptionKey: e.descriptionKey,
-              })),
-            };
-          })
-        );
-        installedModsMap[invId] = modsWithEffects;
+    if (allModRows.length > 0) {
+      // Batch fetch all mod effects in a single query
+      const allModTableIds = [...new Set(allModRows.map(r => r.modTableId))];
+      const allEffectRows = await db.select().from(modEffects).where(inArray(modEffects.modId, allModTableIds));
+      const effectsByModId: Record<number, typeof allEffectRows> = {};
+      for (const e of allEffectRows) {
+        (effectsByModId[e.modId] ??= []).push(e);
+      }
+
+      // Group mods by target inventory ID
+      for (const r of allModRows) {
+        const effects = (effectsByModId[r.modTableId] ?? []).map(e => ({
+          effectType: e.effectType,
+          numericValue: e.numericValue,
+          qualityName: e.qualityName,
+          qualityValue: e.qualityValue,
+          ammoType: e.ammoType,
+          descriptionKey: e.descriptionKey,
+        }));
+        (installedModsMap[r.targetInventoryId] ??= []).push({
+          modInventoryId: r.modInventoryId,
+          modItemId: r.modItemId,
+          modName: r.modName,
+          slot: r.slot,
+          nameAddKey: r.nameAddKey ?? undefined,
+          effects,
+        });
       }
     }
   }
 
-  // Fetch compatible mod item IDs for each unique item
+  // Batch fetch compatible mod item IDs (1 query instead of N)
   const moddableTypes = ['weapon', 'armor', 'powerArmor', 'clothing'];
   const moddableItemIds = [...new Set(inventoryRows.filter(r => moddableTypes.includes(r.itemType)).map(r => r.itemId))];
   const compatibleModsMap: Record<number, number[]> = {};
 
-  for (const itemId of moddableItemIds) {
+  if (moddableItemIds.length > 0) {
     const compatRows = await db
-      .select({ modItemId: itemCompatibleMods.modItemId })
+      .select({ targetItemId: itemCompatibleMods.targetItemId, modItemId: itemCompatibleMods.modItemId })
       .from(itemCompatibleMods)
-      .where(eq(itemCompatibleMods.targetItemId, itemId));
-    compatibleModsMap[itemId] = compatRows.map(r => r.modItemId);
+      .where(inArray(itemCompatibleMods.targetItemId, moddableItemIds));
+    for (const row of compatRows) {
+      (compatibleModsMap[row.targetItemId] ??= []).push(row.modItemId);
+    }
   }
 
   return inventoryRows.map((row) => {

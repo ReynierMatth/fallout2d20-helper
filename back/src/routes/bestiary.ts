@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db/index';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import {
   bestiaryEntries,
   bestiaryAttributes,
@@ -131,21 +131,50 @@ async function getFullBestiaryEntry(entryId: number) {
       .where(eq(bestiaryInventory.bestiaryEntryId, entryId)),
   ]);
 
-  // Get attack qualities for each attack
-  const attacksWithQualities = await Promise.all(
-    attacks.map(async (attack) => {
-      const qualities = await db
-        .select({ quality: bestiaryAttackQualities.quality, value: bestiaryAttackQualities.value })
-        .from(bestiaryAttackQualities)
-        .where(eq(bestiaryAttackQualities.attackId, attack.id));
-      return { ...attack, qualities };
-    })
-  );
+  // Batch fetch attack qualities (1 query instead of N)
+  const attackIds = attacks.map(a => a.id);
+  const qualitiesByAttack: Record<number, { quality: string; value: number | null }[]> = {};
+  if (attackIds.length > 0) {
+    const allQualities = await db
+      .select({ attackId: bestiaryAttackQualities.attackId, quality: bestiaryAttackQualities.quality, value: bestiaryAttackQualities.value })
+      .from(bestiaryAttackQualities)
+      .where(inArray(bestiaryAttackQualities.attackId, attackIds));
+    for (const q of allQualities) {
+      (qualitiesByAttack[q.attackId] ??= []).push({ quality: q.quality, value: q.value });
+    }
+  }
+  const attacksWithQualities = attacks.map(attack => ({
+    ...attack,
+    qualities: qualitiesByAttack[attack.id] ?? [],
+  }));
 
   // Format attributes as Record
   const attributesMap: Record<string, number> = {};
   for (const attr of attributes) {
     attributesMap[attr.attribute] = attr.value;
+  }
+
+  // Batch fetch inventory mods (1 query instead of N)
+  const invIds = inventory.map(i => i.id);
+  const invModsByBestiaryInvId: Record<number, { modItemId: number; modItemName: string; modItemNameKey: string | null }[]> = {};
+  if (invIds.length > 0) {
+    const allInvMods = await db
+      .select({
+        bestiaryInventoryId: bestiaryInventoryMods.bestiaryInventoryId,
+        modItemId: bestiaryInventoryMods.modItemId,
+        modItemName: items.name,
+        modItemNameKey: items.nameKey,
+      })
+      .from(bestiaryInventoryMods)
+      .innerJoin(items, eq(bestiaryInventoryMods.modItemId, items.id))
+      .where(inArray(bestiaryInventoryMods.bestiaryInventoryId, invIds));
+    for (const m of allInvMods) {
+      (invModsByBestiaryInvId[m.bestiaryInventoryId] ??= []).push({
+        modItemId: m.modItemId,
+        modItemName: m.modItemName,
+        modItemNameKey: m.modItemNameKey,
+      });
+    }
   }
 
   return {
@@ -186,19 +215,9 @@ async function getFullBestiaryEntry(entryId: number) {
       nameKey: a.nameKey,
       descriptionKey: a.descriptionKey,
     })),
-    inventory: await Promise.all(inventory.map(async (i) => {
-      // Get installed mods for this inventory entry
-      const invMods = await db
-        .select({
-          modItemId: bestiaryInventoryMods.modItemId,
-          modItemName: items.name,
-          modItemNameKey: items.nameKey,
-        })
-        .from(bestiaryInventoryMods)
-        .innerJoin(items, eq(bestiaryInventoryMods.modItemId, items.id))
-        .where(eq(bestiaryInventoryMods.bestiaryInventoryId, i.id));
-
-      return {
+    inventory: (() => {
+      // Batch fetch inventory mods (already fetched below)
+      return inventory.map(i => ({
         itemId: i.itemId,
         quantity: i.quantity,
         equipped: i.equipped,
@@ -208,13 +227,9 @@ async function getFullBestiaryEntry(entryId: number) {
           nameKey: i.itemNameKey,
           itemType: i.itemType,
         },
-        installedMods: invMods.map(m => ({
-          modItemId: m.modItemId,
-          modItemName: m.modItemName,
-          modItemNameKey: m.modItemNameKey,
-        })),
-      };
-    })),
+        installedMods: (invModsByBestiaryInvId[i.id] ?? []),
+      }));
+    })(),
   };
 }
 

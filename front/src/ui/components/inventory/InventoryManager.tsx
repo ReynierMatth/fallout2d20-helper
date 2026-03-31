@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { Plus, Minus, Trash2, Check, X, Package, Coins, AlertTriangle, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings, Search, ChevronDown, ChevronRight } from 'lucide-react';
@@ -114,19 +114,19 @@ export function InventoryManager({
   const [collapsedSections, setCollapsedSections] = useState<Set<ItemType>>(new Set());
 
   // Calculate total weight
-  const totalWeight = inventory.reduce((sum, inv) => {
+  const totalWeight = useMemo(() => inventory.reduce((sum, inv) => {
     return sum + (inv.item.weight * inv.quantity);
-  }, 0);
+  }, 0), [inventory]);
 
   // Calculate total value
-  const totalValue = inventory.reduce((sum, inv) => {
+  const totalValue = useMemo(() => inventory.reduce((sum, inv) => {
     return sum + (inv.item.value * inv.quantity);
-  }, 0);
+  }, 0), [inventory]);
 
   const isOverCapacity = totalWeight > carryCapacity;
 
   // Add item from selector
-  const handleAddItem = async (itemId: number, quantity: number) => {
+  const handleAddItem = useCallback(async (itemId: number, quantity: number) => {
     try {
       setLoading(-1);
       const newItem = await addToInventory(characterId, { itemId, quantity, equipped: false });
@@ -136,10 +136,10 @@ export function InventoryManager({
     } finally {
       setLoading(null);
     }
-  };
+  }, [characterId, addToInventory, inventory, onInventoryChange]);
 
   // Update quantity
-  const handleQuantityChange = async (inv: InventoryItemApi, delta: number) => {
+  const handleQuantityChange = useCallback(async (inv: InventoryItemApi, delta: number) => {
     const newQuantity = inv.quantity + delta;
     if (newQuantity < 1) return;
 
@@ -152,10 +152,10 @@ export function InventoryManager({
     } finally {
       setLoading(null);
     }
-  };
+  }, [characterId, updateInventoryItem, inventory, onInventoryChange]);
 
   // Toggle equipped status
-  const handleToggleEquip = async (inv: InventoryItemApi, location?: string) => {
+  const handleToggleEquip = useCallback(async (inv: InventoryItemApi, location?: string) => {
     const update: UpdateInventoryData = {
       equipped: !inv.equipped,
     };
@@ -176,10 +176,10 @@ export function InventoryManager({
     } finally {
       setLoading(null);
     }
-  };
+  }, [characterId, updateInventoryItem, inventory, onInventoryChange]);
 
   // Remove item
-  const handleRemove = async (inv: InventoryItemApi) => {
+  const handleRemove = useCallback(async (inv: InventoryItemApi) => {
     try {
       setLoading(inv.id);
       await removeFromInventory(characterId, inv.id);
@@ -189,10 +189,10 @@ export function InventoryManager({
     } finally {
       setLoading(null);
     }
-  };
+  }, [characterId, removeFromInventory, inventory, onInventoryChange]);
 
   // Install a mod on an item
-  const handleInstallMod = async (targetInvId: number, modInventoryId: number) => {
+  const handleInstallMod = useCallback(async (targetInvId: number, modInventoryId: number) => {
     try {
       setLoading(targetInvId);
       const updated = await installMod(characterId, targetInvId, modInventoryId);
@@ -203,10 +203,10 @@ export function InventoryManager({
     } finally {
       setLoading(null);
     }
-  };
+  }, [characterId, installMod, inventory, onInventoryChange]);
 
   // Uninstall a mod from an item
-  const handleUninstallMod = async (targetInvId: number, modInventoryId: number) => {
+  const handleUninstallMod = useCallback(async (targetInvId: number, modInventoryId: number) => {
     try {
       setLoading(targetInvId);
       const updated = await uninstallMod(characterId, targetInvId, modInventoryId);
@@ -216,17 +216,17 @@ export function InventoryManager({
     } finally {
       setLoading(null);
     }
-  };
+  }, [characterId, uninstallMod, inventory, onInventoryChange]);
 
   // Save caps
-  const handleSaveCaps = () => {
+  const handleSaveCaps = useCallback(() => {
     const newCaps = Math.max(0, parseInt(capsInput) || 0);
     onCapsChange?.(newCaps);
     setEditingCaps(false);
-  };
+  }, [capsInput, onCapsChange]);
 
   // Filter inventory
-  const filteredInventory = inventory.filter(inv => {
+  const filteredInventory = useMemo(() => inventory.filter(inv => {
     if (inventoryTypeFilter !== 'all' && inv.item.itemType !== inventoryTypeFilter) return false;
     if (inventorySearch.trim()) {
       const searchLower = inventorySearch.toLowerCase();
@@ -235,15 +235,15 @@ export function InventoryManager({
       if (!name.includes(searchLower) && !nameKey.includes(searchLower)) return false;
     }
     return true;
-  });
+  }), [inventory, inventoryTypeFilter, inventorySearch, t]);
 
   // Group inventory by item type
-  const groupedInventory = filteredInventory.reduce((groups, inv) => {
+  const groupedInventory = useMemo(() => filteredInventory.reduce((groups, inv) => {
     const type = inv.item.itemType;
     if (!groups[type]) groups[type] = [];
     groups[type].push(inv);
     return groups;
-  }, {} as Record<ItemType, InventoryItemApi[]>);
+  }, {} as Record<ItemType, InventoryItemApi[]>), [filteredInventory]);
 
   // Order for display
   const typeOrder: ItemType[] = ['weapon', 'armor', 'powerArmor', 'clothing', 'ammunition', 'chem', 'food', 'generalGood', 'robotArmor', 'syringerAmmo', 'oddity', 'magazine', 'mod'];

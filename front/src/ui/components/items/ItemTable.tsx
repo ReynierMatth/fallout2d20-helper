@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { UserPlus } from 'lucide-react';
 import { getRarityColor, formatCaps, formatWeight } from '../../../generators/utils';
 
 export interface TableItem {
@@ -16,6 +17,7 @@ interface ItemTableProps {
   items: TableItem[];
   showCategory?: boolean;
   onItemClick?: (item: TableItem) => void;
+  onInjectItem?: (item: TableItem) => void;
 }
 
 // Map category to i18n category key for item names
@@ -52,7 +54,7 @@ function getCategoryKey(category: string): string {
   }
 }
 
-export function ItemTable({ items, showCategory = true, onItemClick }: ItemTableProps) {
+export function ItemTable({ items, showCategory = true, onItemClick, onInjectItem }: ItemTableProps) {
   const { t } = useTranslation();
 
   if (items.length === 0) {
@@ -95,6 +97,7 @@ export function ItemTable({ items, showCategory = true, onItemClick }: ItemTable
                   <th className="pb-2 font-medium text-right">{t('common.labels.value')}</th>
                   <th className="pb-2 font-medium text-right hidden sm:table-cell">{t('common.labels.weight')}</th>
                   <th className="pb-2 font-medium text-right hidden md:table-cell">{t('common.labels.rarity')}</th>
+                  {onInjectItem && <th className="pb-2 w-10"></th>}
                 </tr>
               </thead>
               <tbody>
@@ -119,6 +122,18 @@ export function ItemTable({ items, showCategory = true, onItemClick }: ItemTable
                     <td className={`py-2 text-right hidden md:table-cell ${getRarityColor(item.rarity)}`}>
                       {t(`common.rarity.${item.rarity}`)}
                     </td>
+                    {onInjectItem && (
+                      <td className="py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); onInjectItem(item); }}
+                          className="p-1 text-vault-yellow-dark hover:text-vault-yellow transition-colors cursor-pointer"
+                          title={t('inventory.addToCharacter')}
+                        >
+                          <UserPlus size={16} />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

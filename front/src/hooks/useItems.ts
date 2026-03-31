@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { itemsApi, type WeaponApi, type ArmorApi, type PowerArmorApi, type RobotArmorApi, type ClothingApi, type AmmunitionApi, type SyringerAmmoApi, type ChemApi, type FoodApi, type GeneralGoodApi, type MagazineApi, type ModApi } from '../services/api';
 
 export interface ItemsData {
@@ -17,227 +17,94 @@ export interface ItemsData {
   mods: ModApi[];
 }
 
+const ITEMS_STALE_TIME = 5 * 60_000; // Items are reference data, cache longer
+
 export function useItems() {
-  const [items, setItems] = useState<ItemsData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: items = null, isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'all'],
+    queryFn: () => itemsApi.getAllItems(),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchItems = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getAllItems();
-      setItems(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch items');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
-
-  return { items, loading, error, refetch: fetchItems };
+  return { items, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useWeapons(filters?: { skill?: string; rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [weapons, setWeapons] = useState<WeaponApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: weapons = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'weapons', filters],
+    queryFn: () => itemsApi.getWeapons(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchWeapons = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getWeapons(filters);
-      setWeapons(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch weapons');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.skill, filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchWeapons();
-  }, [fetchWeapons]);
-
-  return { weapons, loading, error, refetch: fetchWeapons };
+  return { weapons, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useArmors(filters?: { location?: string; type?: string; set?: string; rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [armors, setArmors] = useState<ArmorApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: armors = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'armors', filters],
+    queryFn: () => itemsApi.getArmors(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchArmors = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getArmors(filters);
-      setArmors(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch armors');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.location, filters?.type, filters?.set, filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchArmors();
-  }, [fetchArmors]);
-
-  return { armors, loading, error, refetch: fetchArmors };
+  return { armors, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function usePowerArmors(filters?: { set?: string; location?: string; rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [powerArmors, setPowerArmors] = useState<PowerArmorApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: powerArmors = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'powerArmors', filters],
+    queryFn: () => itemsApi.getPowerArmors(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchPowerArmors = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getPowerArmors(filters);
-      setPowerArmors(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch power armors');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.set, filters?.location, filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchPowerArmors();
-  }, [fetchPowerArmors]);
-
-  return { powerArmors, loading, error, refetch: fetchPowerArmors };
+  return { powerArmors, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useClothing(filters?: { rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [clothing, setClothing] = useState<ClothingApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: clothing = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'clothing', filters],
+    queryFn: () => itemsApi.getClothing(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchClothing = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getClothing(filters);
-      setClothing(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch clothing');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchClothing();
-  }, [fetchClothing]);
-
-  return { clothing, loading, error, refetch: fetchClothing };
+  return { clothing, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useAmmunition(filters?: { rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [ammunition, setAmmunition] = useState<AmmunitionApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: ammunition = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'ammunition', filters],
+    queryFn: () => itemsApi.getAmmunition(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchAmmunition = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getAmmunition(filters);
-      setAmmunition(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch ammunition');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchAmmunition();
-  }, [fetchAmmunition]);
-
-  return { ammunition, loading, error, refetch: fetchAmmunition };
+  return { ammunition, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useChems(filters?: { duration?: string; addictive?: boolean; rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [chems, setChems] = useState<ChemApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: chems = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'chems', filters],
+    queryFn: () => itemsApi.getChems(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchChems = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getChems(filters);
-      setChems(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch chems');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.duration, filters?.addictive, filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchChems();
-  }, [fetchChems]);
-
-  return { chems, loading, error, refetch: fetchChems };
+  return { chems, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useFood(filters?: { type?: string; irradiated?: boolean; rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [food, setFood] = useState<FoodApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: food = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'food', filters],
+    queryFn: () => itemsApi.getFood(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchFood = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getFood(filters);
-      setFood(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch food');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.type, filters?.irradiated, filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchFood();
-  }, [fetchFood]);
-
-  return { food, loading, error, refetch: fetchFood };
+  return { food, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useGeneralGoods(filters?: { type?: string; rarity?: number; minRarity?: number; maxRarity?: number }) {
-  const [generalGoods, setGeneralGoods] = useState<GeneralGoodApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: generalGoods = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['items', 'generalGoods', filters],
+    queryFn: () => itemsApi.getGeneralGoods(filters),
+    staleTime: ITEMS_STALE_TIME,
+  });
 
-  const fetchGeneralGoods = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await itemsApi.getGeneralGoods(filters);
-      setGeneralGoods(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch general goods');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters?.type, filters?.rarity, filters?.minRarity, filters?.maxRarity]);
-
-  useEffect(() => {
-    fetchGeneralGoods();
-  }, [fetchGeneralGoods]);
-
-  return { generalGoods, loading, error, refetch: fetchGeneralGoods };
+  return { generalGoods, loading, error: queryError?.message ?? null, refetch: () => {} };
 }

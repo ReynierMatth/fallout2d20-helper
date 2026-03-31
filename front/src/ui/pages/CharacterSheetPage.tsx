@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Edit2, Loader2, Star, Swords, Shield, Heart, Zap, Package, Sparkles, Dumbbell, Dice6 } from 'lucide-react';
+import { ArrowLeft, Edit2, Star, Swords, Shield, Heart, Zap, Package, Sparkles, Dumbbell, Dice6 } from 'lucide-react';
+import { CharacterSheetSkeleton } from '../components/shared/Skeleton';
 import { Card, Button, CharacterForm, InventoryManager, OriginIcon, BodyResistanceMap, SwipeableTabs } from '../../components';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
 import type { Character } from '../../data/characters';
@@ -106,12 +107,7 @@ export function CharacterSheetPage() {
   }, [id, updateInventoryItem, refetch]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 size={32} className="animate-spin text-vault-yellow" />
-        <span className="ml-3 text-gray-400">{t('common.loading')}</span>
-      </div>
-    );
+    return <CharacterSheetSkeleton />;
   }
 
   if (error) {
@@ -145,7 +141,7 @@ export function CharacterSheetPage() {
           <OriginIcon originId={character.origin} emoji={character.emoji} type={character.type} size="sm" className="flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-bold text-vault-yellow leading-tight truncate">
-              {character.name || t('characters.unnamed')}
+              {(() => { const tr = t(character.name); return tr !== character.name ? tr : character.name; })() || t('characters.unnamed')}
             </h1>
             <p className="text-xs text-gray-400 truncate">
               {character.type === 'PC' ? t('characters.pc') : t('characters.npc')} · {t('characters.level')} {character.level}

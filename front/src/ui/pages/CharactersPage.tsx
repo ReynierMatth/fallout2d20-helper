@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Users, UserPlus, Bot, Search, Loader2 } from 'lucide-react';
+import { Users, UserPlus, Bot, Search } from 'lucide-react';
+import { CharacterListSkeleton } from '../components/shared/Skeleton';
 import { Card, Button, CharacterCard, CharacterForm } from '../../components';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
@@ -159,12 +160,7 @@ export function CharactersPage() {
       </Card>
 
       {/* Loading state */}
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 size={32} className="animate-spin text-vault-yellow" />
-          <span className="ml-3 text-gray-400">{t('common.loading')}</span>
-        </div>
-      )}
+      {loading && <CharacterListSkeleton />}
 
       {/* Error state */}
       {error && (

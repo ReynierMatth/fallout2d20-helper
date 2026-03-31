@@ -1,29 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { perksApi, type PerkApi, type OriginApi, type SurvivorTraitApi } from '../services/api';
 
+const REFERENCE_STALE_TIME = 5 * 60_000;
+
 export function usePerks() {
-  const [perks, setPerks] = useState<PerkApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: perks = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['perks'],
+    queryFn: () => perksApi.list(),
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchPerks = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await perksApi.list();
-      setPerks(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch perks');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchPerks();
-  }, [fetchPerks]);
-
-  return { perks, loading, error, refetch: fetchPerks };
+  return { perks, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useAvailablePerks(params: {
@@ -34,84 +21,38 @@ export function useAvailablePerks(params: {
   isRobot?: boolean;
   enabled?: boolean;
 }) {
-  const [availablePerks, setAvailablePerks] = useState<{ perk: PerkApi; availableRank: number }[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data: availablePerks = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['perks', 'available', params.characterLevel, params.special, params.skills, params.currentPerks, params.isRobot],
+    queryFn: () => perksApi.getAvailable({
+      characterLevel: params.characterLevel,
+      special: params.special,
+      skills: params.skills,
+      currentPerks: params.currentPerks,
+      isRobot: params.isRobot,
+    }),
+    enabled: params.enabled !== false,
+    staleTime: 10_000,
+  });
 
-  const fetchAvailablePerks = useCallback(async () => {
-    if (params.enabled === false) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await perksApi.getAvailable({
-        characterLevel: params.characterLevel,
-        special: params.special,
-        skills: params.skills,
-        currentPerks: params.currentPerks,
-        isRobot: params.isRobot,
-      });
-      setAvailablePerks(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch available perks');
-    } finally {
-      setLoading(false);
-    }
-  }, [params.characterLevel, JSON.stringify(params.special), JSON.stringify(params.skills), JSON.stringify(params.currentPerks), params.isRobot, params.enabled]);
-
-  useEffect(() => {
-    fetchAvailablePerks();
-  }, [fetchAvailablePerks]);
-
-  return { availablePerks, loading, error, refetch: fetchAvailablePerks };
+  return { availablePerks, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useOrigins() {
-  const [origins, setOrigins] = useState<OriginApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: origins = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['origins'],
+    queryFn: () => perksApi.getOrigins(),
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchOrigins = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await perksApi.getOrigins();
-      setOrigins(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch origins');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchOrigins();
-  }, [fetchOrigins]);
-
-  return { origins, loading, error, refetch: fetchOrigins };
+  return { origins, loading, error: queryError?.message ?? null, refetch: () => {} };
 }
 
 export function useSurvivorTraits() {
-  const [survivorTraits, setSurvivorTraits] = useState<SurvivorTraitApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: survivorTraits = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['survivorTraits'],
+    queryFn: () => perksApi.getSurvivorTraits(),
+    staleTime: REFERENCE_STALE_TIME,
+  });
 
-  const fetchSurvivorTraits = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await perksApi.getSurvivorTraits();
-      setSurvivorTraits(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch survivor traits');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchSurvivorTraits();
-  }, [fetchSurvivorTraits]);
-
-  return { survivorTraits, loading, error, refetch: fetchSurvivorTraits };
+  return { survivorTraits, loading, error: queryError?.message ?? null, refetch: () => {} };
 }

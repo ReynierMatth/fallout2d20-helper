@@ -155,6 +155,13 @@
       "when": 1772701955816,
       "tag": "0021_numerous_joseph",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1774588800000,
+      "tag": "0022_add_fk_indexes",
+      "breakpoints": true
     }
   ]
 }

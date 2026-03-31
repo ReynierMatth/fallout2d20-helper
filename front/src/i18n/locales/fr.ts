@@ -942,6 +942,8 @@ export default {
     quantity: 'Quantité',
     selectLocation: 'Emplacement',
     overCapacity: 'Surcharge !',
+    addToCharacter: 'Ajouter à un personnage',
+    pickCharacter: 'Choisir un personnage',
     caps: 'Capsules',
     itemTypes: {
       weapon: 'Armes',

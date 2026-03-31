@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { bestiaryApi } from '../services/api';
 import type {
   BestiarySummaryApi,
@@ -8,29 +9,21 @@ import type {
   StatBlockType,
 } from '../services/api';
 
+const BESTIARY_KEY = ['bestiary'] as const;
+
 export function useBestiary() {
-  const [entries, setEntries] = useState<BestiarySummaryApi[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const lastFiltersRef = useRef<{ category?: CreatureCategory; statBlockType?: StatBlockType } | undefined>(undefined);
+  const queryClient = useQueryClient();
+
+  const { data: entries = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: BESTIARY_KEY,
+    queryFn: () => bestiaryApi.list(),
+    staleTime: 30_000,
+  });
 
   const loadEntries = useCallback(async (filters?: { category?: CreatureCategory; statBlockType?: StatBlockType }) => {
-    lastFiltersRef.current = filters;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await bestiaryApi.list(filters);
-      setEntries(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load bestiary');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadEntries();
-  }, [loadEntries]);
+    // Refetch with filters by invalidating and letting the query refetch
+    await queryClient.invalidateQueries({ queryKey: BESTIARY_KEY });
+  }, [queryClient]);
 
   const getEntry = useCallback(async (id: number): Promise<BestiaryEntryApi> => {
     return bestiaryApi.get(id);
@@ -42,25 +35,25 @@ export function useBestiary() {
 
   const createEntry = useCallback(async (data: CreateBestiaryEntryData) => {
     const result = await bestiaryApi.create(data);
-    await loadEntries(lastFiltersRef.current);
+    await queryClient.invalidateQueries({ queryKey: BESTIARY_KEY });
     return result;
-  }, [loadEntries]);
+  }, [queryClient]);
 
   const updateEntry = useCallback(async (id: number, data: CreateBestiaryEntryData) => {
     const result = await bestiaryApi.update(id, data);
-    await loadEntries(lastFiltersRef.current);
+    await queryClient.invalidateQueries({ queryKey: BESTIARY_KEY });
     return result;
-  }, [loadEntries]);
+  }, [queryClient]);
 
   const deleteEntry = useCallback(async (id: number) => {
     await bestiaryApi.delete(id);
-    await loadEntries(lastFiltersRef.current);
-  }, [loadEntries]);
+    await queryClient.invalidateQueries({ queryKey: BESTIARY_KEY });
+  }, [queryClient]);
 
   return {
     entries,
     loading,
-    error,
+    error: queryError?.message ?? null,
     loadEntries,
     getEntry,
     instantiate,

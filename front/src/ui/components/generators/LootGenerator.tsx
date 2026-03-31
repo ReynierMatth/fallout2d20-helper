@@ -8,6 +8,8 @@ import { ItemTable } from '../items/ItemTable';
 import type { TableItem } from '../items/ItemTable';
 import { ItemDetailModal } from '../items/ItemDetailSheet';
 import { generatorsApi } from '../../../services/api';
+import { useCharactersApi } from '../../../hooks/useCharactersApi';
+import { CharacterPickerModal } from '../shared/CharacterPickerModal';
 import type { LootResultApi, ItemType, LootCategory } from '../../../services/api';
 import {
   areaTypes,
@@ -49,6 +51,8 @@ export function LootGenerator({ showZoneDescriptions = true }: LootGeneratorProp
   // Step 3: Results
   const [result, setResult] = useState<LootResultApi | null>(null);
   const [selectedItem, setSelectedItem] = useState<{ id: number; itemType: ItemType } | null>(null);
+  const [injectItem, setInjectItem] = useState<TableItem | null>(null);
+  const { addToInventory } = useCharactersApi();
 
   const maxRarity = getMaxRarityForLevel(locationLevel);
 
@@ -117,6 +121,20 @@ export function LootGenerator({ showZoneDescriptions = true }: LootGeneratorProp
     if (tableItem.itemId && tableItem.itemType) {
       setSelectedItem({ id: tableItem.itemId, itemType: tableItem.itemType as ItemType });
     }
+  };
+
+  const handleInjectItem = (tableItem: TableItem) => {
+    setInjectItem(tableItem);
+  };
+
+  const handleCharacterSelected = async (characterId: string) => {
+    if (!injectItem?.itemId) return;
+    try {
+      await addToInventory(characterId, { itemId: injectItem.itemId, quantity: injectItem.quantity, equipped: false });
+    } catch (err) {
+      console.error('Failed to inject item:', err);
+    }
+    setInjectItem(null);
   };
 
   const areaTypeOptions = areaTypes.map(type => ({
@@ -375,7 +393,7 @@ export function LootGenerator({ showZoneDescriptions = true }: LootGeneratorProp
           </div>
 
           {tableItems.length > 0 ? (
-            <ItemTable items={tableItems} onItemClick={handleItemClick} />
+            <ItemTable items={tableItems} onItemClick={handleItemClick} onInjectItem={handleInjectItem} />
           ) : (
             <div className="text-center py-8 text-vault-yellow-dark">{t('loot.noItems')}</div>
           )}
@@ -416,6 +434,14 @@ export function LootGenerator({ showZoneDescriptions = true }: LootGeneratorProp
         onClose={() => setSelectedItem(null)}
         itemId={selectedItem?.id ?? null}
         itemType={selectedItem?.itemType ?? null}
+      />
+
+      {/* Character Picker for item injection */}
+      <CharacterPickerModal
+        isOpen={injectItem !== null}
+        onClose={() => setInjectItem(null)}
+        onSelect={handleCharacterSelected}
+        title={t('inventory.addToCharacter')}
       />
     </div>
   );
