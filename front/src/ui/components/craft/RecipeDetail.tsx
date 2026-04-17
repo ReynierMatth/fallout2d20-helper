@@ -102,9 +102,9 @@ function ItemResultSection({ item }: { item: NonNullable<RecipeDetailType['resul
     <div className="space-y-1 text-sm">
       <span className="text-vault-yellow font-semibold">{itemName}</span>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
-        <span className="text-vault-yellow-dark">{t('filters.labels.value')}</span>
+        <span className="text-vault-yellow-dark">{t('common.labels.value')}</span>
         <span className="text-vault-yellow">{item.value} ¢</span>
-        <span className="text-vault-yellow-dark">{t('filters.labels.weight')}</span>
+        <span className="text-vault-yellow-dark">{t('common.labels.weight')}</span>
         <span className="text-vault-yellow">{item.weight} kg</span>
       </div>
     </div>
