@@ -7,6 +7,7 @@ import { ApiPerkRepository } from '../../infrastructure/adapters/ApiPerkReposito
 import { ApiEquipmentPackRepository } from '../../infrastructure/adapters/ApiEquipmentPackRepository';
 import { ApiSessionRepository } from '../../infrastructure/adapters/ApiSessionRepository';
 import { ApiGeneratorService } from '../../infrastructure/adapters/ApiGeneratorService';
+import { ApiRecipeRepository } from '../../infrastructure/adapters/ApiRecipeRepository';
 
 const repositories: Repositories = {
   items: new ApiItemRepository(),
@@ -15,6 +16,7 @@ const repositories: Repositories = {
   equipmentPacks: new ApiEquipmentPackRepository(),
   sessions: new ApiSessionRepository(),
   generator: new ApiGeneratorService(),
+  recipes: new ApiRecipeRepository(),
 };
 
 const queryClient = new QueryClient({

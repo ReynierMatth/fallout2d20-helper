@@ -5,6 +5,7 @@ import type { PerkRepository } from '../../domain/ports/PerkRepository';
 import type { EquipmentPackRepository } from '../../domain/ports/EquipmentPackRepository';
 import type { SessionRepository } from '../../domain/ports/SessionRepository';
 import type { GeneratorService } from '../../domain/ports/GeneratorService';
+import type { RecipeRepository } from '../../domain/ports/RecipeRepository';
 
 export interface Repositories {
   characters: CharacterRepository;
@@ -13,6 +14,7 @@ export interface Repositories {
   equipmentPacks: EquipmentPackRepository;
   sessions: SessionRepository;
   generator: GeneratorService;
+  recipes: RecipeRepository;
 }
 
 const RepositoryContext = createContext<Repositories | null>(null);
