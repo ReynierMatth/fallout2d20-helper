@@ -12,6 +12,8 @@ import { useRecipes, useRecipe, useKnownRecipes, useMarkRecipeKnown, useForgetRe
 import type { MaterialItemIds } from '../../application/hooks/useRecipes';
 import type { RecipeIngredient } from '../../domain/models/recipe';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
+import type { AddInventoryData } from '../../services/api';
+import { getMaterialCostByComplexity, SPECIFIC_INGREDIENT_WORKBENCHES } from '../components/craft/craftUtils';
 import { Select } from '../../components';
 
 export function CraftPage() {
@@ -24,8 +26,9 @@ export function CraftPage() {
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedWeaponId, setSelectedWeaponId] = useState<number | null>(null);
+  const [isCrafting, setIsCrafting] = useState(false);
 
-  const { characters } = useCharactersApi();
+  const { characters, addToInventory, updateInventoryItem, removeFromInventory } = useCharactersApi();
   const pcCharacters = useMemo(() => characters?.filter((c: any) => c.type === 'PC') ?? [], [characters]);
   const rawCharacter = characterId ? (characters?.find((c: any) => String(c.id) === characterId) ?? null) : null;
 
@@ -51,6 +54,7 @@ export function CraftPage() {
 
   const characterInventory = useMemo(
     () => character?.inventory?.map((i: any) => ({
+      id: i.id,
       itemId: i.itemId,
       quantity: i.quantity,
       itemName: i.item?.name ?? '',
@@ -96,6 +100,52 @@ export function CraftPage() {
     { value: '', label: t('craft.noCharacterSelected') },
     ...pcCharacters.map((c: any) => ({ value: String(c.id), label: c.name })),
   ];
+
+  const handleCraft = async () => {
+    if (!characterId || !recipeDetail) return;
+    setIsCrafting(true);
+    try {
+      const isSpecific = SPECIFIC_INGREDIENT_WORKBENCHES.has(recipeDetail.workbenchType);
+      const invItems: any[] = character?.inventory ?? [];
+
+      if (isSpecific) {
+        for (const ing of recipeDetail.ingredients) {
+          const invItem = invItems.find((i: any) => i.itemId === ing.itemId);
+          if (!invItem) continue;
+          const newQty = invItem.quantity - ing.quantity;
+          if (newQty <= 0) {
+            await removeFromInventory(characterId, invItem.id);
+          } else {
+            await updateInventoryItem(characterId, invItem.id, { quantity: newQty });
+          }
+        }
+      } else if (materialItemIds) {
+        const cost = getMaterialCostByComplexity(recipeDetail.complexity);
+        for (const { itemId, qty } of [
+          { itemId: materialItemIds.common, qty: cost.common },
+          { itemId: materialItemIds.uncommon, qty: cost.uncommon },
+          { itemId: materialItemIds.rare, qty: cost.rare },
+        ]) {
+          if (!itemId || qty <= 0) continue;
+          const invItem = invItems.find((i: any) => i.itemId === itemId);
+          if (!invItem) continue;
+          const newQty = invItem.quantity - qty;
+          if (newQty <= 0) {
+            await removeFromInventory(characterId, invItem.id);
+          } else {
+            await updateInventoryItem(characterId, invItem.id, { quantity: newQty });
+          }
+        }
+      }
+
+      const resultItemId = recipeDetail.resultMod?.itemId ?? recipeDetail.resultItemId ?? null;
+      if (resultItemId) {
+        await addToInventory(characterId, { itemId: resultItemId });
+      }
+    } finally {
+      setIsCrafting(false);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -188,6 +238,8 @@ export function CraftPage() {
               onForget={() => selectedRecipeId && forget.mutate(selectedRecipeId)}
               isMarkingKnown={markKnown.isPending}
               isForgetting={forget.isPending}
+              onCraft={handleCraft}
+              isCrafting={isCrafting}
             />
           )}
         </div>

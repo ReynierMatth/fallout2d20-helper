@@ -2652,6 +2652,7 @@ export default {
     },
     noRecipeSelected: 'Select a recipe',
     noCharacterSelected: 'No character selected — display without calculations',
+    craftButton: 'Craft',
     selectCharacter: 'Character',
     allWeaponMods: 'All weapon mods',
     searchRecipe: 'Search a recipe…',

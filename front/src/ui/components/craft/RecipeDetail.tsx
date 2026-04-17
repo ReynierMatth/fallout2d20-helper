@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle, XCircle, Loader2, BookmarkPlus, BookmarkX, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings, Package } from 'lucide-react';
+import { CheckCircle, XCircle, Loader2, BookmarkPlus, BookmarkX, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings, Package, Hammer } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import type { RecipeDetail as RecipeDetailType } from '../../../domain/models/recipe';
 import type { MaterialItemIds } from '../../../application/hooks/useRecipes';
@@ -164,6 +164,7 @@ function ItemResultSection({
 }
 
 interface CharacterInventoryItem {
+  id: number;
   itemId: number;
   quantity: number;
   itemName?: string;
@@ -181,6 +182,8 @@ interface RecipeDetailProps {
   onForget: () => void;
   isMarkingKnown: boolean;
   isForgetting: boolean;
+  onCraft?: () => void;
+  isCrafting?: boolean;
 }
 
 export function RecipeDetail({
@@ -194,6 +197,8 @@ export function RecipeDetail({
   onForget,
   isMarkingKnown,
   isForgetting,
+  onCraft,
+  isCrafting = false,
 }: RecipeDetailProps) {
   const { t } = useTranslation();
   const [detailItem, setDetailItem] = useState<{ id: number; itemType: ItemType } | null>(null);
@@ -358,6 +363,23 @@ export function RecipeDetail({
             </button>
           )}
         </div>
+      )}
+
+      {/* Craft button */}
+      {onCraft && character && !isLocked && missingIngredients.length === 0 && missingGenericMaterials.length === 0 && (recipe.resultMod || recipe.resultItemId) && (
+        <button
+          type="button"
+          onClick={onCraft}
+          disabled={isCrafting}
+          className="flex items-center gap-2 px-4 py-2 rounded border border-vault-yellow bg-vault-yellow/10 text-vault-yellow text-sm font-semibold hover:bg-vault-yellow/20 transition-colors disabled:opacity-50 w-full justify-center"
+        >
+          {isCrafting ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <Hammer size={15} />
+          )}
+          {t('craft.craftButton')}
+        </button>
       )}
 
       {/* Prerequisites */}
