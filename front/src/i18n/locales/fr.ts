@@ -428,6 +428,18 @@ export default {
     internal: 'Interne',
   },
 
+  modApplicableTo: {
+    smallGuns: 'Armes légères',
+    energyWeapons: 'Armes à énergie',
+    bigGuns: 'Armes lourdes',
+    meleeWeapons: 'Armes de corps à corps',
+    unarmed: 'À mains nues',
+    armor: 'Armure',
+    clothing: 'Vêtement',
+    powerArmor: 'Armure assistée',
+    robot: 'Robot',
+  },
+
   ranges: {
     close: 'Courte (C)',
     medium: 'Moyenne (M)',
@@ -2599,6 +2611,7 @@ export default {
       complication: 'Marge de complication : 20',
       materials: 'Matériaux requis',
       result: 'Résultat',
+      craftingInfo: 'Infos de fabrication',
       craftingTime: 'Temps : 1h (20min cuisine)',
       halfTimeWithAP: '2 PA dépensés + réussite = temps divisé par 2',
       onFailure: 'Échec : objet non fabriqué',

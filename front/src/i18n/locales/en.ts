@@ -428,6 +428,18 @@ export default {
     internal: 'Internal',
   },
 
+  modApplicableTo: {
+    smallGuns: 'Small Guns',
+    energyWeapons: 'Energy Weapons',
+    bigGuns: 'Heavy Weapons',
+    meleeWeapons: 'Melee Weapons',
+    unarmed: 'Unarmed',
+    armor: 'Armor',
+    clothing: 'Clothing',
+    powerArmor: 'Power Armor',
+    robot: 'Robot',
+  },
+
 
   ranges: {
     close: 'Close (C)',
@@ -2598,6 +2610,7 @@ export default {
       complication: 'Complication range: 20',
       materials: 'Required Materials',
       result: 'Result',
+      craftingInfo: 'Crafting Info',
       craftingTime: 'Time: 1h (20min cooking)',
       halfTimeWithAP: '2 AP spent + success = time halved',
       onFailure: 'Failure: item not crafted',
