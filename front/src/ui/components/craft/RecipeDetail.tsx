@@ -24,17 +24,17 @@ function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMo
         )}
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
-        <span className="text-vault-yellow-dark">{t('encyclopedia.mod.slot')}</span>
+        <span className="text-vault-yellow-dark">{t('itemDetail.mod.slot')}</span>
         <span className="text-vault-yellow">
           {t(`modSlots.${mod.slot}`, { defaultValue: mod.slot })}
         </span>
-        <span className="text-vault-yellow-dark">{t('encyclopedia.mod.applicableTo')}</span>
+        <span className="text-vault-yellow-dark">{t('itemDetail.mod.applicableTo')}</span>
         <span className="text-vault-yellow">
           {t(`modApplicableTo.${mod.applicableTo}`, { defaultValue: mod.applicableTo })}
         </span>
         {mod.weightChange !== 0 && (
           <>
-            <span className="text-vault-yellow-dark">{t('encyclopedia.mod.weightChange')}</span>
+            <span className="text-vault-yellow-dark">{t('itemDetail.mod.weightChange')}</span>
             <span className="text-vault-yellow">
               {mod.weightChange > 0 ? '+' : ''}{mod.weightChange} kg
             </span>
@@ -44,7 +44,7 @@ function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMo
       {mod.effects.length > 0 && (
         <div>
           <p className="text-vault-yellow-dark text-xs font-medium mb-1">
-            {t('encyclopedia.mod.effects')}
+            {t('itemDetail.mod.effects')}
           </p>
           <ul className="space-y-0.5">
             {mod.effects.map((eff) => (
@@ -56,7 +56,7 @@ function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMo
                 ) : eff.effectType === 'gainQuality' || eff.effectType === 'loseQuality' ? (
                   <>
                     <span className="text-vault-yellow-dark">
-                      {t(`encyclopedia.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
+                      {t(`itemDetail.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
                     </span>
                     <span className="text-vault-yellow">
                       {eff.qualityName
@@ -68,14 +68,14 @@ function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMo
                 ) : eff.effectType === 'setAmmo' ? (
                   <>
                     <span className="text-vault-yellow-dark">
-                      {t('encyclopedia.mod.setAmmo', { defaultValue: 'Ammo' })}:
+                      {t('itemDetail.mod.setAmmo', { defaultValue: 'Ammo' })}:
                     </span>
                     <span className="text-vault-yellow">{eff.ammoType ?? ''}</span>
                   </>
                 ) : (
                   <>
                     <span className="text-vault-yellow-dark">
-                      {t(`encyclopedia.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
+                      {t(`itemDetail.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
                     </span>
                     <span className="text-vault-yellow">
                       {eff.numericValue != null
