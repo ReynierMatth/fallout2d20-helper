@@ -2,12 +2,15 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle, AlertCircle, Lock } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import type { Recipe, RecipeState, RecipePerkRequirement } from '../../../domain/models/recipe';
-import { SPECIFIC_INGREDIENT_WORKBENCHES } from './craftUtils';
+import { SPECIFIC_INGREDIENT_WORKBENCHES, getMaterialCostByComplexity } from './craftUtils';
 import type { RecipeIngredient } from '../../../domain/models/recipe';
+import type { MaterialItemIds } from '../../../application/hooks/useRecipes';
 
 interface CharacterInventoryItem {
   itemId: number;
   quantity: number;
+  itemName?: string;
+  itemNameKey?: string;
 }
 
 interface RecipeListProps {
@@ -17,6 +20,7 @@ interface RecipeListProps {
   knownRecipeIds: number[];
   characterInventory: CharacterInventoryItem[];
   recipeIngredientMap: Map<number, RecipeIngredient[]>;
+  materialItemIds?: MaterialItemIds;
   onSelect: (id: number) => void;
 }
 
@@ -37,7 +41,8 @@ function getRecipeState(
   character: RecipeListProps['character'],
   knownRecipeIds: number[],
   characterInventory: CharacterInventoryItem[],
-  recipeIngredientMap: Map<number, RecipeIngredient[]>
+  recipeIngredientMap: Map<number, RecipeIngredient[]>,
+  materialItemIds?: MaterialItemIds
 ): RecipeState {
   if (!character) return 'craftable';
 
@@ -59,7 +64,14 @@ function getRecipeState(
     return hasMaterials ? 'craftable' : 'known_missing_materials';
   }
 
-  return 'craftable';
+  const cost = getMaterialCostByComplexity(recipe.complexity);
+  const getQtyById = (id: number | null | undefined) =>
+    id != null ? (characterInventory.find((i) => i.itemId === id)?.quantity ?? 0) : 0;
+  const hasMaterials =
+    getQtyById(materialItemIds?.common) >= cost.common &&
+    getQtyById(materialItemIds?.uncommon) >= cost.uncommon &&
+    getQtyById(materialItemIds?.rare) >= cost.rare;
+  return hasMaterials ? 'craftable' : 'known_missing_materials';
 }
 
 const STATE_ORDER: Record<RecipeState, number> = {
@@ -75,6 +87,7 @@ export function RecipeList({
   knownRecipeIds,
   characterInventory,
   recipeIngredientMap,
+  materialItemIds,
   onSelect,
 }: RecipeListProps) {
   const { t } = useTranslation();
@@ -82,7 +95,7 @@ export function RecipeList({
   const withState = recipes
     .map((r) => ({
       recipe: r,
-      state: getRecipeState(r, character, knownRecipeIds, characterInventory, recipeIngredientMap),
+      state: getRecipeState(r, character, knownRecipeIds, characterInventory, recipeIngredientMap, materialItemIds),
     }))
     .sort((a, b) => STATE_ORDER[a.state] - STATE_ORDER[b.state]);
 
@@ -95,15 +108,16 @@ export function RecipeList({
           <li key={recipe.id}>
             <button
               type="button"
-              disabled={isUnknown}
-              onClick={() => !isUnknown && onSelect(recipe.id)}
+              onClick={() => onSelect(recipe.id)}
               className={cn(
-                'w-full flex items-center gap-2 px-3 py-2 rounded text-sm text-left transition-colors',
+                'w-full flex items-center gap-2 px-3 py-2 rounded text-sm text-left transition-colors cursor-pointer',
                 isUnknown
-                  ? 'text-vault-yellow-dark/40 cursor-not-allowed'
+                  ? selectedId === recipe.id
+                    ? 'bg-vault-yellow/20 text-vault-yellow-dark font-semibold'
+                    : 'text-vault-yellow-dark/50 hover:bg-vault-blue-light/50'
                   : selectedId === recipe.id
                   ? 'bg-vault-yellow text-vault-blue font-semibold'
-                  : 'text-vault-yellow hover:bg-vault-blue-light cursor-pointer'
+                  : 'text-vault-yellow hover:bg-vault-blue-light'
               )}
             >
               {state === 'craftable' && <CheckCircle size={14} className="text-green-400 shrink-0" />}

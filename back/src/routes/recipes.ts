@@ -8,6 +8,8 @@ import {
   characterKnownRecipes,
   perks,
   items,
+  mods,
+  itemCompatibleMods,
 } from '../db/schema/index';
 
 const router = Router();
@@ -47,18 +49,51 @@ const VALID_WORKBENCH_TYPES = ['weapon', 'armor', 'chemistry', 'cooking', 'power
 const SPECIFIC_INGREDIENT_WORKBENCHES = new Set(['chemistry', 'cooking']);
 
 // GET /api/recipes — list with perk requirements included (needed for client-side filtering)
-// optional ?workbench_type=weapon
+// optional ?workbench_type=weapon&weapon_id=42
 // chemistry/cooking tabs also include ingredients for client-side inventory checks
 router.get('/', async (req, res) => {
   try {
-    const { workbench_type } = req.query;
+    const { workbench_type, weapon_id } = req.query;
 
     if (workbench_type && !VALID_WORKBENCH_TYPES.includes(workbench_type as any)) {
       return res.status(400).json({ error: 'Invalid workbench_type' });
     }
 
-    const allRecipes = workbench_type
-      ? await db.select().from(recipes).where(eq(recipes.workbenchType, workbench_type as any))
+    const weaponId = weapon_id ? parseInt(weapon_id as string) : null;
+    if (weapon_id && isNaN(weaponId!)) {
+      return res.status(400).json({ error: 'Invalid weapon_id' });
+    }
+
+    // When filtering by weapon, resolve compatible mod IDs first
+    let weaponModIds: number[] | null = null;
+    if (weaponId !== null) {
+      const compatibleModItems = await db
+        .select({ modItemId: itemCompatibleMods.modItemId })
+        .from(itemCompatibleMods)
+        .where(eq(itemCompatibleMods.targetItemId, weaponId));
+
+      if (compatibleModItems.length === 0) {
+        return res.json([]);
+      }
+
+      const modItemIds = compatibleModItems.map((r) => r.modItemId);
+      const compatibleMods = await db
+        .select({ id: mods.id })
+        .from(mods)
+        .where(inArray(mods.itemId, modItemIds));
+
+      weaponModIds = compatibleMods.map((m) => m.id);
+      if (weaponModIds.length === 0) {
+        return res.json([]);
+      }
+    }
+
+    const baseConditions: any[] = [];
+    if (workbench_type) baseConditions.push(eq(recipes.workbenchType, workbench_type as any));
+    if (weaponModIds !== null) baseConditions.push(inArray(recipes.resultModId, weaponModIds));
+
+    const allRecipes = baseConditions.length > 0
+      ? await db.select().from(recipes).where(and(...baseConditions))
       : await db.select().from(recipes);
 
     if (allRecipes.length === 0) {

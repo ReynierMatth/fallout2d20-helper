@@ -2,6 +2,7 @@ import type { Recipe, RecipeDetail, WorkbenchType } from '../models/recipe';
 
 export interface RecipeFilters {
   workbenchType?: WorkbenchType;
+  weaponId?: number;
 }
 
 export interface RecipeRepository {

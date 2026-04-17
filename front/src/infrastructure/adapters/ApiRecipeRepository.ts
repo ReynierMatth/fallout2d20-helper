@@ -4,7 +4,10 @@ import { fetchApi, buildQueryString } from '../http/httpClient';
 
 export class ApiRecipeRepository implements RecipeRepository {
   list(filters?: RecipeFilters): Promise<Recipe[]> {
-    const query = buildQueryString({ workbench_type: filters?.workbenchType });
+    const query = buildQueryString({
+      workbench_type: filters?.workbenchType,
+      weapon_id: filters?.weaponId,
+    });
     return fetchApi(`/recipes${query}`);
   }
 

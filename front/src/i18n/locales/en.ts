@@ -1206,6 +1206,11 @@ export default {
       'Fancy Hat': 'Fancy Hat',
       'Lab Coat': 'Lab Coat',
       'Common Materials': 'Common Materials',
+      materials: {
+        common: 'Common Materials',
+        uncommon: 'Uncommon Materials',
+        rare: 'Rare Materials',
+      },
       Caps: 'Caps',
       // Robot arms
       'Robot Arm - Pincer': 'Robot Arm: Pincer',
@@ -2601,6 +2606,10 @@ export default {
       markAsKnown: 'Mark as known',
       forget: 'Forget',
       perkRank: '(rank {{rank}})',
+      lockedNotice: 'Cannot craft this recipe:',
+      lockedRareUnknown: 'Rare recipe not learned by this character',
+      lockedMissingPerks: 'Missing perks',
+      lockedMissingMaterials: 'Insufficient materials',
       rarity: {
         frequente: 'Common',
         peu_frequente: 'Uncommon',
@@ -2632,6 +2641,8 @@ export default {
     noRecipeSelected: 'Select a recipe',
     noCharacterSelected: 'No character selected — display without calculations',
     selectCharacter: 'Character',
+    allWeaponMods: 'All weapon mods',
+    searchRecipe: 'Search a recipe…',
     inventoryCount: '{{count}} in inventory',
     missing: '−{{count}} missing',
   },

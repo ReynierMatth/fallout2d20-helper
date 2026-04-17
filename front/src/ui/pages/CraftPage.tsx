@@ -8,7 +8,8 @@ import { RecipeDetail } from '../components/craft/RecipeDetail';
 import { RepairPanel } from '../components/craft/RepairPanel';
 import type { WorkbenchTab } from '../components/craft/WorkbenchNav';
 import type { WorkbenchType } from '../../domain/models/recipe';
-import { useRecipes, useRecipe, useKnownRecipes, useMarkRecipeKnown, useForgetRecipe } from '../../application/hooks/useRecipes';
+import { useRecipes, useRecipe, useKnownRecipes, useMarkRecipeKnown, useForgetRecipe, useMaterialItemIds, useWeapons } from '../../application/hooks/useRecipes';
+import type { MaterialItemIds } from '../../application/hooks/useRecipes';
 import type { RecipeIngredient } from '../../domain/models/recipe';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
 import { Select } from '../../components';
@@ -21,9 +22,11 @@ export function CraftPage() {
   const [characterId, setCharacterId] = useState<string | null>(characterIdParam);
   const [activeTab, setActiveTab] = useState<WorkbenchTab>('weapon');
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedWeaponId, setSelectedWeaponId] = useState<number | null>(null);
 
   const { characters } = useCharactersApi();
-  const pcCharacters = useMemo(() => characters?.filter((c: any) => c.type === 'pc') ?? [], [characters]);
+  const pcCharacters = useMemo(() => characters?.filter((c: any) => c.type === 'PC') ?? [], [characters]);
   const rawCharacter = characterId ? (characters?.find((c: any) => String(c.id) === characterId) ?? null) : null;
 
   // Normalize Character (Record<SkillName, number> skills) into the shape expected by craft components
@@ -35,16 +38,24 @@ export function CraftPage() {
     };
   }, [rawCharacter]);
 
+  const { data: weapons = [] } = useWeapons();
+
   const workbenchType: WorkbenchType | undefined = activeTab !== 'repair' ? activeTab : undefined;
-  const { data: recipes = [], isLoading: recipesLoading } = useRecipes(workbenchType);
+  const { data: recipes = [], isLoading: recipesLoading } = useRecipes(workbenchType, selectedWeaponId);
   const { data: recipeDetail, isLoading: detailLoading } = useRecipe(selectedRecipeId);
   const { data: knownIds = [] } = useKnownRecipes(character ? Number(character.id) : null);
 
   const markKnown = useMarkRecipeKnown(character ? Number(character.id) : null);
   const forget = useForgetRecipe(character ? Number(character.id) : null);
+  const { data: materialItemIds } = useMaterialItemIds();
 
   const characterInventory = useMemo(
-    () => character?.inventory?.map((i: any) => ({ itemId: i.itemId, quantity: i.quantity })) ?? [],
+    () => character?.inventory?.map((i: any) => ({
+      itemId: i.itemId,
+      quantity: i.quantity,
+      itemName: i.item?.name ?? '',
+      itemNameKey: i.item?.nameKey ?? '',
+    })) ?? [],
     [character]
   );
 
@@ -56,9 +67,20 @@ export function CraftPage() {
     return map;
   }, [recipes]);
 
+  const filteredRecipes = useMemo(() => {
+    if (!searchQuery.trim()) return recipes;
+    const q = searchQuery.toLowerCase();
+    return recipes.filter((r) => {
+      const name = r.nameKey ? t(r.nameKey, { defaultValue: r.name }) : r.name;
+      return name.toLowerCase().includes(q);
+    });
+  }, [recipes, searchQuery, t]);
+
   const handleTabChange = (tab: WorkbenchTab) => {
     setActiveTab(tab);
     setSelectedRecipeId(null);
+    setSearchQuery('');
+    setSelectedWeaponId(null);
   };
 
   const handleCharacterChange = (id: string) => {
@@ -104,20 +126,50 @@ export function CraftPage() {
 
         {/* Center: recipe list (hidden for repair tab) */}
         {activeTab !== 'repair' && (
-          <div className="border border-vault-yellow-dark/30 rounded-lg p-3 overflow-y-auto max-h-[calc(100vh-200px)]">
+          <div className="flex flex-col border border-vault-yellow-dark/30 rounded-lg overflow-hidden max-h-[calc(100vh-200px)]">
+            <div className="p-2 space-y-2 border-b border-vault-yellow-dark/30">
+              {activeTab === 'weapon' && (
+                <select
+                  value={selectedWeaponId ?? ''}
+                  onChange={(e) => {
+                    setSelectedWeaponId(e.target.value ? Number(e.target.value) : null);
+                    setSelectedRecipeId(null);
+                    setSearchQuery('');
+                  }}
+                  className="w-full bg-vault-blue-dark text-vault-yellow text-sm px-3 py-1.5 rounded border border-vault-yellow-dark/40 focus:outline-none focus:border-vault-yellow/60"
+                >
+                  <option value="">{t('craft.allWeaponMods')}</option>
+                  {weapons.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.nameKey ? t(w.nameKey, { defaultValue: w.name }) : w.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('craft.searchRecipe')}
+                className="w-full bg-vault-blue-dark text-vault-yellow placeholder-vault-yellow-dark/50 text-sm px-3 py-1.5 rounded border border-vault-yellow-dark/40 focus:outline-none focus:border-vault-yellow/60"
+              />
+            </div>
+            <div className="p-3 overflow-y-auto flex-1">
             {recipesLoading ? (
               <div className="text-vault-yellow-dark text-sm text-center py-4">{t('common.loading')}</div>
             ) : (
               <RecipeList
-                recipes={recipes}
+                recipes={filteredRecipes}
                 selectedId={selectedRecipeId}
                 character={character}
                 knownRecipeIds={knownIds}
                 characterInventory={characterInventory}
                 recipeIngredientMap={recipeIngredientMap}
+                materialItemIds={materialItemIds}
                 onSelect={setSelectedRecipeId}
               />
             )}
+            </div>
           </div>
         )}
 
@@ -132,6 +184,7 @@ export function CraftPage() {
               character={character}
               knownRecipeIds={knownIds}
               characterInventory={characterInventory}
+              materialItemIds={materialItemIds}
               onMarkKnown={() => selectedRecipeId && markKnown.mutate(selectedRecipeId)}
               onForget={() => selectedRecipeId && forget.mutate(selectedRecipeId)}
               isMarkingKnown={markKnown.isPending}

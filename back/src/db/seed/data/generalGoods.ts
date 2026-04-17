@@ -48,7 +48,18 @@ export const generalGoods: GeneralGood[] = [
   },
   {
     name: 'Common Materials',
+    nameKey: 'items.materials.common',
     value: 1, rarity: 1, weight: 1,
+    type: 'Materials',
+  },
+  {
+    name: 'Abraxo Cleaner',
+    value: 6, rarity: 1, weight: 1,
+    type: 'Materials',
+  },
+  {
+    name: 'Asbestos',
+    value: 2, rarity: 1, weight: 0.5,
     type: 'Materials',
   },
 
@@ -114,6 +125,7 @@ export const generalGoods: GeneralGood[] = [
   },
   {
     name: 'Uncommon Materials',
+    nameKey: 'items.materials.uncommon',
     value: 3, rarity: 2, weight: 1,
     type: 'Materials',
   },
@@ -158,6 +170,7 @@ export const generalGoods: GeneralGood[] = [
   },
   {
     name: 'Rare Materials',
+    nameKey: 'items.materials.rare',
     value: 5, rarity: 3, weight: 1,
     type: 'Materials',
   },

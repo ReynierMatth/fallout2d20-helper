@@ -53,6 +53,14 @@ export const food: FoodItem[] = [
   },
   { name: 'Mutfruit', value: 8, rarity: 0, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 3 } },
   { name: 'Tarberry', value: 5, rarity: 3, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 3 } },
+  { name: 'Hubflower', value: 10, rarity: 2, weight: 0.1, type: 'food', irradiated: false, effect: { hpHealed: 2 } },
+  { name: 'Bloodleaf', value: 6, rarity: 1, weight: 0.1, type: 'food', irradiated: true, effect: { hpHealed: 2 } },
+  { name: 'Razorgrain', value: 4, rarity: 0, weight: 0.1, type: 'food', irradiated: true, effect: { hpHealed: 2 } },
+
+  { name: 'Stingwing Barb', value: 15, rarity: 2, weight: 0.1, type: 'food', irradiated: false, effect: {} },
+  { name: 'Bloatfly Gland', value: 10, rarity: 1, weight: 0.1, type: 'food', irradiated: false, effect: {} },
+  { name: 'Bloodbug Blood', value: 10, rarity: 1, weight: 0.1, type: 'food', irradiated: false, effect: {} },
+  { name: 'Bloodbug Steak', value: 12, rarity: 1, weight: 0.5, type: 'food', irradiated: false, effect: { hpHealed: 5 } },
   { name: 'Canned Bean', value: 6, rarity: 1, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 3 } },
   { name: 'BlamCo Mac and Cheese', value: 10, rarity: 1, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 4 } },
   { name: 'Melon', value: 6, rarity: 1, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 3 } },
@@ -184,6 +192,7 @@ export const food: FoodItem[] = [
     // Reroll 1d20 on END tests until end of scene
   },
   { name: 'Stingwing Meat', value: 8, rarity: 1, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 7 } },
+  { name: 'Bloodbug Meat', value: 5, rarity: 0, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 3 } },
   { name: 'Yao Guai Meat', value: 85, rarity: 3, weight: 0.5, type: 'food', irradiated: true, effect: { hpHealed: 9 } },
   {
     name: 'Canned Meat', value: 25, rarity: 0, weight: 0.5, type: 'food', irradiated: true,

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle, XCircle, Loader2, BookmarkPlus, BookmarkX } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import type { RecipeDetail as RecipeDetailType } from '../../../domain/models/recipe';
+import type { MaterialItemIds } from '../../../application/hooks/useRecipes';
 import {
   getMaterialCostByComplexity,
   calcCraftingDifficulty,
@@ -11,6 +12,8 @@ import {
 interface CharacterInventoryItem {
   itemId: number;
   quantity: number;
+  itemName?: string;
+  itemNameKey?: string;
 }
 
 interface RecipeDetailProps {
@@ -19,6 +22,7 @@ interface RecipeDetailProps {
   character: { perks?: { perkId: string; rank: number }[]; skills?: { skill: string; rank: number }[]; special?: Record<string, number> } | null;
   knownRecipeIds: number[];
   characterInventory: CharacterInventoryItem[];
+  materialItemIds?: MaterialItemIds;
   onMarkKnown: () => void;
   onForget: () => void;
   isMarkingKnown: boolean;
@@ -31,6 +35,7 @@ export function RecipeDetail({
   character,
   knownRecipeIds,
   characterInventory,
+  materialItemIds,
   onMarkKnown,
   onForget,
   isMarkingKnown,
@@ -59,11 +64,48 @@ export function RecipeDetail({
   const difficulty = calcCraftingDifficulty(recipe.complexity, skillRank);
   const isAutoSuccess = difficulty === 0;
 
-  const isKnownRare = recipe.rarity === 'rare' && knownRecipeIds.includes(recipe.id);
-  const isUnknownRare = recipe.rarity === 'rare' && !knownRecipeIds.includes(recipe.id);
+  const missingPerks = character
+    ? recipe.perkRequirements.filter((req) => {
+        const charPerk = character.perks?.find((p) => p.perkId === req.perkId);
+        return !(charPerk && charPerk.rank >= req.minRank);
+      })
+    : [];
+  const perksOk = missingPerks.length === 0;
+
+  const isKnown =
+    recipe.rarity === 'frequente' ||
+    (recipe.rarity === 'peu_frequente' && perksOk) ||
+    (recipe.rarity === 'rare' && knownRecipeIds.includes(recipe.id));
+
+  const isLocked = character && (!isKnown || !perksOk);
 
   const isSpecific = SPECIFIC_INGREDIENT_WORKBENCHES.has(recipe.workbenchType);
   const materialCost = isSpecific ? null : getMaterialCostByComplexity(recipe.complexity);
+
+  const missingIngredients = character && isSpecific
+    ? recipe.ingredients.filter((ing) => {
+        const inv = characterInventory.find((i) => i.itemId === ing.itemId);
+        return (inv?.quantity ?? 0) < ing.quantity;
+      })
+    : [];
+
+  const missingGenericMaterials: { label: string; have: number; need: number }[] = [];
+  if (character && !isSpecific && materialCost && materialItemIds) {
+    const getQtyById = (id: number | null) =>
+      id != null ? (characterInventory.find((i) => i.itemId === id)?.quantity ?? 0) : 0;
+    const commonHave = getQtyById(materialItemIds.common);
+    const uncommonHave = getQtyById(materialItemIds.uncommon);
+    const rareHave = getQtyById(materialItemIds.rare);
+    if (materialCost.common > 0 && commonHave < materialCost.common)
+      missingGenericMaterials.push({ label: t('craft.recipe.materialTypes.common'), have: commonHave, need: materialCost.common });
+    if (materialCost.uncommon > 0 && uncommonHave < materialCost.uncommon)
+      missingGenericMaterials.push({ label: t('craft.recipe.materialTypes.uncommon'), have: uncommonHave, need: materialCost.uncommon });
+    if (materialCost.rare > 0 && rareHave < materialCost.rare)
+      missingGenericMaterials.push({ label: t('craft.recipe.materialTypes.rare'), have: rareHave, need: materialCost.rare });
+  }
+
+  const isKnownRare = recipe.rarity === 'rare' && knownRecipeIds.includes(recipe.id);
+  const isUnknownRare = recipe.rarity === 'rare' && !knownRecipeIds.includes(recipe.id);
 
   const recipeName = recipe.nameKey ? t(recipe.nameKey, { defaultValue: recipe.name }) : recipe.name;
 
@@ -85,6 +127,54 @@ export function RecipeDetail({
           {t(`craft.recipe.rarity.${recipe.rarity}`)}
         </span>
       </div>
+
+      {/* Missing prerequisites banner */}
+      {isLocked && (
+        <div className="border border-red-400/50 rounded-lg p-3 bg-red-400/5 space-y-2 text-xs">
+          <p className="text-red-400 font-semibold">{t('craft.recipe.lockedNotice')}</p>
+          {isUnknownRare && (
+            <p className="text-red-300">— {t('craft.recipe.lockedRareUnknown')}</p>
+          )}
+          {missingPerks.length > 0 && (
+            <div>
+              <p className="text-red-300">— {t('craft.recipe.lockedMissingPerks')} :</p>
+              <ul className="mt-1 ml-3 space-y-0.5">
+                {missingPerks.map((req) => {
+                  const label = req.perkNameKey ? t(req.perkNameKey, { defaultValue: req.perkId }) : req.perkId;
+                  return (
+                    <li key={req.id} className="text-red-300">
+                      {label}{req.minRank > 1 ? ` ${t('craft.recipe.perkRank', { rank: req.minRank })}` : ''}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Missing materials banner (non-locked known recipe) */}
+      {!isLocked && (missingIngredients.length > 0 || missingGenericMaterials.length > 0) && (
+        <div className="border border-yellow-400/50 rounded-lg p-3 bg-yellow-400/5 text-xs">
+          <p className="text-yellow-400 font-semibold">{t('craft.recipe.lockedMissingMaterials')} :</p>
+          <ul className="mt-1 ml-3 space-y-0.5">
+            {missingIngredients.map((ing) => {
+              const label = ing.itemNameKey ? t(ing.itemNameKey, { defaultValue: ing.itemName ?? '' }) : ing.itemName ?? '';
+              const inv = characterInventory.find((i) => i.itemId === ing.itemId)?.quantity ?? 0;
+              return (
+                <li key={ing.id} className="text-yellow-300">
+                  {label} ({inv}/{ing.quantity})
+                </li>
+              );
+            })}
+            {missingGenericMaterials.map((m) => (
+              <li key={m.label} className="text-yellow-300">
+                {m.label} ({m.have}/{m.need})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Mark as known / Forget (rare recipes with character selected) */}
       {character && recipe.rarity === 'rare' && (
