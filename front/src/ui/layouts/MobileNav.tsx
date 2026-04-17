@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Package, Store, Dice6, Home, Book, Users, Calendar, X, Bug } from 'lucide-react';
+import { Package, Store, Dice6, Home, Book, Users, Calendar, X, Bug, Wrench } from 'lucide-react';
 import { cn } from '../../lib/cn';
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { path: '/characters', labelKey: 'nav.characters', icon: Users },
   { path: '/sessions', labelKey: 'nav.sessions', icon: Calendar },
   { path: '/bestiary', labelKey: 'nav.bestiary', icon: Bug },
+  { path: '/craft', labelKey: 'nav.craft', icon: Wrench },
 ] as const;
 
 interface MobileNavProps {
