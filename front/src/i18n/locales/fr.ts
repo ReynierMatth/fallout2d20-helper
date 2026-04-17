@@ -2599,6 +2599,7 @@ export default {
       complications: '+30min par complication (+10min cuisine). Risque de perte de matériaux.',
       markAsKnown: 'Marquer comme apprise',
       forget: 'Oublier',
+      perkRank: '(rang {{rank}})',
       rarity: {
         frequente: 'Fréquente',
         peu_frequente: 'Peu fréquente',
@@ -2619,8 +2620,10 @@ export default {
       title: 'Réparation',
       description: 'Réparer un objet endommagé.',
       selectItem: 'Sélectionnez un objet à réparer',
+      testSectionTitle: 'Test',
       test: 'Test : INT + Réparation | Difficulté = rareté de l\'objet',
       complicationBonus: '+1 marge de complication par mod installé',
+      difficultyHeader: 'Diff.',
       time: 'Temps : 30min (÷2 avec 2 PA, +15min/complication)',
       spareParts: 'Pièces détachées : utiliser un objet identique fournit les matériaux et réduit la difficulté de 1',
       materials: 'Matériaux requis (basés sur la rareté de l\'objet)',

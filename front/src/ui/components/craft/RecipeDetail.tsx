@@ -144,7 +144,7 @@ export function RecipeDetail({
                         )
                       ) : null}
                       <span className={cn('text-vault-yellow', !character && 'text-vault-yellow-dark')}>
-                        {perkLabel} {req.minRank > 1 ? `(rang ${req.minRank})` : ''}
+                        {perkLabel} {req.minRank > 1 ? t('craft.recipe.perkRank', { rank: req.minRank }) : ''}
                       </span>
                     </li>
                   );

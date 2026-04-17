@@ -9,6 +9,7 @@ import { RepairPanel } from '../components/craft/RepairPanel';
 import type { WorkbenchTab } from '../components/craft/WorkbenchNav';
 import type { WorkbenchType } from '../../domain/models/recipe';
 import { useRecipes, useRecipe, useKnownRecipes, useMarkRecipeKnown, useForgetRecipe } from '../../application/hooks/useRecipes';
+import type { RecipeIngredient } from '../../domain/models/recipe';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
 import { Select } from '../../components';
 
@@ -22,7 +23,7 @@ export function CraftPage() {
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
 
   const { characters } = useCharactersApi();
-  const pcCharacters = useMemo(() => characters?.filter((c: any) => c.type === 'PC') ?? [], [characters]);
+  const pcCharacters = useMemo(() => characters?.filter((c: any) => c.type === 'pc') ?? [], [characters]);
   const character = characterId ? (characters?.find((c: any) => String(c.id) === characterId) ?? null) : null;
 
   const workbenchType: WorkbenchType | undefined = activeTab !== 'repair' ? activeTab : undefined;
@@ -38,7 +39,13 @@ export function CraftPage() {
     [character]
   );
 
-  const recipeIngredientMap = useMemo(() => new Map(), []);
+  const recipeIngredientMap = useMemo(() => {
+    const map = new Map<number, RecipeIngredient[]>();
+    for (const r of recipes) {
+      if (r.ingredients) map.set(r.id, r.ingredients);
+    }
+    return map;
+  }, [recipes]);
 
   const handleTabChange = (tab: WorkbenchTab) => {
     setActiveTab(tab);

@@ -43,11 +43,19 @@ async function getFullRecipe(recipeId: number) {
   return { ...recipe, perkRequirements: perkReqs, ingredients };
 }
 
+const VALID_WORKBENCH_TYPES = ['weapon', 'armor', 'chemistry', 'cooking', 'power_armor', 'robot'] as const;
+const SPECIFIC_INGREDIENT_WORKBENCHES = new Set(['chemistry', 'cooking']);
+
 // GET /api/recipes — list with perk requirements included (needed for client-side filtering)
 // optional ?workbench_type=weapon
+// chemistry/cooking tabs also include ingredients for client-side inventory checks
 router.get('/', async (req, res) => {
   try {
     const { workbench_type } = req.query;
+
+    if (workbench_type && !VALID_WORKBENCH_TYPES.includes(workbench_type as any)) {
+      return res.status(400).json({ error: 'Invalid workbench_type' });
+    }
 
     const allRecipes = workbench_type
       ? await db.select().from(recipes).where(eq(recipes.workbenchType, workbench_type as any))
@@ -58,10 +66,27 @@ router.get('/', async (req, res) => {
     }
 
     const recipeIds = allRecipes.map((r) => r.id);
-    const allPerkReqs = await db
-      .select()
-      .from(recipePerkRequirements)
-      .where(inArray(recipePerkRequirements.recipeId, recipeIds));
+
+    const [allPerkReqs, allIngredients] = await Promise.all([
+      db
+        .select()
+        .from(recipePerkRequirements)
+        .where(inArray(recipePerkRequirements.recipeId, recipeIds)),
+      workbench_type && SPECIFIC_INGREDIENT_WORKBENCHES.has(workbench_type as string)
+        ? db
+            .select({
+              id: recipeIngredients.id,
+              recipeId: recipeIngredients.recipeId,
+              itemId: recipeIngredients.itemId,
+              quantity: recipeIngredients.quantity,
+              itemName: items.name,
+              itemNameKey: items.nameKey,
+            })
+            .from(recipeIngredients)
+            .leftJoin(items, eq(recipeIngredients.itemId, items.id))
+            .where(inArray(recipeIngredients.recipeId, recipeIds))
+        : Promise.resolve([] as any[]),
+    ]);
 
     const perkReqMap = new Map<number, typeof allPerkReqs>();
     for (const req of allPerkReqs) {
@@ -69,9 +94,17 @@ router.get('/', async (req, res) => {
       perkReqMap.get(req.recipeId)!.push(req);
     }
 
+    const ingredientMap = new Map<number, typeof allIngredients>();
+    for (const ing of allIngredients) {
+      if (!ingredientMap.has(ing.recipeId)) ingredientMap.set(ing.recipeId, []);
+      ingredientMap.get(ing.recipeId)!.push(ing);
+    }
+
+    const includeIngredients = workbench_type && SPECIFIC_INGREDIENT_WORKBENCHES.has(workbench_type as string);
     const result = allRecipes.map((r) => ({
       ...r,
       perkRequirements: perkReqMap.get(r.id) ?? [],
+      ...(includeIngredients && { ingredients: ingredientMap.get(r.id) ?? [] }),
     }));
 
     res.json(result);

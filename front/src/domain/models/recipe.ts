@@ -27,7 +27,8 @@ export interface Recipe {
   rarity: RecipeRarity;
   resultModId: number | null;
   resultItemId: number | null;
-  perkRequirements: RecipePerkRequirement[]; // included in list endpoint
+  perkRequirements: RecipePerkRequirement[];
+  ingredients?: RecipeIngredient[]; // included only for chemistry/cooking list responses
 }
 
 export interface RecipeDetail extends Recipe {

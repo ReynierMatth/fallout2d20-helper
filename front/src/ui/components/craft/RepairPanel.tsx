@@ -17,7 +17,7 @@ export function RepairPanel({ character }: RepairPanelProps) {
 
       <section>
         <h3 className="text-vault-yellow-dark text-xs font-semibold uppercase tracking-wide mb-2">
-          Test
+          {t('craft.repair.testSectionTitle')}
         </h3>
         <p className="text-vault-yellow text-sm font-mono">{t('craft.repair.test')}</p>
         <p className="text-vault-yellow-dark text-xs mt-1">{t('craft.repair.complicationBonus')}</p>
@@ -34,7 +34,7 @@ export function RepairPanel({ character }: RepairPanelProps) {
               <th className="text-center pb-1">{t('craft.recipe.materialTypes.common')}</th>
               <th className="text-center pb-1">{t('craft.recipe.materialTypes.uncommon')}</th>
               <th className="text-center pb-1">{t('craft.recipe.materialTypes.rare')}</th>
-              {character && <th className="text-right pb-1">Diff.</th>}
+              {character && <th className="text-right pb-1">{t('craft.repair.difficultyHeader')}</th>}
             </tr>
           </thead>
           <tbody>

@@ -2600,6 +2600,7 @@ export default {
       complications: '+30min per complication (+10min cooking). Risk of extra material loss.',
       markAsKnown: 'Mark as known',
       forget: 'Forget',
+      perkRank: '(rank {{rank}})',
       rarity: {
         frequente: 'Common',
         peu_frequente: 'Uncommon',
@@ -2620,8 +2621,10 @@ export default {
       title: 'Repair',
       description: 'Repair a damaged item.',
       selectItem: 'Select an item to repair',
+      testSectionTitle: 'Crafting Test',
       test: 'Test: INT + Repair | Difficulty = item rarity',
       complicationBonus: '+1 complication range per installed mod',
+      difficultyHeader: 'Diff.',
       time: 'Time: 30min (÷2 with 2 AP, +15min/complication)',
       spareParts: 'Spare parts: using an identical item provides materials and reduces difficulty by 1',
       materials: 'Required materials (based on item rarity)',
