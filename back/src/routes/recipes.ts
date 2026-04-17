@@ -9,6 +9,7 @@ import {
   perks,
   items,
   mods,
+  modEffects,
   itemCompatibleMods,
 } from '../db/schema/index';
 
@@ -42,7 +43,27 @@ async function getFullRecipe(recipeId: number) {
       .where(eq(recipeIngredients.recipeId, recipeId)),
   ]);
 
-  return { ...recipe, perkRequirements: perkReqs, ingredients };
+  // Fetch result mod (with linked item + effects) if this recipe produces a mod
+  let resultMod: Record<string, unknown> | null = null;
+  if (recipe.resultModId !== null) {
+    const [modRow] = await db.select().from(mods).where(eq(mods.id, recipe.resultModId));
+    if (modRow) {
+      const [modItem, effects] = await Promise.all([
+        db.select().from(items).where(eq(items.id, modRow.itemId)).then((r) => r[0] ?? null),
+        db.select().from(modEffects).where(eq(modEffects.modId, modRow.id)),
+      ]);
+      resultMod = { ...modRow, item: modItem, effects };
+    }
+  }
+
+  // Fetch result item if this recipe produces a standalone item
+  let resultItem: Record<string, unknown> | null = null;
+  if (recipe.resultItemId !== null) {
+    const [itemRow] = await db.select().from(items).where(eq(items.id, recipe.resultItemId));
+    resultItem = itemRow ?? null;
+  }
+
+  return { ...recipe, perkRequirements: perkReqs, ingredients, resultMod, resultItem };
 }
 
 const VALID_WORKBENCH_TYPES = ['weapon', 'armor', 'chemistry', 'cooking', 'power_armor', 'robot'] as const;
