@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, XCircle, Loader2, BookmarkPlus, BookmarkX } from 'lucide-react';
 import { cn } from '../../../lib/cn';
@@ -8,8 +9,16 @@ import {
   calcCraftingDifficulty,
   SPECIFIC_INGREDIENT_WORKBENCHES,
 } from './craftUtils';
+import { ItemDetailModal } from '../../../components/ItemDetailModal';
+import type { ItemType } from '../../../services/api';
 
-function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMod']> }) {
+function ModResultSection({
+  mod,
+  onItemClick,
+}: {
+  mod: NonNullable<RecipeDetailType['resultMod']>;
+  onItemClick: (id: number, itemType: ItemType) => void;
+}) {
   const { t } = useTranslation();
   const modName = mod.item?.nameKey
     ? t(mod.item.nameKey, { defaultValue: mod.item.name ?? '' })
@@ -18,7 +27,17 @@ function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMo
   return (
     <div className="space-y-2 text-sm">
       <div className="flex items-center gap-2">
-        <span className="text-vault-yellow font-semibold">{modName}</span>
+        {mod.item ? (
+          <button
+            type="button"
+            onClick={() => onItemClick(mod.item!.id, mod.item!.itemType as ItemType)}
+            className="text-vault-yellow font-semibold hover:underline text-left"
+          >
+            {modName}
+          </button>
+        ) : (
+          <span className="text-vault-yellow font-semibold">{modName}</span>
+        )}
         {nameAdd && (
           <span className="text-xs text-vault-yellow-dark italic">→ «…{nameAdd}»</span>
         )}
@@ -93,14 +112,26 @@ function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMo
   );
 }
 
-function ItemResultSection({ item }: { item: NonNullable<RecipeDetailType['resultItem']> }) {
+function ItemResultSection({
+  item,
+  onItemClick,
+}: {
+  item: NonNullable<RecipeDetailType['resultItem']>;
+  onItemClick: (id: number, itemType: ItemType) => void;
+}) {
   const { t } = useTranslation();
   const itemName = item.nameKey
     ? t(item.nameKey, { defaultValue: item.name })
     : item.name;
   return (
     <div className="space-y-1 text-sm">
-      <span className="text-vault-yellow font-semibold">{itemName}</span>
+      <button
+        type="button"
+        onClick={() => onItemClick(item.id, item.itemType as ItemType)}
+        className="text-vault-yellow font-semibold hover:underline text-left"
+      >
+        {itemName}
+      </button>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
         <span className="text-vault-yellow-dark">{t('common.labels.value')}</span>
         <span className="text-vault-yellow">{item.value} ¢</span>
@@ -144,6 +175,8 @@ export function RecipeDetail({
   isForgetting,
 }: RecipeDetailProps) {
   const { t } = useTranslation();
+  const [detailItem, setDetailItem] = useState<{ id: number; itemType: ItemType } | null>(null);
+  const handleItemClick = (id: number, itemType: ItemType) => setDetailItem({ id, itemType });
 
   if (loading) {
     return (
@@ -399,7 +432,17 @@ export function RecipeDetail({
               const sufficient = invQty === null || invQty >= ing.quantity;
               return (
                 <li key={ing.id} className="flex justify-between text-sm">
-                  <span className="text-vault-yellow">{itemLabel}</span>
+                  {ing.itemType ? (
+                    <button
+                      type="button"
+                      onClick={() => handleItemClick(ing.itemId, ing.itemType as ItemType)}
+                      className="text-vault-yellow hover:underline text-left"
+                    >
+                      {itemLabel}
+                    </button>
+                  ) : (
+                    <span className="text-vault-yellow">{itemLabel}</span>
+                  )}
                   <span className={cn('font-mono', invQty !== null && !sufficient ? 'text-red-400' : 'text-vault-yellow')}>
                     {invQty !== null ? (
                       <>
@@ -451,8 +494,8 @@ export function RecipeDetail({
             {t('craft.recipe.result')}
           </h3>
 
-          {recipe.resultMod && <ModResultSection mod={recipe.resultMod} />}
-          {recipe.resultItem && <ItemResultSection item={recipe.resultItem} />}
+          {recipe.resultMod && <ModResultSection mod={recipe.resultMod} onItemClick={handleItemClick} />}
+          {recipe.resultItem && <ItemResultSection item={recipe.resultItem} onItemClick={handleItemClick} />}
         </section>
       )}
 
@@ -469,6 +512,13 @@ export function RecipeDetail({
           <li>{t('craft.recipe.complications')}</li>
         </ul>
       </section>
+
+      <ItemDetailModal
+        isOpen={!!detailItem}
+        onClose={() => setDetailItem(null)}
+        itemId={detailItem?.id ?? null}
+        itemType={detailItem?.itemType ?? null}
+      />
     </div>
   );
 }
