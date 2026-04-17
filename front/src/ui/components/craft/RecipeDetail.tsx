@@ -1,13 +1,115 @@
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, XCircle, Loader2, BookmarkPlus, BookmarkX } from 'lucide-react';
 import { cn } from '../../../lib/cn';
-import type { RecipeDetail as RecipeDetailType, ResultMod, RecipeResultItem, ResultModEffect } from '../../../domain/models/recipe';
+import type { RecipeDetail as RecipeDetailType } from '../../../domain/models/recipe';
 import type { MaterialItemIds } from '../../../application/hooks/useRecipes';
 import {
   getMaterialCostByComplexity,
   calcCraftingDifficulty,
   SPECIFIC_INGREDIENT_WORKBENCHES,
 } from './craftUtils';
+
+function ModResultSection({ mod }: { mod: NonNullable<RecipeDetailType['resultMod']> }) {
+  const { t } = useTranslation();
+  const modName = mod.item?.nameKey
+    ? t(mod.item.nameKey, { defaultValue: mod.item.name ?? '' })
+    : (mod.item?.name ?? '');
+  const nameAdd = mod.nameAddKey ? t(mod.nameAddKey, { defaultValue: '' }) : '';
+  return (
+    <div className="space-y-2 text-sm">
+      <div className="flex items-center gap-2">
+        <span className="text-vault-yellow font-semibold">{modName}</span>
+        {nameAdd && (
+          <span className="text-xs text-vault-yellow-dark italic">→ «…{nameAdd}»</span>
+        )}
+      </div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
+        <span className="text-vault-yellow-dark">{t('encyclopedia.mod.slot')}</span>
+        <span className="text-vault-yellow">
+          {t(`modSlots.${mod.slot}`, { defaultValue: mod.slot })}
+        </span>
+        <span className="text-vault-yellow-dark">{t('encyclopedia.mod.applicableTo')}</span>
+        <span className="text-vault-yellow">
+          {t(`modApplicableTo.${mod.applicableTo}`, { defaultValue: mod.applicableTo })}
+        </span>
+        {mod.weightChange !== 0 && (
+          <>
+            <span className="text-vault-yellow-dark">{t('encyclopedia.mod.weightChange')}</span>
+            <span className="text-vault-yellow">
+              {mod.weightChange > 0 ? '+' : ''}{mod.weightChange} kg
+            </span>
+          </>
+        )}
+      </div>
+      {mod.effects.length > 0 && (
+        <div>
+          <p className="text-vault-yellow-dark text-xs font-medium mb-1">
+            {t('encyclopedia.mod.effects')}
+          </p>
+          <ul className="space-y-0.5">
+            {mod.effects.map((eff) => (
+              <li key={eff.id} className="text-xs flex gap-2">
+                {eff.effectType === 'special' ? (
+                  <span className="text-vault-yellow">
+                    {eff.descriptionKey ? t(eff.descriptionKey, { defaultValue: eff.effectType }) : eff.effectType}
+                  </span>
+                ) : eff.effectType === 'gainQuality' || eff.effectType === 'loseQuality' ? (
+                  <>
+                    <span className="text-vault-yellow-dark">
+                      {t(`encyclopedia.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
+                    </span>
+                    <span className="text-vault-yellow">
+                      {eff.qualityName
+                        ? t(`qualities.${eff.qualityName}.name`, { defaultValue: eff.qualityName })
+                        : ''}
+                      {eff.qualityValue != null ? ` ×${eff.qualityValue}` : ''}
+                    </span>
+                  </>
+                ) : eff.effectType === 'setAmmo' ? (
+                  <>
+                    <span className="text-vault-yellow-dark">
+                      {t('encyclopedia.mod.setAmmo', { defaultValue: 'Ammo' })}:
+                    </span>
+                    <span className="text-vault-yellow">{eff.ammoType ?? ''}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-vault-yellow-dark">
+                      {t(`encyclopedia.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
+                    </span>
+                    <span className="text-vault-yellow">
+                      {eff.numericValue != null
+                        ? `${eff.numericValue > 0 ? '+' : ''}${eff.numericValue}`
+                        : ''}
+                    </span>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ItemResultSection({ item }: { item: NonNullable<RecipeDetailType['resultItem']> }) {
+  const { t } = useTranslation();
+  const itemName = item.nameKey
+    ? t(item.nameKey, { defaultValue: item.name })
+    : item.name;
+  return (
+    <div className="space-y-1 text-sm">
+      <span className="text-vault-yellow font-semibold">{itemName}</span>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
+        <span className="text-vault-yellow-dark">{t('filters.labels.value')}</span>
+        <span className="text-vault-yellow">{item.value} ¢</span>
+        <span className="text-vault-yellow-dark">{t('filters.labels.weight')}</span>
+        <span className="text-vault-yellow">{item.weight} kg</span>
+      </div>
+    </div>
+  );
+}
 
 interface CharacterInventoryItem {
   itemId: number;
@@ -349,107 +451,8 @@ export function RecipeDetail({
             {t('craft.recipe.result')}
           </h3>
 
-          {recipe.resultMod && (() => {
-            const mod = recipe.resultMod!;
-            const modName = mod.item?.nameKey
-              ? t(mod.item.nameKey, { defaultValue: mod.item.name ?? '' })
-              : (mod.item?.name ?? '');
-            const nameAdd = mod.nameAddKey ? t(mod.nameAddKey, { defaultValue: '' }) : '';
-            return (
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-vault-yellow font-semibold">{modName}</span>
-                  {nameAdd && (
-                    <span className="text-xs text-vault-yellow-dark italic">→ «…{nameAdd}»</span>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
-                  <span className="text-vault-yellow-dark">{t('encyclopedia.mod.slot')}</span>
-                  <span className="text-vault-yellow">
-                    {t(`modSlots.${mod.slot}`, { defaultValue: mod.slot })}
-                  </span>
-                  <span className="text-vault-yellow-dark">{t('encyclopedia.mod.applicableTo')}</span>
-                  <span className="text-vault-yellow">
-                    {t(`modApplicableTo.${mod.applicableTo}`, { defaultValue: mod.applicableTo })}
-                  </span>
-                  {mod.weightChange !== 0 && (
-                    <>
-                      <span className="text-vault-yellow-dark">{t('encyclopedia.mod.weightChange')}</span>
-                      <span className="text-vault-yellow">
-                        {mod.weightChange > 0 ? '+' : ''}{mod.weightChange} kg
-                      </span>
-                    </>
-                  )}
-                </div>
-                {mod.effects.length > 0 && (
-                  <div>
-                    <p className="text-vault-yellow-dark text-xs font-medium mb-1">
-                      {t('encyclopedia.mod.effects')}
-                    </p>
-                    <ul className="space-y-0.5">
-                      {mod.effects.map((eff) => (
-                        <li key={eff.id} className="text-xs flex gap-2">
-                          {eff.effectType === 'special' ? (
-                            <span className="text-vault-yellow">
-                              {eff.descriptionKey ? t(eff.descriptionKey, { defaultValue: eff.effectType }) : eff.effectType}
-                            </span>
-                          ) : eff.effectType === 'gainQuality' || eff.effectType === 'loseQuality' ? (
-                            <>
-                              <span className="text-vault-yellow-dark">
-                                {t(`encyclopedia.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
-                              </span>
-                              <span className="text-vault-yellow">
-                                {eff.qualityName
-                                  ? t(`qualities.${eff.qualityName}.name`, { defaultValue: eff.qualityName })
-                                  : ''}
-                                {eff.qualityValue != null ? ` ×${eff.qualityValue}` : ''}
-                              </span>
-                            </>
-                          ) : eff.effectType === 'setAmmo' ? (
-                            <>
-                              <span className="text-vault-yellow-dark">
-                                {t('encyclopedia.mod.setAmmo', { defaultValue: 'Ammo' })}:
-                              </span>
-                              <span className="text-vault-yellow">{eff.ammoType ?? ''}</span>
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-vault-yellow-dark">
-                                {t(`encyclopedia.mod.${eff.effectType}`, { defaultValue: eff.effectType })}:
-                              </span>
-                              <span className="text-vault-yellow">
-                                {eff.numericValue != null
-                                  ? `${eff.numericValue > 0 ? '+' : ''}${eff.numericValue}`
-                                  : ''}
-                              </span>
-                            </>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-
-          {recipe.resultItem && (() => {
-            const item = recipe.resultItem!;
-            const itemName = item.nameKey
-              ? t(item.nameKey, { defaultValue: item.name })
-              : item.name;
-            return (
-              <div className="space-y-1 text-sm">
-                <span className="text-vault-yellow font-semibold">{itemName}</span>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
-                  <span className="text-vault-yellow-dark">{t('itemDetail.value', { defaultValue: 'Value' })}</span>
-                  <span className="text-vault-yellow">{item.value} ¢</span>
-                  <span className="text-vault-yellow-dark">{t('itemDetail.weight', { defaultValue: 'Weight' })}</span>
-                  <span className="text-vault-yellow">{item.weight} kg</span>
-                </div>
-              </div>
-            );
-          })()}
+          {recipe.resultMod && <ModResultSection mod={recipe.resultMod} />}
+          {recipe.resultItem && <ItemResultSection item={recipe.resultItem} />}
         </section>
       )}
 
