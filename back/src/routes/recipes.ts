@@ -55,6 +55,7 @@ async function getFullRecipe(recipeId: number) {
         quantity: recipeIngredients.quantity,
         itemName: items.name,
         itemNameKey: items.nameKey,
+        itemType: items.itemType,
       })
       .from(recipeIngredients)
       .leftJoin(items, eq(recipeIngredients.itemId, items.id))

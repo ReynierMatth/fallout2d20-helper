@@ -15,6 +15,7 @@ export interface RecipeIngredient {
   quantity: number;
   itemName: string | null;
   itemNameKey: string | null;
+  itemType: string | null;
 }
 
 export interface ResultModEffect {
