@@ -129,22 +129,21 @@ export function CraftPage() {
           <div className="flex flex-col border border-vault-yellow-dark/30 rounded-lg overflow-hidden max-h-[calc(100vh-200px)]">
             <div className="p-2 space-y-2 border-b border-vault-yellow-dark/30">
               {activeTab === 'weapon' && (
-                <select
-                  value={selectedWeaponId ?? ''}
+                <Select
+                  value={selectedWeaponId != null ? String(selectedWeaponId) : ''}
                   onChange={(e) => {
                     setSelectedWeaponId(e.target.value ? Number(e.target.value) : null);
                     setSelectedRecipeId(null);
                     setSearchQuery('');
                   }}
-                  className="w-full bg-vault-blue-dark text-vault-yellow text-sm px-3 py-1.5 rounded border border-vault-yellow-dark/40 focus:outline-none focus:border-vault-yellow/60"
-                >
-                  <option value="">{t('craft.allWeaponMods')}</option>
-                  {weapons.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.nameKey ? t(w.nameKey, { defaultValue: w.name }) : w.name}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: '', label: t('craft.allWeaponMods') },
+                    ...weapons.map((w) => ({
+                      value: String(w.id),
+                      label: w.nameKey ? t(w.nameKey, { defaultValue: w.name }) : w.name,
+                    })),
+                  ]}
+                />
               )}
               <input
                 type="search"
