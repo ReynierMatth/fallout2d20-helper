@@ -17,6 +17,45 @@ export interface RecipeIngredient {
   itemNameKey: string | null;
 }
 
+export interface ResultModEffect {
+  id: number;
+  effectType: string;
+  numericValue: number | null;
+  qualityName: string | null;
+  qualityValue: number | null;
+  ammoType: string | null;
+  descriptionKey: string | null;
+}
+
+export interface ResultModItem {
+  id: number;
+  name: string;
+  nameKey: string | null;
+  value: number;
+  rarity: number;
+  weight: number;
+}
+
+export interface ResultMod {
+  id: number;
+  slot: string;
+  applicableTo: string;
+  nameAddKey: string | null;
+  weightChange: number;
+  item: ResultModItem | null;
+  effects: ResultModEffect[];
+}
+
+export interface ResultItem {
+  id: number;
+  name: string;
+  nameKey: string | null;
+  value: number;
+  rarity: number;
+  weight: number;
+  itemType: string;
+}
+
 export interface Recipe {
   id: number;
   name: string;
@@ -28,11 +67,13 @@ export interface Recipe {
   resultModId: number | null;
   resultItemId: number | null;
   perkRequirements: RecipePerkRequirement[];
-  ingredients?: RecipeIngredient[]; // included only for chemistry/cooking list responses
+  ingredients?: RecipeIngredient[];
 }
 
 export interface RecipeDetail extends Recipe {
   ingredients: RecipeIngredient[];
+  resultMod?: ResultMod | null;
+  resultItem?: ResultItem | null;
 }
 
 export type RecipeState = 'craftable' | 'known_missing_materials' | 'unknown';
