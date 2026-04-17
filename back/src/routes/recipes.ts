@@ -16,12 +16,14 @@ import {
 const router = Router();
 
 async function fetchResultMod(modId: number) {
-  const [modRow] = await db.select().from(mods).where(eq(mods.id, modId));
-  if (!modRow) return null;
-  const [modItem, effects] = await Promise.all([
-    db.select().from(items).where(eq(items.id, modRow.itemId)).then((r) => r[0] ?? null),
-    db.select().from(modEffects).where(eq(modEffects.modId, modRow.id)),
-  ]);
+  const rows = await db
+    .select()
+    .from(mods)
+    .leftJoin(items, eq(items.id, mods.itemId))
+    .where(eq(mods.id, modId));
+  if (rows.length === 0) return null;
+  const { mods: modRow, items: modItem } = rows[0];
+  const effects = await db.select().from(modEffects).where(eq(modEffects.modId, modRow.id));
   return { ...modRow, item: modItem, effects };
 }
 
@@ -59,8 +61,8 @@ async function getFullRecipe(recipeId: number) {
   ]);
 
   const [resultMod, resultItem] = await Promise.all([
-    recipe.resultModId !== null ? fetchResultMod(recipe.resultModId) : Promise.resolve(null),
-    recipe.resultItemId !== null ? fetchResultItem(recipe.resultItemId) : Promise.resolve(null),
+    recipe.resultModId !== null ? fetchResultMod(recipe.resultModId) : null,
+    recipe.resultItemId !== null ? fetchResultItem(recipe.resultItemId) : null,
   ]);
 
   return { ...recipe, perkRequirements: perkReqs, ingredients, resultMod, resultItem };
