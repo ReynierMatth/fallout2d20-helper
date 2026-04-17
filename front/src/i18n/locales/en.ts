@@ -440,7 +440,6 @@ export default {
     robot: 'Robot',
   },
 
-
   ranges: {
     close: 'Close (C)',
     medium: 'Medium (M)',
