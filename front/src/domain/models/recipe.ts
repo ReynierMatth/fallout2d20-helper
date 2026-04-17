@@ -27,7 +27,7 @@ export interface ResultModEffect {
   descriptionKey: string | null;
 }
 
-export interface ResultModItem {
+export interface RecipeResultItem {
   id: number;
   name: string;
   nameKey: string | null;
@@ -48,18 +48,8 @@ export interface ResultMod {
   requiredPerk2: string | null;
   requiredPerkRank2: number | null;
   weightChange: number;
-  item: ResultModItem | null;
+  item: RecipeResultItem | null;
   effects: ResultModEffect[];
-}
-
-export interface ResultItem {
-  id: number;
-  name: string;
-  nameKey: string | null;
-  value: number;
-  rarity: number;
-  weight: number;
-  itemType: string;
 }
 
 export interface Recipe {
@@ -73,13 +63,13 @@ export interface Recipe {
   resultModId: number | null;
   resultItemId: number | null;
   perkRequirements: RecipePerkRequirement[];
-  ingredients?: RecipeIngredient[];
+  ingredients?: RecipeIngredient[]; // included only for chemistry/cooking list responses
 }
 
 export interface RecipeDetail extends Recipe {
   ingredients: RecipeIngredient[];
-  resultMod?: ResultMod | null;
-  resultItem?: ResultItem | null;
+  resultMod: ResultMod | null;
+  resultItem: RecipeResultItem | null;
 }
 
 export type RecipeState = 'craftable' | 'known_missing_materials' | 'unknown';
