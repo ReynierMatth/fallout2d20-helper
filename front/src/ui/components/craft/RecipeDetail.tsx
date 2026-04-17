@@ -366,9 +366,9 @@ export function RecipeDetail({
           {t('craft.recipe.prerequisites')}
         </h3>
         <div className="space-y-1 text-sm">
-          <div className="flex justify-between">
-            <span className="text-vault-yellow-dark">{t('craft.recipe.workbench')}</span>
-            <span className="text-vault-yellow">{t(`craft.workbenches.${recipe.workbenchType}`)}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-vault-yellow-dark text-xs">{t('craft.recipe.workbench')} :</span>
+            <span className="text-vault-yellow text-xs font-medium">{t(`craft.workbenches.${recipe.workbenchType}`)}</span>
           </div>
           {recipe.perkRequirements.length > 0 && (
             <div>
@@ -483,23 +483,32 @@ export function RecipeDetail({
           </ul>
         ) : (
           materialCost && (
-            <ul className="space-y-1 text-sm">
+            <ul className="space-y-1">
               {materialCost.common > 0 && (
-                <li className="flex justify-between">
-                  <span className="text-vault-yellow-dark">{t('craft.recipe.materialTypes.common')}</span>
-                  <span className="text-vault-yellow">×{materialCost.common}</span>
+                <li className="flex items-center justify-between py-1 border-b border-vault-yellow-dark/10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+                    <span className="text-gray-300 text-sm">{t('craft.recipe.materialTypes.common')}</span>
+                  </div>
+                  <span className="font-mono text-xs px-2 py-0.5 rounded-full bg-gray-400/10 text-gray-300 shrink-0">×{materialCost.common}</span>
                 </li>
               )}
               {materialCost.uncommon > 0 && (
-                <li className="flex justify-between">
-                  <span className="text-vault-yellow-dark">{t('craft.recipe.materialTypes.uncommon')}</span>
-                  <span className="text-vault-yellow">×{materialCost.uncommon}</span>
+                <li className="flex items-center justify-between py-1 border-b border-vault-yellow-dark/10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-400 shrink-0" />
+                    <span className="text-green-300 text-sm">{t('craft.recipe.materialTypes.uncommon')}</span>
+                  </div>
+                  <span className="font-mono text-xs px-2 py-0.5 rounded-full bg-green-400/10 text-green-300 shrink-0">×{materialCost.uncommon}</span>
                 </li>
               )}
               {materialCost.rare > 0 && (
-                <li className="flex justify-between">
-                  <span className="text-vault-yellow-dark">{t('craft.recipe.materialTypes.rare')}</span>
-                  <span className="text-vault-yellow">×{materialCost.rare}</span>
+                <li className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
+                    <span className="text-blue-300 text-sm">{t('craft.recipe.materialTypes.rare')}</span>
+                  </div>
+                  <span className="font-mono text-xs px-2 py-0.5 rounded-full bg-blue-400/10 text-blue-300 shrink-0">×{materialCost.rare}</span>
                 </li>
               )}
             </ul>
