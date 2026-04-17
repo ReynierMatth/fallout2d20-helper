@@ -23,6 +23,7 @@ async function fetchResultMod(modId: number) {
     .where(eq(mods.id, modId));
   if (rows.length === 0) return null;
   const { mods: modRow, items: modItem } = rows[0];
+  if (!modItem) return null;
   const effects = await db.select().from(modEffects).where(eq(modEffects.modId, modRow.id));
   return { ...modRow, item: modItem, effects };
 }
