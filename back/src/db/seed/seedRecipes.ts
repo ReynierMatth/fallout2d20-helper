@@ -19,6 +19,9 @@ export async function seedRecipes() {
         console.warn(`  ⚠ result mod item not found: "${recipe.resultModName}" (recipe: ${recipe.name})`);
       } else {
         const [mod] = await db.select({ id: mods.id }).from(mods).where(eq(mods.itemId, modItem.id));
+        if (!mod) {
+          console.warn(`  ⚠ mod row not found for item: "${recipe.resultModName}" (recipe: ${recipe.name})`);
+        }
         resultModId = mod?.id ?? null;
       }
     }
