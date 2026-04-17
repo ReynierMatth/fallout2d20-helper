@@ -140,3 +140,16 @@ export const bodyTypeEnum = pgEnum('body_type', ['humanoid', 'quadruped', 'insec
 
 // ===== SESSIONS =====
 export const sessionStatusEnum = pgEnum('session_status', ['active', 'paused', 'completed']);
+
+// ===== CRAFTING =====
+export const workbenchTypeEnum = pgEnum('workbench_type', [
+  'weapon', 'armor', 'chemistry', 'cooking', 'power_armor', 'robot'
+]);
+
+export const craftingSkillEnum = pgEnum('crafting_skill', [
+  'repair', 'science', 'survival', 'explosives'
+]);
+
+export const recipeRarityEnum = pgEnum('recipe_rarity', [
+  'frequente', 'peu_frequente', 'rare'
+]);
