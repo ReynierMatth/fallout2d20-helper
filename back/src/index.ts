@@ -11,6 +11,7 @@ import sessionsRouter from './routes/sessions';
 import diseasesRouter from './routes/diseases';
 import generatorsRouter from './routes/generators';
 import bestiaryRouter from './routes/bestiary';
+import recipesRouter from './routes/recipes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -29,6 +30,7 @@ app.use('/api/sessions', sessionsRouter);
 app.use('/api/diseases', diseasesRouter);
 app.use('/api/generate', generatorsRouter);
 app.use('/api/bestiary', bestiaryRouter);
+app.use('/api/recipes', recipesRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {
