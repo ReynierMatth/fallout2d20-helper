@@ -15,6 +15,21 @@ import {
 
 const router = Router();
 
+async function fetchResultMod(modId: number) {
+  const [modRow] = await db.select().from(mods).where(eq(mods.id, modId));
+  if (!modRow) return null;
+  const [modItem, effects] = await Promise.all([
+    db.select().from(items).where(eq(items.id, modRow.itemId)).then((r) => r[0] ?? null),
+    db.select().from(modEffects).where(eq(modEffects.modId, modRow.id)),
+  ]);
+  return { ...modRow, item: modItem, effects };
+}
+
+async function fetchResultItem(itemId: number) {
+  const [row] = await db.select().from(items).where(eq(items.id, itemId));
+  return row ?? null;
+}
+
 async function getFullRecipe(recipeId: number) {
   const [recipe] = await db.select().from(recipes).where(eq(recipes.id, recipeId));
   if (!recipe) return null;
@@ -43,25 +58,10 @@ async function getFullRecipe(recipeId: number) {
       .where(eq(recipeIngredients.recipeId, recipeId)),
   ]);
 
-  // Fetch result mod (with linked item + effects) if this recipe produces a mod
-  let resultMod: Record<string, unknown> | null = null;
-  if (recipe.resultModId !== null) {
-    const [modRow] = await db.select().from(mods).where(eq(mods.id, recipe.resultModId));
-    if (modRow) {
-      const [modItem, effects] = await Promise.all([
-        db.select().from(items).where(eq(items.id, modRow.itemId)).then((r) => r[0] ?? null),
-        db.select().from(modEffects).where(eq(modEffects.modId, modRow.id)),
-      ]);
-      resultMod = { ...modRow, item: modItem, effects };
-    }
-  }
-
-  // Fetch result item if this recipe produces a standalone item
-  let resultItem: Record<string, unknown> | null = null;
-  if (recipe.resultItemId !== null) {
-    const [itemRow] = await db.select().from(items).where(eq(items.id, recipe.resultItemId));
-    resultItem = itemRow ?? null;
-  }
+  const [resultMod, resultItem] = await Promise.all([
+    recipe.resultModId !== null ? fetchResultMod(recipe.resultModId) : Promise.resolve(null),
+    recipe.resultItemId !== null ? fetchResultItem(recipe.resultItemId) : Promise.resolve(null),
+  ]);
 
   return { ...recipe, perkRequirements: perkReqs, ingredients, resultMod, resultItem };
 }
