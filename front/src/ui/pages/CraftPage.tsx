@@ -24,7 +24,16 @@ export function CraftPage() {
 
   const { characters } = useCharactersApi();
   const pcCharacters = useMemo(() => characters?.filter((c: any) => c.type === 'pc') ?? [], [characters]);
-  const character = characterId ? (characters?.find((c: any) => String(c.id) === characterId) ?? null) : null;
+  const rawCharacter = characterId ? (characters?.find((c: any) => String(c.id) === characterId) ?? null) : null;
+
+  // Normalize Character (Record<SkillName, number> skills) into the shape expected by craft components
+  const character = useMemo(() => {
+    if (!rawCharacter) return null;
+    return {
+      ...rawCharacter,
+      skills: Object.entries(rawCharacter.skills ?? {}).map(([skill, rank]) => ({ skill, rank: rank as number })),
+    };
+  }, [rawCharacter]);
 
   const workbenchType: WorkbenchType | undefined = activeTab !== 'repair' ? activeTab : undefined;
   const { data: recipes = [], isLoading: recipesLoading } = useRecipes(workbenchType);
