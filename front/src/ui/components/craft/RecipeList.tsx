@@ -113,10 +113,10 @@ export function RecipeList({
                 'w-full flex items-center gap-2 px-3 py-2 rounded text-sm text-left transition-colors cursor-pointer',
                 isUnknown
                   ? selectedId === recipe.id
-                    ? 'bg-vault-yellow/20 text-vault-yellow-dark font-semibold'
+                    ? 'border border-vault-yellow-dark/50 text-vault-yellow-dark font-semibold'
                     : 'text-vault-yellow-dark/50 hover:bg-vault-blue-light/50'
                   : selectedId === recipe.id
-                  ? 'bg-vault-yellow text-vault-blue font-semibold'
+                  ? 'border border-vault-yellow text-vault-yellow font-semibold'
                   : 'text-vault-yellow hover:bg-vault-blue-light'
               )}
             >
