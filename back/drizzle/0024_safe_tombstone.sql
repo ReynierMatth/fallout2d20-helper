@@ -1,0 +1,2 @@
+ALTER TABLE "recipe_ingredients" ADD CONSTRAINT "recipe_ingredients_recipe_id_item_id_unique" UNIQUE("recipe_id","item_id");--> statement-breakpoint
+ALTER TABLE "recipe_perk_requirements" ADD CONSTRAINT "recipe_perk_requirements_recipe_id_perk_id_unique" UNIQUE("recipe_id","perk_id");

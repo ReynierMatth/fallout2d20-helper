@@ -169,6 +169,13 @@
       "when": 1776430901387,
       "tag": "0023_majestic_sandman",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1776431267761,
+      "tag": "0024_safe_tombstone",
+      "breakpoints": true
     }
   ]
 }
