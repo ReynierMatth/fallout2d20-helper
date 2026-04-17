@@ -34,13 +34,19 @@ export interface ResultModItem {
   value: number;
   rarity: number;
   weight: number;
+  itemType: string;
 }
 
 export interface ResultMod {
   id: number;
+  itemId: number;
   slot: string;
   applicableTo: string;
   nameAddKey: string | null;
+  requiredPerk: string | null;
+  requiredPerkRank: number | null;
+  requiredPerk2: string | null;
+  requiredPerkRank2: number | null;
   weightChange: number;
   item: ResultModItem | null;
   effects: ResultModEffect[];
