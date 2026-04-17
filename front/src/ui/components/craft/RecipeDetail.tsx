@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle, XCircle, Loader2, BookmarkPlus, BookmarkX } from 'lucide-react';
+import { CheckCircle, XCircle, Loader2, BookmarkPlus, BookmarkX, Sword, Shield, Shirt, Pill, Apple, Wrench, Settings, Package } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import type { RecipeDetail as RecipeDetailType } from '../../../domain/models/recipe';
 import type { MaterialItemIds } from '../../../application/hooks/useRecipes';
@@ -11,6 +11,20 @@ import {
 } from './craftUtils';
 import { ItemDetailModal } from '../../../components/ItemDetailModal';
 import type { ItemType } from '../../../services/api';
+
+const itemTypeIcons: Partial<Record<ItemType, React.ElementType>> = {
+  weapon: Sword, armor: Shield, robotArmor: Shield, clothing: Shirt,
+  ammunition: Package, syringerAmmo: Package, chem: Pill, food: Apple,
+  generalGood: Wrench, oddity: Package, powerArmor: Shield, magazine: Package, mod: Settings,
+};
+
+const itemTypeColors: Partial<Record<ItemType, string>> = {
+  weapon: 'text-red-400', armor: 'text-blue-400', powerArmor: 'text-yellow-500',
+  robotArmor: 'text-blue-300', clothing: 'text-purple-400', ammunition: 'text-yellow-400',
+  syringerAmmo: 'text-green-400', chem: 'text-pink-400', food: 'text-orange-400',
+  generalGood: 'text-gray-400', oddity: 'text-cyan-400', magazine: 'text-teal-400',
+  mod: 'text-emerald-400',
+};
 
 function ModResultSection({
   mod,
@@ -24,9 +38,11 @@ function ModResultSection({
     ? t(mod.item.nameKey, { defaultValue: mod.item.name ?? '' })
     : (mod.item?.name ?? '');
   const nameAdd = mod.nameAddKey ? t(mod.nameAddKey, { defaultValue: '' }) : '';
+  const Icon = itemTypeIcons['mod'] ?? Package;
   return (
-    <div className="space-y-2 text-sm">
+    <div className="rounded-lg bg-vault-yellow/5 border border-vault-yellow/10 p-3 space-y-2 text-sm">
       <div className="flex items-center gap-2">
+        <Icon size={14} className="text-emerald-400 shrink-0" />
         {mod.item ? (
           <button
             type="button"
@@ -123,15 +139,20 @@ function ItemResultSection({
   const itemName = item.nameKey
     ? t(item.nameKey, { defaultValue: item.name })
     : item.name;
+  const Icon = (item.itemType ? itemTypeIcons[item.itemType as ItemType] : null) ?? Package;
+  const colorClass = (item.itemType ? itemTypeColors[item.itemType as ItemType] : null) ?? 'text-vault-yellow';
   return (
-    <div className="space-y-1 text-sm">
-      <button
-        type="button"
-        onClick={() => onItemClick(item.id, item.itemType as ItemType)}
-        className="text-vault-yellow font-semibold hover:underline text-left"
-      >
-        {itemName}
-      </button>
+    <div className="rounded-lg bg-vault-yellow/5 border border-vault-yellow/10 p-3 space-y-1 text-sm">
+      <div className="flex items-center gap-2">
+        <Icon size={14} className={`shrink-0 ${colorClass}`} />
+        <button
+          type="button"
+          onClick={() => onItemClick(item.id, item.itemType as ItemType)}
+          className="text-vault-yellow font-semibold hover:underline text-left"
+        >
+          {itemName}
+        </button>
+      </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
         <span className="text-vault-yellow-dark">{t('common.labels.value')}</span>
         <span className="text-vault-yellow">{item.value} ¢</span>
@@ -340,7 +361,7 @@ export function RecipeDetail({
       )}
 
       {/* Prerequisites */}
-      <section>
+      <section className="border-l-2 border-vault-yellow/30 pl-3">
         <h3 className="text-vault-yellow-dark text-xs font-semibold uppercase tracking-wide mb-2">
           {t('craft.recipe.prerequisites')}
         </h3>
@@ -381,47 +402,45 @@ export function RecipeDetail({
       </section>
 
       {/* Crafting test */}
-      <section>
+      <section className="border-l-2 border-vault-yellow/30 pl-3">
         <h3 className="text-vault-yellow-dark text-xs font-semibold uppercase tracking-wide mb-2">
           {t('craft.recipe.craftingTest')}
         </h3>
         {character ? (
-          <div className="space-y-1 text-sm">
-            <p className="text-vault-yellow font-mono">
-              {t('craft.recipe.formula', {
-                skill: t(`skills.${recipe.skill}`, recipe.skill),
-                complexity: recipe.complexity,
-                rank: skillRank,
-                difficulty,
-              })}
-            </p>
-            <p className="text-vault-yellow-dark text-xs">
-              INT({intValue}) + {t(`skills.${recipe.skill}`, recipe.skill)}({skillRank})
-            </p>
-            {isAutoSuccess && (
-              <p className="text-green-400 text-xs font-medium">{t('craft.recipe.automaticSuccess')}</p>
-            )}
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-vault-yellow/10 border border-vault-yellow/30 shrink-0">
+              {isAutoSuccess ? (
+                <CheckCircle size={20} className="text-green-400" />
+              ) : (
+                <>
+                  <span className="text-vault-yellow font-bold text-lg leading-none">{difficulty}</span>
+                  <span className="text-vault-yellow-dark text-[9px]">succès</span>
+                </>
+              )}
+            </div>
+            <div className="text-xs text-vault-yellow-dark space-y-0.5">
+              <p className="text-vault-yellow font-medium">
+                {t(`skills.${recipe.skill}`, recipe.skill)} — {t('craft.recipe.complexity', { defaultValue: 'Complexité' })} {recipe.complexity}
+              </p>
+              <p>INT({intValue}) + {t(`skills.${recipe.skill}`, recipe.skill)}({skillRank})</p>
+              {isAutoSuccess && <p className="text-green-400">{t('craft.recipe.automaticSuccess')}</p>}
+            </div>
           </div>
         ) : (
           <p className="text-vault-yellow-dark text-sm">
-            {t('craft.recipe.formula', {
-              skill: t(`skills.${recipe.skill}`, recipe.skill),
-              complexity: recipe.complexity,
-              rank: '?',
-              difficulty: '?',
-            })}
+            {t('craft.recipe.formula', { skill: t(`skills.${recipe.skill}`, recipe.skill), complexity: recipe.complexity, rank: '?', difficulty: '?' })}
           </p>
         )}
-        <p className="text-vault-yellow-dark text-xs mt-1">{t('craft.recipe.complication')}</p>
+        <p className="text-vault-yellow-dark text-xs mt-2">{t('craft.recipe.complication')}</p>
       </section>
 
       {/* Materials */}
-      <section>
+      <section className="border-l-2 border-vault-yellow/30 pl-3">
         <h3 className="text-vault-yellow-dark text-xs font-semibold uppercase tracking-wide mb-2">
           {t('craft.recipe.materials')}
         </h3>
         {isSpecific ? (
-          <ul className="space-y-1">
+          <ul className="space-y-0">
             {recipe.ingredients.map((ing) => {
               const invQty = character
                 ? characterInventory.find((i) => i.itemId === ing.itemId)?.quantity ?? 0
@@ -430,32 +449,33 @@ export function RecipeDetail({
                 ? t(ing.itemNameKey, { defaultValue: ing.itemName ?? '' })
                 : ing.itemName ?? '';
               const sufficient = invQty === null || invQty >= ing.quantity;
+              const Icon = (ing.itemType ? itemTypeIcons[ing.itemType as ItemType] : null) ?? Package;
+              const colorClass = (ing.itemType ? itemTypeColors[ing.itemType as ItemType] : null) ?? 'text-vault-yellow-dark';
               return (
-                <li key={ing.id} className="flex justify-between text-sm">
-                  {ing.itemType ? (
-                    <button
-                      type="button"
-                      onClick={() => handleItemClick(ing.itemId, ing.itemType as ItemType)}
-                      className="text-vault-yellow hover:underline text-left"
-                    >
-                      {itemLabel}
-                    </button>
-                  ) : (
-                    <span className="text-vault-yellow">{itemLabel}</span>
-                  )}
-                  <span className={cn('font-mono', invQty !== null && !sufficient ? 'text-red-400' : 'text-vault-yellow')}>
-                    {invQty !== null ? (
-                      <>
-                        {invQty}/{ing.quantity}
-                        {!sufficient && (
-                          <span className="text-red-400 ml-1">
-                            {t('craft.missing', { count: ing.quantity - invQty })}
-                          </span>
-                        )}
-                      </>
+                <li key={ing.id} className="flex items-center justify-between gap-2 py-1 border-b border-vault-yellow-dark/10 last:border-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Icon size={13} className={`shrink-0 ${colorClass}`} />
+                    {ing.itemType ? (
+                      <button
+                        type="button"
+                        onClick={() => handleItemClick(ing.itemId, ing.itemType as ItemType)}
+                        className="text-vault-yellow text-sm hover:underline text-left truncate"
+                      >
+                        {itemLabel}
+                      </button>
                     ) : (
-                      `×${ing.quantity}`
+                      <span className="text-vault-yellow text-sm truncate">{itemLabel}</span>
                     )}
+                  </div>
+                  <span className={cn(
+                    'font-mono text-xs px-2 py-0.5 rounded-full shrink-0',
+                    invQty !== null && !sufficient
+                      ? 'bg-red-400/10 text-red-400'
+                      : invQty !== null
+                      ? 'bg-green-400/10 text-green-400'
+                      : 'bg-vault-yellow/10 text-vault-yellow'
+                  )}>
+                    {invQty !== null ? `${invQty}/${ing.quantity}` : `×${ing.quantity}`}
                   </span>
                 </li>
               );
@@ -489,7 +509,7 @@ export function RecipeDetail({
 
       {/* Crafted result details */}
       {(recipe.resultMod || recipe.resultItem) && (
-        <section>
+        <section className="border-l-2 border-vault-yellow/30 pl-3">
           <h3 className="text-vault-yellow-dark text-xs font-semibold uppercase tracking-wide mb-2">
             {t('craft.recipe.result')}
           </h3>
@@ -500,7 +520,7 @@ export function RecipeDetail({
       )}
 
       {/* Crafting info */}
-      <section>
+      <section className="border-l-2 border-vault-yellow/30 pl-3">
         <h3 className="text-vault-yellow-dark text-xs font-semibold uppercase tracking-wide mb-2">
           {t('craft.recipe.craftingInfo')}
         </h3>
