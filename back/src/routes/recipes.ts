@@ -62,12 +62,13 @@ async function getFullRecipe(recipeId: number) {
       .where(eq(recipeIngredients.recipeId, recipeId)),
   ]);
 
-  const [resultMod, resultItem] = await Promise.all([
+  const [resultMod, resultItem, requiredBaseItem] = await Promise.all([
     recipe.resultModId !== null ? fetchResultMod(recipe.resultModId) : null,
     recipe.resultItemId !== null ? fetchResultItem(recipe.resultItemId) : null,
+    recipe.requiredBaseItemId !== null ? fetchResultItem(recipe.requiredBaseItemId) : null,
   ]);
 
-  return { ...recipe, perkRequirements: perkReqs, ingredients, resultMod, resultItem };
+  return { ...recipe, perkRequirements: perkReqs, ingredients, resultMod, resultItem, requiredBaseItem };
 }
 
 const VALID_WORKBENCH_TYPES = ['weapon', 'armor', 'chemistry', 'cooking', 'power_armor', 'robot'] as const;
