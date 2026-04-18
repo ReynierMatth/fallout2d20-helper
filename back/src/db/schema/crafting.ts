@@ -16,6 +16,7 @@ export const recipes = pgTable('recipes', {
   rarity: recipeRarityEnum('rarity').notNull().default('frequente'),
   resultModId: integer('result_mod_id').references(() => mods.id, { onDelete: 'set null' }),
   resultItemId: integer('result_item_id').references(() => items.id, { onDelete: 'set null' }),
+  requiredBaseItemId: integer('required_base_item_id').references(() => items.id, { onDelete: 'set null' }),
 });
 
 export const recipePerkRequirements = pgTable('recipe_perk_requirements', {
