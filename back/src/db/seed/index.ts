@@ -6,6 +6,7 @@ import { seedAllEquipmentPacks } from './seedEquipmentPacks';
 import { seedMods } from './seedMods';
 import { seedItemCompatibility } from './seedItemModCompatibility';
 import { seedBestiary } from './seedBestiary';
+import { seedRecipes } from './seedRecipes';
 
 async function seed() {
   console.log('Starting database seed...\n');
@@ -38,6 +39,10 @@ async function seed() {
 
     // 7. Bestiary (depends on items for inventory/attacks)
     await seedBestiary();
+    console.log('');
+
+    // 8. Recipes (depends on items + mods + perks)
+    await seedRecipes();
     console.log('');
 
     console.log('Database seed completed successfully!');

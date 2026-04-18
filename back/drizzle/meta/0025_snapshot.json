@@ -1,6 +1,6 @@
 {
-  "id": "c11b7c0f-7fb1-4e5f-8296-6041c5b17677",
-  "prevId": "ed003e98-27fc-450c-81bf-2fafbd4875b9",
+  "id": "0450aeae-eaa0-47e5-895c-7261de41e42c",
+  "prevId": "24546cb8-7463-406f-a11f-32ea58152294",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -4000,6 +4000,339 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.character_known_recipes": {
+      "name": "character_known_recipes",
+      "schema": "",
+      "columns": {
+        "character_id": {
+          "name": "character_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipe_id": {
+          "name": "recipe_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "character_known_recipes_character_id_characters_id_fk": {
+          "name": "character_known_recipes_character_id_characters_id_fk",
+          "tableFrom": "character_known_recipes",
+          "tableTo": "characters",
+          "columnsFrom": [
+            "character_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "character_known_recipes_recipe_id_recipes_id_fk": {
+          "name": "character_known_recipes_recipe_id_recipes_id_fk",
+          "tableFrom": "character_known_recipes",
+          "tableTo": "recipes",
+          "columnsFrom": [
+            "recipe_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "character_known_recipes_character_id_recipe_id_pk": {
+          "name": "character_known_recipes_character_id_recipe_id_pk",
+          "columns": [
+            "character_id",
+            "recipe_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recipe_ingredients": {
+      "name": "recipe_ingredients",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "recipe_id": {
+          "name": "recipe_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item_id": {
+          "name": "item_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recipe_ingredients_recipe_id_recipes_id_fk": {
+          "name": "recipe_ingredients_recipe_id_recipes_id_fk",
+          "tableFrom": "recipe_ingredients",
+          "tableTo": "recipes",
+          "columnsFrom": [
+            "recipe_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recipe_ingredients_item_id_items_id_fk": {
+          "name": "recipe_ingredients_item_id_items_id_fk",
+          "tableFrom": "recipe_ingredients",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recipe_ingredients_recipe_id_item_id_unique": {
+          "name": "recipe_ingredients_recipe_id_item_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "recipe_id",
+            "item_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recipe_perk_requirements": {
+      "name": "recipe_perk_requirements",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "recipe_id": {
+          "name": "recipe_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "perk_id": {
+          "name": "perk_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "min_rank": {
+          "name": "min_rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recipe_perk_requirements_recipe_id_recipes_id_fk": {
+          "name": "recipe_perk_requirements_recipe_id_recipes_id_fk",
+          "tableFrom": "recipe_perk_requirements",
+          "tableTo": "recipes",
+          "columnsFrom": [
+            "recipe_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recipe_perk_requirements_perk_id_perks_id_fk": {
+          "name": "recipe_perk_requirements_perk_id_perks_id_fk",
+          "tableFrom": "recipe_perk_requirements",
+          "tableTo": "perks",
+          "columnsFrom": [
+            "perk_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recipe_perk_requirements_recipe_id_perk_id_unique": {
+          "name": "recipe_perk_requirements_recipe_id_perk_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "recipe_id",
+            "perk_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recipes": {
+      "name": "recipes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "workbench_type": {
+          "name": "workbench_type",
+          "type": "workbench_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "complexity": {
+          "name": "complexity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skill": {
+          "name": "skill",
+          "type": "crafting_skill",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rarity": {
+          "name": "rarity",
+          "type": "recipe_rarity",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'frequente'"
+        },
+        "result_mod_id": {
+          "name": "result_mod_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result_item_id": {
+          "name": "result_item_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "required_base_item_id": {
+          "name": "required_base_item_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recipes_result_mod_id_mods_id_fk": {
+          "name": "recipes_result_mod_id_mods_id_fk",
+          "tableFrom": "recipes",
+          "tableTo": "mods",
+          "columnsFrom": [
+            "result_mod_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "recipes_result_item_id_items_id_fk": {
+          "name": "recipes_result_item_id_items_id_fk",
+          "tableFrom": "recipes",
+          "tableTo": "items",
+          "columnsFrom": [
+            "result_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "recipes_required_base_item_id_items_id_fk": {
+          "name": "recipes_required_base_item_id_items_id_fk",
+          "tableFrom": "recipes",
+          "tableTo": "items",
+          "columnsFrom": [
+            "required_base_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recipes_name_unique": {
+          "name": "recipes_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -4104,6 +4437,16 @@
         "crippled",
         "addicted",
         "unconscious"
+      ]
+    },
+    "public.crafting_skill": {
+      "name": "crafting_skill",
+      "schema": "public",
+      "values": [
+        "repair",
+        "science",
+        "survival",
+        "explosives"
       ]
     },
     "public.creature_category": {
@@ -4275,6 +4618,15 @@
         "x01"
       ]
     },
+    "public.recipe_rarity": {
+      "name": "recipe_rarity",
+      "schema": "public",
+      "values": [
+        "frequente",
+        "peu_frequente",
+        "rare"
+      ]
+    },
     "public.robot_location": {
       "name": "robot_location",
       "schema": "public",
@@ -4401,6 +4753,18 @@
         "unarmed",
         "throwing",
         "explosives"
+      ]
+    },
+    "public.workbench_type": {
+      "name": "workbench_type",
+      "schema": "public",
+      "values": [
+        "weapon",
+        "armor",
+        "chemistry",
+        "cooking",
+        "power_armor",
+        "robot"
       ]
     }
   },

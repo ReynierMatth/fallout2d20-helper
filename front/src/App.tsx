@@ -14,6 +14,7 @@ const CharacterSheetPage = lazy(() => import('./ui/pages/CharacterSheetPage').th
 const SessionsPage = lazy(() => import('./ui/pages/SessionsPage').then(m => ({ default: m.SessionsPage })));
 const SessionDetailPage = lazy(() => import('./ui/pages/SessionDetailPage').then(m => ({ default: m.SessionDetailPage })));
 const BestiaryPage = lazy(() => import('./ui/pages/BestiaryPage').then(m => ({ default: m.BestiaryPage })));
+const CraftPage = lazy(() => import('./ui/pages/CraftPage').then(m => ({ default: m.CraftPage })));
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/sessions" element={<SessionsPage />} />
             <Route path="/sessions/:id" element={<SessionDetailPage />} />
             <Route path="/bestiary" element={<BestiaryPage />} />
+            <Route path="/craft" element={<CraftPage />} />
           </Routes>
           </Suspense>
             </div>

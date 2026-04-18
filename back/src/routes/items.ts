@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db/index';
-import { eq, and, gte, lte } from 'drizzle-orm';
+import { eq, and, gte, lte, inArray } from 'drizzle-orm';
 import {
   items,
   weapons,
@@ -885,6 +885,23 @@ router.get('/food/:id', async (req, res) => {
 });
 
 // ===== GENERAL GOODS =====
+
+router.get('/materials', async (_req, res) => {
+  try {
+    const MATERIAL_KEYS = ['items.materials.common', 'items.materials.uncommon', 'items.materials.rare'];
+    const rows = await db
+      .select({ id: items.id, nameKey: items.nameKey })
+      .from(items)
+      .where(inArray(items.nameKey, MATERIAL_KEYS));
+    const result: Record<string, number> = {};
+    for (const row of rows) {
+      if (row.nameKey) result[row.nameKey] = row.id;
+    }
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 router.get('/general-goods', async (req, res) => {
   try {

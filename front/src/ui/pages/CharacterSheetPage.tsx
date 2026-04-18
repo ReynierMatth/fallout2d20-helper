@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Edit2, Star, Swords, Shield, Heart, Zap, Package, Sparkles, Dumbbell, Dice6 } from 'lucide-react';
+import { ArrowLeft, Edit2, Star, Swords, Shield, Heart, Zap, Package, Sparkles, Dumbbell, Dice6, Wrench } from 'lucide-react';
 import { CharacterSheetSkeleton } from '../components/shared/Skeleton';
 import { Card, Button, CharacterForm, InventoryManager, OriginIcon, BodyResistanceMap, SwipeableTabs } from '../../components';
 import { useCharactersApi } from '../../hooks/useCharactersApi';
@@ -165,6 +165,13 @@ export function CharacterSheetPage() {
               </button>
             ))}
           </div>
+          <Link
+            to={`/craft?character=${id}`}
+            className="p-1.5 text-vault-yellow hover:bg-vault-blue rounded transition-colors cursor-pointer flex-shrink-0"
+            title={t('characterSheet.goToWorkshop')}
+          >
+            <Wrench size={18} />
+          </Link>
           <button
             onClick={() => setIsFormOpen(true)}
             className="p-1.5 text-vault-yellow hover:bg-vault-blue rounded transition-colors cursor-pointer flex-shrink-0"
