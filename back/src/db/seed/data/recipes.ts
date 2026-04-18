@@ -21,6 +21,7 @@ export interface RecipeData {
   rarity: RecipeRarity;
   resultModName?: string;  // must match exact name in items table (for mod recipes)
   resultItemName?: string; // must match exact name in items table (for item recipes)
+  requiredBaseItemName?: string; // must match exact name in items table (base weapon required in inventory)
   perkRequirements?: RecipePerkReq[];
   ingredients?: RecipeIngredient[]; // only for chemistry/cooking
 }
@@ -217,12 +218,12 @@ const MELEE_MODS: RecipeData[] = [
   { name: 'Planche à chaînes', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }], resultModName: 'À chaînes' },
   { name: 'Planche à lames', workbenchType: 'weapon', complexity: 4, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }], resultModName: 'À lames (planche)' },
   // Tuyau de plomb
-  { name: 'Tuyau à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
+  { name: 'Tuyau à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente', resultModName: 'À pointes (tuyau)', requiredBaseItemName: 'Lead Pipe' },
   { name: 'Tuyau perforant', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }] },
   { name: 'Tuyau à lames', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }] },
   // Clé serre-tube
   { name: 'Clé à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
-  { name: 'Clé lourde', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }] },
+  { name: 'Clé lourde', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }], resultModName: 'Lourd (clé)', requiredBaseItemName: 'Pipe Wrench' },
   // Queue de billard
   { name: 'Billard crochet', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
   { name: 'Billard lourde', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }] },
@@ -237,26 +238,26 @@ const MELEE_MODS: RecipeData[] = [
   { name: 'Masse affûtée', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
   { name: 'Masse électrifiée', workbenchType: 'weapon', complexity: 4, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }, { perkId: 'science', minRank: 1 }] },
   { name: 'Module d\'étourdissement (masse)', workbenchType: 'weapon', complexity: 4, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }, { perkId: 'science', minRank: 1 }] },
-  { name: 'Masse perforante', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }] },
-  { name: 'Masse lourde', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }] },
+  { name: 'Masse perforante', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }], resultModName: 'Perforant (masse)', requiredBaseItemName: 'Sledgehammer' },
+  { name: 'Masse lourde', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }], resultModName: 'Lourd (masse)', requiredBaseItemName: 'Sledgehammer' },
   { name: 'Masse bobine thermique', workbenchType: 'weapon', complexity: 5, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }] },
-  { name: 'Module d\'étourdissement (super masse)', workbenchType: 'weapon', complexity: 5, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 3 }, { perkId: 'science', minRank: 1 }] },
+  { name: 'Module d\'étourdissement (super masse)', workbenchType: 'weapon', complexity: 5, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 3 }, { perkId: 'science', minRank: 1 }], resultModName: 'Module d\'étourdissement (super masse)', requiredBaseItemName: 'Super Sledge' },
   // Démonte-pneu
-  { name: 'Démonte-pneu à lames', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }] },
+  { name: 'Démonte-pneu à lames', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }], resultModName: 'À lames (démonte-pneu)', requiredBaseItemName: 'Tire Iron' },
   // Canne
-  { name: 'Canne barbelée', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
-  { name: 'Canne à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
+  { name: 'Canne barbelée', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente', resultModName: 'Barbelé (canne)', requiredBaseItemName: 'Walking Cane' },
+  { name: 'Canne à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente', resultModName: 'À pointes (canne)', requiredBaseItemName: 'Walking Cane' },
   // Poing américain
-  { name: 'Poing américain à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
-  { name: 'Poing américain perforant', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }] },
+  { name: 'Poing américain à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente', resultModName: 'À pointes (poing)', requiredBaseItemName: 'Knuckles' },
+  { name: 'Poing américain perforant', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }], resultModName: 'Perforant (poing)', requiredBaseItemName: 'Knuckles' },
   { name: 'Poing américain revêtement en plomb', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }] },
   // Gant de boxe
   { name: 'Gant de boxe affûté', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
-  { name: 'Gant de boxe à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente' },
+  { name: 'Gant de boxe à pointes', workbenchType: 'weapon', complexity: 1, skill: 'repair', rarity: 'frequente', resultModName: 'À pointes (gant)', requiredBaseItemName: 'Boxing Glove' },
   // Poing assisté
   { name: 'Poing assisté à lames', workbenchType: 'weapon', complexity: 2, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 1 }] },
-  { name: 'Poing assisté perforant', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }] },
-  { name: 'Poing assisté bobine thermique', workbenchType: 'weapon', complexity: 4, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 3 }] },
+  { name: 'Poing assisté perforant', workbenchType: 'weapon', complexity: 3, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 2 }], resultModName: 'Perforant (poing assisté)', requiredBaseItemName: 'Power Fist' },
+  { name: 'Poing assisté bobine thermique', workbenchType: 'weapon', complexity: 4, skill: 'repair', rarity: 'peu_frequente', perkRequirements: [{ perkId: 'blacksmith', minRank: 3 }], resultModName: 'Bobine thermique (poing assisté)', requiredBaseItemName: 'Power Fist' },
 ];
 
 export const WEAPON_MOD_RECIPES: RecipeData[] = [
