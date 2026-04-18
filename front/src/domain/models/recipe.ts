@@ -71,6 +71,7 @@ export interface RecipeDetail extends Recipe {
   ingredients: RecipeIngredient[];
   resultMod: ResultMod | null;
   resultItem: RecipeResultItem | null;
+  requiredBaseItem: { id: number; name: string; nameKey: string | null } | null;
 }
 
 export type RecipeState = 'craftable' | 'known_missing_materials' | 'unknown';
