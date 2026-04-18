@@ -268,6 +268,9 @@ export function RecipeDetail({
   const isKnownRare = recipe.rarity === 'rare' && knownRecipeIds.includes(recipe.id);
   const isUnknownRare = recipe.rarity === 'rare' && !knownRecipeIds.includes(recipe.id);
 
+  const hasRequiredBaseItem = !recipe.requiredBaseItem ||
+    characterInventory.some((inv) => inv.itemId === recipe.requiredBaseItem!.id);
+
   const recipeName = recipe.nameKey ? t(recipe.nameKey, { defaultValue: recipe.name }) : recipe.name;
 
   return (
@@ -367,19 +370,31 @@ export function RecipeDetail({
 
       {/* Craft button */}
       {onCraft && character && !isLocked && missingIngredients.length === 0 && missingGenericMaterials.length === 0 && (recipe.resultMod || recipe.resultItemId) && (
-        <button
-          type="button"
-          onClick={onCraft}
-          disabled={isCrafting}
-          className="flex items-center gap-2 px-4 py-2 rounded border border-vault-yellow bg-vault-yellow/10 text-vault-yellow text-sm font-semibold hover:bg-vault-yellow/20 transition-colors disabled:opacity-50 w-full justify-center"
-        >
-          {isCrafting ? (
-            <Loader2 size={15} className="animate-spin" />
-          ) : (
-            <Hammer size={15} />
+        <div className="space-y-1">
+          <button
+            type="button"
+            onClick={onCraft}
+            disabled={isCrafting || !hasRequiredBaseItem}
+            className="flex items-center gap-2 px-4 py-2 rounded border border-vault-yellow bg-vault-yellow/10 text-vault-yellow text-sm font-semibold hover:bg-vault-yellow/20 transition-colors disabled:opacity-50 w-full justify-center"
+          >
+            {isCrafting ? (
+              <Loader2 size={15} className="animate-spin" />
+            ) : (
+              <Hammer size={15} />
+            )}
+            {t('craft.craftButton')}
+          </button>
+          {!hasRequiredBaseItem && recipe.requiredBaseItem && (
+            <p className="text-xs text-red-400 text-center">
+              {t('craft.requiresBaseItem', {
+                item: recipe.requiredBaseItem.nameKey
+                  ? t(recipe.requiredBaseItem.nameKey, { defaultValue: recipe.requiredBaseItem.name })
+                  : recipe.requiredBaseItem.name,
+                defaultValue: `Requiert : {{item}} dans l'inventaire`,
+              })}
+            </p>
           )}
-          {t('craft.craftButton')}
-        </button>
+        </div>
       )}
 
       {/* Prerequisites */}
