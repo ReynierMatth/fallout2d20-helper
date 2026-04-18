@@ -40,6 +40,20 @@ export async function seedRecipes() {
       }
     }
 
+    // Resolve required base item ID
+    let requiredBaseItemId: number | null = null;
+    if (recipe.requiredBaseItemName) {
+      const [baseItem] = await db
+        .select({ id: items.id })
+        .from(items)
+        .where(eq(items.name, recipe.requiredBaseItemName));
+      if (!baseItem) {
+        console.warn(`  ⚠ required base item not found: "${recipe.requiredBaseItemName}" (recipe: ${recipe.name})`);
+      } else {
+        requiredBaseItemId = baseItem.id;
+      }
+    }
+
     // Upsert recipe
     const [inserted] = await db
       .insert(recipes)
@@ -52,6 +66,7 @@ export async function seedRecipes() {
         rarity: recipe.rarity as any,
         resultModId,
         resultItemId,
+        requiredBaseItemId,
       })
       .onConflictDoUpdate({
         target: recipes.name,
@@ -62,6 +77,7 @@ export async function seedRecipes() {
           rarity: sql`excluded.rarity`,
           resultModId: sql`excluded.result_mod_id`,
           resultItemId: sql`excluded.result_item_id`,
+          requiredBaseItemId: sql`excluded.required_base_item_id`,
         },
       })
       .returning({ id: recipes.id });
