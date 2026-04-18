@@ -2655,6 +2655,7 @@ export default {
     noRecipeSelected: 'Sélectionnez une recette',
     noCharacterSelected: 'Aucun personnage sélectionné — affichage sans calculs',
     craftButton: 'Fabriquer',
+    requiresBaseItem: "Requiert : {{item}} dans l'inventaire",
     selectCharacter: 'Personnage',
     allWeaponMods: 'Tous les mods d\'arme',
     searchRecipe: 'Rechercher une recette…',

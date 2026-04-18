@@ -33,6 +33,14 @@ async function fetchResultItem(itemId: number) {
   return row ?? null;
 }
 
+async function fetchRequiredBaseItem(itemId: number) {
+  const [row] = await db
+    .select({ id: items.id, name: items.name, nameKey: items.nameKey })
+    .from(items)
+    .where(eq(items.id, itemId));
+  return row ?? null;
+}
+
 async function getFullRecipe(recipeId: number) {
   const [recipe] = await db.select().from(recipes).where(eq(recipes.id, recipeId));
   if (!recipe) return null;
@@ -65,7 +73,7 @@ async function getFullRecipe(recipeId: number) {
   const [resultMod, resultItem, requiredBaseItem] = await Promise.all([
     recipe.resultModId !== null ? fetchResultMod(recipe.resultModId) : null,
     recipe.resultItemId !== null ? fetchResultItem(recipe.resultItemId) : null,
-    recipe.requiredBaseItemId !== null ? fetchResultItem(recipe.requiredBaseItemId) : null,
+    recipe.requiredBaseItemId !== null ? fetchRequiredBaseItem(recipe.requiredBaseItemId) : null,
   ]);
 
   return { ...recipe, perkRequirements: perkReqs, ingredients, resultMod, resultItem, requiredBaseItem };

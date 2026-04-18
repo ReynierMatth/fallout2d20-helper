@@ -40,10 +40,14 @@ export const characterKnownRecipes = pgTable('character_known_recipes', {
 
 // ===== RELATIONS =====
 
-export const recipesRelations = relations(recipes, ({ many }) => ({
+export const recipesRelations = relations(recipes, ({ one, many }) => ({
   perkRequirements: many(recipePerkRequirements),
   ingredients: many(recipeIngredients),
   knownByCharacters: many(characterKnownRecipes),
+  requiredBaseItem: one(items, {
+    fields: [recipes.requiredBaseItemId],
+    references: [items.id],
+  }),
 }));
 
 export const recipePerkRequirementsRelations = relations(recipePerkRequirements, ({ one }) => ({
