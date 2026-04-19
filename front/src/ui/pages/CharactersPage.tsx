@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Users, UserPlus, Bot, Search, Upload } from 'lucide-react';
@@ -39,6 +39,14 @@ export function CharactersPage() {
     message: string;
     warnings?: ImportWarning[];
   } | null>(null);
+
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+    };
+  }, []);
 
   // Filtered characters
   const filteredCharacters = (() => {
@@ -115,10 +123,13 @@ export function CharactersPage() {
       await exportCharacter(character);
     } catch (err) {
       console.error('Failed to export character:', err);
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+      feedbackTimerRef.current = setTimeout(() => setImportFeedback(null), 6000);
+      setImportFeedback({ type: 'error', message: 'characters.importError' });
     }
   };
 
-  const handleImportChange = async (e: { target: HTMLInputElement }) => {
+  const handleImportChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
@@ -132,7 +143,8 @@ export function CharactersPage() {
     } catch (err) {
       setImportFeedback({ type: 'error', message: 'characters.importError' });
     }
-    setTimeout(() => setImportFeedback(null), 6000);
+    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+    feedbackTimerRef.current = setTimeout(() => setImportFeedback(null), 6000);
   };
 
   return (
@@ -157,7 +169,7 @@ export function CharactersPage() {
                 className="hidden"
                 onChange={handleImportChange}
               />
-              <span className="inline-flex items-center px-4 py-2 text-sm font-bold uppercase border border-vault-yellow-dark text-vault-yellow hover:bg-vault-blue transition-colors rounded cursor-pointer">
+              <span className="inline-flex items-center px-4 py-2 text-sm font-bold uppercase border-2 border-vault-yellow text-vault-yellow hover:bg-vault-blue transition-colors rounded cursor-pointer">
                 <Upload size={18} className="mr-2" />
                 {t('characters.import')}
               </span>
