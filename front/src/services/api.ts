@@ -578,9 +578,9 @@ export const charactersApi = {
       method: 'POST',
       body: JSON.stringify({ name }),
     }),
-  exportCharacter: (id: number) =>
+  export: (id: number) =>
     fetchApi<Record<string, unknown>>(`/characters/${id}/export`),
-  importCharacter: (data: unknown) =>
+  import: (data: unknown) =>
     fetchApi<ImportCharacterResponse>('/characters/import', {
       method: 'POST',
       body: JSON.stringify(data),

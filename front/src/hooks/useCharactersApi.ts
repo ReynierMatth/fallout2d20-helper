@@ -259,7 +259,7 @@ export function useCharactersApi(): UseCharactersApiReturn {
 
   const exportCharacter = useCallback(
     async (character: Character): Promise<void> => {
-      const data = await charactersApi.exportCharacter(Number(character.id));
+      const data = await charactersApi.export(Number(character.id));
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -277,7 +277,7 @@ export function useCharactersApi(): UseCharactersApiReturn {
     async (file: File): Promise<{ character: Character; warnings: ImportWarning[] }> => {
       const text = await file.text();
       const json = JSON.parse(text);
-      const result = await charactersApi.importCharacter(json);
+      const result = await charactersApi.import(json);
       const newCharacter = apiToFrontend(result.character);
       queryClient.setQueryData<Character[]>(CHARACTERS_QUERY_KEY, (old) => [...(old ?? []), newCharacter]);
       return { character: newCharacter, warnings: result.warnings };
