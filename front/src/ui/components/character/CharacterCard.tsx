@@ -1,4 +1,4 @@
-import { Edit2, Copy, Trash2, Swords, Eye, Heart, Shield, Zap, Sparkles, Package } from 'lucide-react';
+import { Edit2, Copy, Trash2, Swords, Eye, Heart, Shield, Zap, Sparkles, Package, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Character } from '../../../data/characters';
 import { ORIGINS } from '../../../domain/rules/originRules';
@@ -16,6 +16,7 @@ interface CharacterCardProps {
   onEdit?: () => void;
   onDuplicate?: () => void;
   onDelete?: () => void;
+  onExport?: () => void;
   selected?: boolean;
   compact?: boolean;
   className?: string;
@@ -27,6 +28,7 @@ export function CharacterCard({
   onEdit,
   onDuplicate,
   onDelete,
+  onExport,
   selected = false,
   compact = false,
   className = '',
@@ -228,7 +230,7 @@ export function CharacterCard({
         )}
 
         {/* Actions */}
-        {(onEdit || onDuplicate || onDelete) && (
+        {(onEdit || onDuplicate || onDelete || onExport) && (
           <div className="flex gap-2 pt-2 border-t border-gray-600">
             {onEdit && (
               <button
@@ -254,6 +256,19 @@ export function CharacterCard({
               >
                 <Copy size={14} />
                 {t('common.duplicate')}
+              </button>
+            )}
+            {onExport && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExport();
+                }}
+                className="flex-1 flex items-center justify-center gap-1 py-1.5 text-sm text-vault-yellow hover:bg-vault-blue rounded transition-colors"
+              >
+                <Download size={14} />
+                {t('characters.export')}
               </button>
             )}
             {onDelete && (
