@@ -371,23 +371,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single character
-router.get('/:id', async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-    const character = await getFullCharacter(id);
-
-    if (!character) {
-      return res.status(404).json({ error: 'Character not found' });
-    }
-
-    res.json(character);
-  } catch (error) {
-    console.error('Error fetching character:', error);
-    res.status(500).json({ error: 'Failed to fetch character' });
-  }
-});
-
 // Export a character as a portable JSON file
 router.get('/:id/export', async (req, res) => {
   try {
@@ -404,6 +387,23 @@ router.get('/:id/export', async (req, res) => {
   } catch (error) {
     console.error('Error exporting character:', error);
     res.status(500).json({ error: 'Failed to export character' });
+  }
+});
+
+// GET single character
+router.get('/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const character = await getFullCharacter(id);
+
+    if (!character) {
+      return res.status(404).json({ error: 'Character not found' });
+    }
+
+    res.json(character);
+  } catch (error) {
+    console.error('Error fetching character:', error);
+    res.status(500).json({ error: 'Failed to fetch character' });
   }
 });
 
