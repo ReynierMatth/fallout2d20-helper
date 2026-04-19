@@ -972,6 +972,7 @@ router.post('/import', async (req, res) => {
           equipped: inv.equipped ?? false,
           equippedLocation: inv.equippedLocation ?? null,
         }).returning();
+        if (!newInv) throw new Error('Inventory insert returned no rows');
 
         // Resolve and install mods
         for (const mod of inv.installedMods ?? []) {
