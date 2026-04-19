@@ -798,6 +798,208 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Import a character from an exported JSON file
+router.post('/import', async (req, res) => {
+  try {
+    const data = req.body;
+
+    if (!data.version || !data.character?.name || !data.character?.type) {
+      return res.status(400).json({ error: 'Invalid export file: missing version, character.name, or character.type' });
+    }
+
+    const char = data.character;
+    const warnings: { itemName: string; reason: string }[] = [];
+    let newCharId!: number;
+
+    await db.transaction(async (tx) => {
+      // 1. Insert character base record
+      const [newChar] = await tx.insert(characters).values({
+        name: char.name,
+        type: char.type,
+        statBlockType: char.statBlockType ?? 'normal',
+        level: char.level ?? 1,
+        xp: char.xp ?? 0,
+        maxHp: char.maxHp ?? 10,
+        currentHp: char.currentHp ?? char.maxHp ?? 10,
+        defense: char.defense ?? 1,
+        initiative: char.initiative ?? 10,
+        meleeDamageBonus: char.meleeDamageBonus ?? 0,
+        carryCapacity: char.carryCapacity ?? 150,
+        maxLuckPoints: char.maxLuckPoints ?? 0,
+        currentLuckPoints: char.currentLuckPoints ?? 0,
+        caps: char.caps ?? 0,
+        radiationDamage: char.radiationDamage ?? 0,
+        creatureAttributes: char.creatureAttributes ?? null,
+        creatureSkills: char.creatureSkills ?? null,
+        creatureAttacks: char.creatureAttacks ?? null,
+      }).returning();
+
+      newCharId = newChar.id;
+
+      // 2. SPECIAL
+      if (char.special) {
+        const specialEntries = Object.entries(char.special);
+        if (specialEntries.length > 0) {
+          await tx.insert(characterSpecial).values(
+            specialEntries.map(([attribute, value]) => ({
+              characterId: newCharId,
+              attribute: attribute as any,
+              value: value as number,
+            }))
+          );
+        }
+      }
+
+      // 3. Skills
+      if (char.skills) {
+        const skillEntries = Object.entries(char.skills).filter(([, rank]) => (rank as number) > 0);
+        if (skillEntries.length > 0) {
+          await tx.insert(characterSkills).values(
+            skillEntries.map(([skill, rank]) => ({
+              characterId: newCharId,
+              skill: skill as any,
+              rank: rank as number,
+            }))
+          );
+        }
+      }
+
+      // 4. Tag skills
+      if (char.tagSkills?.length > 0) {
+        await tx.insert(characterTagSkills).values(
+          char.tagSkills.map((skill: string) => ({
+            characterId: newCharId,
+            skill: skill as any,
+          }))
+        );
+      }
+
+      // 5. Survivor traits
+      if (char.survivorTraits?.length > 0) {
+        await tx.insert(characterSurvivorTraits).values(
+          char.survivorTraits.map((traitId: string) => ({
+            characterId: newCharId,
+            traitId: traitId as any,
+          }))
+        );
+      }
+
+      // 6. Perks
+      if (char.perks?.length > 0) {
+        await tx.insert(characterPerks).values(
+          char.perks.map((perk: { perkId: string; rank: number }) => ({
+            characterId: newCharId,
+            perkId: perk.perkId,
+            rank: perk.rank,
+          }))
+        );
+      }
+
+      // 7. Gifted bonuses
+      if (char.giftedBonusAttributes?.length > 0) {
+        await tx.insert(characterGiftedBonuses).values(
+          char.giftedBonusAttributes.map((attribute: string) => ({
+            characterId: newCharId,
+            attribute: attribute as any,
+          }))
+        );
+      }
+
+      // 8. Exercise bonuses
+      if (char.exerciseBonuses?.length > 0) {
+        await tx.insert(characterExerciseBonuses).values(
+          char.exerciseBonuses.map((attribute: string) => ({
+            characterId: newCharId,
+            attribute: attribute as any,
+          }))
+        );
+      }
+
+      // 9. Conditions
+      if (char.conditions?.length > 0) {
+        await tx.insert(characterConditions).values(
+          char.conditions.map((condition: string) => ({
+            characterId: newCharId,
+            condition: condition as any,
+          }))
+        );
+      }
+
+      // 10. DR
+      if (char.dr?.length > 0) {
+        await tx.insert(characterDr).values(
+          char.dr.map((d: any) => ({
+            characterId: newCharId,
+            location: d.location,
+            drPhysical: d.drPhysical,
+            drEnergy: d.drEnergy,
+            drRadiation: d.drRadiation,
+            drPoison: d.drPoison,
+          }))
+        );
+      }
+
+      // 11. Custom traits
+      if (char.traits?.length > 0) {
+        await tx.insert(characterTraits).values(
+          char.traits.map((t: any) => ({
+            characterId: newCharId,
+            name: t.name,
+            description: t.description,
+            nameKey: t.nameKey ?? null,
+            descriptionKey: t.descriptionKey ?? null,
+          }))
+        );
+      }
+
+      // 12. Inventory — resolve items by name, skip + warn if not found
+      for (const inv of char.inventory ?? []) {
+        const [foundItem] = await tx.select({ id: items.id }).from(items).where(eq(items.name, inv.item.name));
+        if (!foundItem) {
+          warnings.push({ itemName: inv.item.name, reason: 'item not found' });
+          continue;
+        }
+
+        const [newInv] = await tx.insert(characterInventory).values({
+          characterId: newCharId,
+          itemId: foundItem.id,
+          quantity: inv.quantity ?? 1,
+          equipped: inv.equipped ?? false,
+          equippedLocation: inv.equippedLocation ?? null,
+        }).returning();
+
+        // Resolve and install mods
+        for (const mod of inv.installedMods ?? []) {
+          const [foundMod] = await tx.select({ id: items.id }).from(items).where(eq(items.name, mod.modName));
+          if (!foundMod) {
+            warnings.push({ itemName: mod.modName, reason: 'mod item not found' });
+            continue;
+          }
+
+          const [modInv] = await tx.insert(characterInventory).values({
+            characterId: newCharId,
+            itemId: foundMod.id,
+            quantity: 1,
+            equipped: false,
+            equippedLocation: null,
+          }).returning();
+
+          await tx.insert(inventoryItemMods).values({
+            targetInventoryId: newInv.id,
+            modInventoryId: modInv.id,
+          });
+        }
+      }
+    });
+
+    const fullCharacter = await getFullCharacter(newCharId);
+    res.status(201).json({ character: fullCharacter, warnings });
+  } catch (error) {
+    console.error('Error importing character:', error);
+    res.status(500).json({ error: 'Failed to import character' });
+  }
+});
+
 // POST duplicate character
 router.post('/:id/duplicate', async (req, res) => {
   try {
