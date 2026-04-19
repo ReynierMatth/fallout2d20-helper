@@ -808,10 +808,10 @@ router.post('/import', async (req, res) => {
     }
 
     const char = data.character;
-    const warnings: { itemName: string; reason: string }[] = [];
-    let newCharId!: number;
 
-    await db.transaction(async (tx) => {
+    const { newCharId, warnings } = await db.transaction(async (tx) => {
+      const warnings: { itemName: string; reason: string }[] = [];
+
       // 1. Insert character base record
       const [newChar] = await tx.insert(characters).values({
         name: char.name,
@@ -834,7 +834,8 @@ router.post('/import', async (req, res) => {
         creatureAttacks: char.creatureAttacks ?? null,
       }).returning();
 
-      newCharId = newChar.id;
+      if (!newChar) throw new Error('Character insert returned no rows');
+      const newCharId = newChar.id;
 
       // 2. SPECIAL
       if (char.special) {
@@ -954,6 +955,10 @@ router.post('/import', async (req, res) => {
 
       // 12. Inventory — resolve items by name, skip + warn if not found
       for (const inv of char.inventory ?? []) {
+        if (!inv.item?.name) {
+          warnings.push({ itemName: '(unknown)', reason: 'missing item data' });
+          continue;
+        }
         const [foundItem] = await tx.select({ id: items.id }).from(items).where(eq(items.name, inv.item.name));
         if (!foundItem) {
           warnings.push({ itemName: inv.item.name, reason: 'item not found' });
@@ -990,6 +995,8 @@ router.post('/import', async (req, res) => {
           });
         }
       }
+
+      return { newCharId, warnings };
     });
 
     const fullCharacter = await getFullCharacter(newCharId);
