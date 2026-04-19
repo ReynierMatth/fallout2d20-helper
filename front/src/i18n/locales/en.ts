@@ -535,6 +535,7 @@ export default {
     importSuccess: 'Character imported successfully.',
     importError: 'Failed to import character. Check that the file is a valid export.',
     importMissingItems: 'Some items were not found and were skipped: {{items}}',
+    exportError: 'Failed to export character.',
     noCharacters: 'No characters created. Start by creating a PC or NPC.',
     noResults: 'No characters match your search.',
     notFound: 'Character not found',

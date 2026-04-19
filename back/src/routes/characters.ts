@@ -989,6 +989,7 @@ router.post('/import', async (req, res) => {
             equipped: false,
             equippedLocation: null,
           }).returning();
+          if (!modInv) throw new Error('Mod inventory insert returned no rows');
 
           await tx.insert(inventoryItemMods).values({
             targetInventoryId: newInv.id,

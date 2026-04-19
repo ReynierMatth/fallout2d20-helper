@@ -125,7 +125,7 @@ export function CharactersPage() {
       console.error('Failed to export character:', err);
       if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
       feedbackTimerRef.current = setTimeout(() => setImportFeedback(null), 6000);
-      setImportFeedback({ type: 'error', message: 'characters.importError' });
+      setImportFeedback({ type: 'error', message: 'characters.exportError' });
     }
   };
 
