@@ -281,6 +281,69 @@ async function getFullCharacter(characterId: number) {
   };
 }
 
+function buildExportData(character: NonNullable<Awaited<ReturnType<typeof getFullCharacter>>>) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    appVersion: 'fallout2d20-helper',
+    character: {
+      name: character.name,
+      type: character.type,
+      statBlockType: character.statBlockType,
+      level: character.level,
+      xp: character.xp,
+      maxHp: character.maxHp,
+      currentHp: character.currentHp,
+      defense: character.defense,
+      initiative: character.initiative,
+      meleeDamageBonus: character.meleeDamageBonus,
+      carryCapacity: character.carryCapacity,
+      maxLuckPoints: character.maxLuckPoints,
+      currentLuckPoints: character.currentLuckPoints,
+      caps: character.caps,
+      radiationDamage: character.radiationDamage,
+      special: character.special,
+      skills: character.skills,
+      tagSkills: character.tagSkills,
+      survivorTraits: character.survivorTraits,
+      perks: character.perks,
+      giftedBonusAttributes: character.giftedBonusAttributes,
+      exerciseBonuses: character.exerciseBonuses,
+      conditions: character.conditions,
+      dr: character.dr,
+      traits: character.traits.map((t) => ({
+        name: t.name,
+        description: t.description,
+        ...(t.nameKey && { nameKey: t.nameKey }),
+        ...(t.descriptionKey && { descriptionKey: t.descriptionKey }),
+      })),
+      inventory: character.inventory.map((inv) => ({
+        quantity: inv.quantity,
+        equipped: inv.equipped,
+        equippedLocation: inv.equippedLocation ?? null,
+        item: {
+          name: inv.item.name,
+          itemType: inv.item.itemType,
+          value: inv.item.value,
+          rarity: inv.item.rarity,
+          weight: inv.item.weight,
+        },
+        ...(inv.armorDetails && { armorDetails: inv.armorDetails }),
+        ...(inv.powerArmorDetails && { powerArmorDetails: inv.powerArmorDetails }),
+        ...(inv.clothingDetails && { clothingDetails: inv.clothingDetails }),
+        installedMods: inv.installedMods.map((mod) => ({
+          modName: mod.modName,
+          slot: mod.slot,
+          ...(mod.nameAddKey && { nameAddKey: mod.nameAddKey }),
+        })),
+      })),
+      ...(character.creatureAttributes && { creatureAttributes: character.creatureAttributes }),
+      ...(character.creatureSkills && { creatureSkills: character.creatureSkills }),
+      ...(character.creatureAttacks && { creatureAttacks: character.creatureAttacks }),
+    },
+  };
+}
+
 // GET all characters
 router.get('/', async (req, res) => {
   try {
@@ -322,6 +385,25 @@ router.get('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error fetching character:', error);
     res.status(500).json({ error: 'Failed to fetch character' });
+  }
+});
+
+// Export a character as a portable JSON file
+router.get('/:id/export', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const character = await getFullCharacter(id);
+    if (!character) return res.status(404).json({ error: 'Character not found' });
+
+    const exportData = buildExportData(character);
+    const filename = `${character.name.replace(/[^a-z0-9]/gi, '_')}.json`;
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.json(exportData);
+  } catch (error) {
+    console.error('Error exporting character:', error);
+    res.status(500).json({ error: 'Failed to export character' });
   }
 });
 
