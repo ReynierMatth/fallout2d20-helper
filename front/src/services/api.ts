@@ -540,6 +540,16 @@ export interface UpdateInventoryData {
   currentHp?: number; // For Power Armor pieces
 }
 
+export interface ImportWarning {
+  itemName: string;
+  reason: string;
+}
+
+export interface ImportCharacterResponse {
+  character: CharacterApi;
+  warnings: ImportWarning[];
+}
+
 export const charactersApi = {
   list: (filters?: { type?: 'pc' | 'npc'; full?: boolean }) => {
     const params = new URLSearchParams();
@@ -567,6 +577,13 @@ export const charactersApi = {
     fetchApi<CharacterApi>(`/characters/${id}/duplicate`, {
       method: 'POST',
       body: JSON.stringify({ name }),
+    }),
+  export: (id: number) =>
+    fetchApi<Record<string, unknown>>(`/characters/${id}/export`),
+  import: (data: unknown) =>
+    fetchApi<ImportCharacterResponse>('/characters/import', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 
   // Inventory management

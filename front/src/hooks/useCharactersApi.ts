@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { charactersApi, type CharacterApi, type CreateCharacterData, type InventoryItemApi, type AddInventoryData, type UpdateInventoryData } from '../services/api';
+import { charactersApi, type CharacterApi, type CreateCharacterData, type InventoryItemApi, type AddInventoryData, type UpdateInventoryData, type ImportWarning } from '../services/api';
 import type { Character, SkillName, SpecialAttribute } from '../data/characters';
 import {
   createDefaultCharacter,
@@ -123,6 +123,8 @@ export interface UseCharactersApiReturn {
   deleteCharacter: (id: string) => Promise<void>;
   getCharacter: (id: string) => Character | undefined;
   duplicateCharacter: (id: string) => Promise<Character | undefined>;
+  exportCharacter: (character: Character) => Promise<void>;
+  importCharacter: (file: File) => Promise<{ character: Character; warnings: ImportWarning[] }>;
   recalculateStats: (id: string) => Promise<void>;
   refetch: () => Promise<void>;
   // Inventory management
@@ -253,6 +255,34 @@ export function useCharactersApi(): UseCharactersApiReturn {
       return newChar;
     },
     [characters, queryClient]
+  );
+
+  const exportCharacter = useCallback(
+    async (character: Character): Promise<void> => {
+      const data = await charactersApi.export(Number(character.id));
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${character.name.replace(/[^a-z0-9]/gi, '_')}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    },
+    []
+  );
+
+  const importCharacter = useCallback(
+    async (file: File): Promise<{ character: Character; warnings: ImportWarning[] }> => {
+      const text = await file.text();
+      const json = JSON.parse(text);
+      const result = await charactersApi.import(json);
+      const newCharacter = apiToFrontend(result.character);
+      queryClient.setQueryData<Character[]>(CHARACTERS_QUERY_KEY, (old) => [...(old ?? []), newCharacter]);
+      return { character: newCharacter, warnings: result.warnings };
+    },
+    [queryClient]
   );
 
   // Recalculate derived stats using the official rules
@@ -386,6 +416,8 @@ export function useCharactersApi(): UseCharactersApiReturn {
     deleteCharacter,
     getCharacter,
     duplicateCharacter,
+    exportCharacter,
+    importCharacter,
     recalculateStats,
     refetch,
     // Inventory
