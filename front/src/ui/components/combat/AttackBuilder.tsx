@@ -235,8 +235,8 @@ export function AttackBuilder({ attacker, target, allParticipants, onSelectTarge
                 const blocked = weaponBlockedByInjuries(w.equippedHand, attacker.injuries ?? []);
                 const displayName = computeModdedWeaponName(w as any, t as any);
                 return (
-                  <option key={id} value={id} disabled={blocked}>
-                    🔫 {displayName}{blocked ? ' (bras cassé)' : ''}
+                  <option key={id} value={id}>
+                    🔫 {displayName}{blocked ? ' ⚠ (bras cassé)' : ''}
                   </option>
                 );
               })}
@@ -436,7 +436,7 @@ export function AttackBuilder({ attacker, target, allParticipants, onSelectTarge
       <button
         type="button"
         onClick={computePreview}
-        disabled={!target || armLocked}
+        disabled={!target}
         className="text-xs px-3 py-1 bg-vault-gray text-vault-yellow-light rounded hover:bg-vault-gray-light disabled:opacity-50"
       >
         {t('combat.attackFlow.computePreview')}
