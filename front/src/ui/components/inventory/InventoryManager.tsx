@@ -459,8 +459,8 @@ export function InventoryManager({
                           </button>
                         </div>
 
-                        {/* Equip button */}
-                        {(inv.item.itemType === 'weapon' || inv.item.itemType === 'armor' || inv.item.itemType === 'powerArmor' || inv.item.itemType === 'clothing') && (
+                        {/* Equip button — weapons not equipable in this UI */}
+                        {(inv.item.itemType === 'armor' || inv.item.itemType === 'powerArmor' || inv.item.itemType === 'clothing') && (
                           (inv.item.itemType === 'armor' || inv.item.itemType === 'powerArmor') && !inv.equipped ? (
                             <select
                               onChange={(e) => {

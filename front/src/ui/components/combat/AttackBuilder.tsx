@@ -8,7 +8,6 @@ import {
   type AttackResult,
 } from '../../../domain/rules/attackResolution';
 import type { DamageKind } from '../../../domain/rules/attackQualities';
-import { weaponBlockedByInjuries } from '../../../domain/rules/injuryRules';
 import { computeModdedWeaponName, computeEffectiveWeaponStats } from '../../../domain/rules/weaponMods';
 import { computeBodyDR, type BodyLocation } from '../../../domain/rules/bodyResistance';
 import { rollHitLocation } from '../../../domain/rules/hitLocation';
@@ -82,11 +81,6 @@ export function AttackBuilder({ attacker, target, allParticipants, onSelectTarge
     () => inventoryWeapons.find((w: any) => (w.itemId ?? w.id) === weaponId) ?? null,
     [inventoryWeapons, weaponId],
   );
-
-  const armLocked = useMemo(() => {
-    if (!weapon?.equippedHand) return false;
-    return weaponBlockedByInjuries(weapon.equippedHand, attacker.injuries ?? []);
-  }, [weapon, attacker.injuries]);
 
   // Compute TN = skill rank + SPECIAL value (informational — d20 rolls are physical)
   const tnInfo = useMemo(() => {
@@ -233,11 +227,10 @@ export function AttackBuilder({ attacker, target, allParticipants, onSelectTarge
             >
               {inventoryWeapons.map((w: any) => {
                 const id = w.itemId ?? w.id;
-                const blocked = weaponBlockedByInjuries(w.equippedHand, attacker.injuries ?? []);
                 const displayName = computeModdedWeaponName(w as any, t as any);
                 return (
-                  <option key={id} value={id} disabled={blocked}>
-                    🔫 {displayName}{blocked ? ' (bras cassé)' : ''}
+                  <option key={id} value={id}>
+                    🔫 {displayName}
                   </option>
                 );
               })}
@@ -252,9 +245,6 @@ export function AttackBuilder({ attacker, target, allParticipants, onSelectTarge
               <Eye size={16} />
             </button>
           </div>
-          {armLocked && (
-            <p className="text-xs text-vault-danger mt-1">⚠ {t('combat.attackFlow.armBroken')}</p>
-          )}
         </div>
 
         <div>
@@ -437,7 +427,7 @@ export function AttackBuilder({ attacker, target, allParticipants, onSelectTarge
       <button
         type="button"
         onClick={computePreview}
-        disabled={!target || armLocked}
+        disabled={!target}
         className="text-xs px-3 py-1 bg-vault-gray text-vault-yellow-light rounded hover:bg-vault-gray-light disabled:opacity-50"
       >
         {t('combat.attackFlow.computePreview')}
