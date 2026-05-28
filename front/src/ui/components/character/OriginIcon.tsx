@@ -8,6 +8,14 @@ const originIcons: Record<string, string> = {
   misterHandy: '🤖',
   survivor: '🏜️',
   vaultDweller: '🔵',
+  // Guide des Colonies
+  commonwealthMilitia: '🪖',
+  nca: '🐻',
+  protectron: '🚨',
+  cerebrobot: '🧠',
+  securitron: '🎰',
+  synthGen3: '🧬',
+  synthGen2: '🦾',
 };
 
 interface OriginIconProps {
