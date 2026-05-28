@@ -83,6 +83,9 @@ const BASE_TAG_SKILLS_COUNT = 3;
 const TAG_SKILL_STARTING_RANK = 2;
 const MAX_SKILL_RANK = 6;
 const GIFTED_BONUS_COUNT = 2; // Gifted trait gives +1 to two chosen SPECIAL
+const GOOD_MOOD_TAG_SKILLS_COUNT = 2;
+const GOOD_MOOD_ALLOWED_SKILLS: readonly SkillName[] = ['speech', 'medicine', 'repair', 'science', 'barter'] as const;
+const GOOD_MOOD_OTHER_SKILL_CAP = 4;
 
 const SPECIAL_SHORT: Record<SpecialAttribute, string> = {
   strength: 'S', perception: 'P', endurance: 'E',
@@ -131,6 +134,8 @@ export function CharacterForm({
   const [levelInput, setLevelInput] = useState('1');
   const [origin, setOrigin] = useState<OriginId>('survivor');
   const [survivorTraits, setSurvivorTraits] = useState<SurvivorTraitId[]>([]);
+  // Survivor/NCA origin choice: 2 traits, or 1 trait + 1 extra perk (book option)
+  const [traitChoiceMode, setTraitChoiceMode] = useState<'two-traits' | 'one-trait-one-perk'>('two-traits');
 
   // Gifted trait: +1 to two chosen SPECIAL attributes
   const [giftedBonusAttributes, setGiftedBonusAttributes] = useState<SpecialAttribute[]>([]);
@@ -165,6 +170,8 @@ export function CharacterForm({
   const [tagPerkSkill, setTagPerkSkill] = useState<SkillName | null>(null);
   // Origin constrained bonus tag skill (e.g. Brotherhood → one of energyWeapons/science/repair)
   const [originOptionTagSkill, setOriginOptionTagSkill] = useState<SkillName | null>(null);
+  // Bonne humeur (NCA trait): 2 chosen tag skills from speech/medicine/repair/science/barter
+  const [goodMoodTagSkills, setGoodMoodTagSkills] = useState<SkillName[]>([]);
   const [notes, setNotes] = useState('');
 
   // NPC-specific: stat block type, fixed DR, traits
@@ -221,12 +228,21 @@ export function CharacterForm({
   const hasEducated = survivorTraits.includes('educated');
   const hasSmallFrame = survivorTraits.includes('smallFrame');
   const hasHeavyHanded = survivorTraits.includes('heavyHanded');
+  const hasGoodMood = survivorTraits.includes('goodMood');
+
+  // Origins that grant the survivor trait pool & the alt "1 trait + 1 perk" choice
+  const originAllowsSurvivorTraits = origin === 'survivor' || origin === 'nca';
+  const maxSurvivorTraits = traitChoiceMode === 'one-trait-one-perk' ? 1 : 2;
+  const traitChoiceBonusPerkSlots = originAllowsSurvivorTraits && traitChoiceMode === 'one-trait-one-perk' ? 1 : 0;
 
   // Origin bonus tag skills — locked (auto-applied fixed ones + user-chosen constrained option)
-  const originBonusTagSkills: SkillName[] = [
+  // Plus Bonne humeur picks (auto-locked from the restricted list).
+  const lockedTagSkills: SkillName[] = [
     ...((currentOrigin?.bonusTagSkills ?? []) as SkillName[]),
     ...(originOptionTagSkill ? [originOptionTagSkill] : []),
+    ...goodMoodTagSkills,
   ];
+  const originBonusTagSkills: SkillName[] = lockedTagSkills;
 
   // Dynamic tag skills count (Educated gives +1, Tag! perk gives +1, some origins give extra slots)
   const hasTagPerk = perks.some(p => p.perkId === 'tag');
@@ -284,6 +300,13 @@ export function CharacterForm({
     return originMax;
   })();
 
+  // Per-skill cap (Bonne humeur drops non-tag skills to 4)
+  const getMaxRankForSkill = (skill: SkillName): number => {
+    const isTag = tagSkills.includes(skill);
+    if (!isTag && hasGoodMood) return Math.min(maxSkillRank, GOOD_MOOD_OTHER_SKILL_CAP);
+    return maxSkillRank;
+  };
+
   // Calculate skill points
   const baseSkillPoints = calculateSkillPoints(special.intelligence, level);
   const skillPointsSpent = useMemo(() => {
@@ -301,7 +324,8 @@ export function CharacterForm({
   const isRobot = currentOrigin?.isRobot ?? false;
 
   // Perk limits: 1 perk choice per level (each rank counts as 1 choice)
-  const maxPerkChoices = level;
+  // Survivor/NCA origins can trade one trait pick for an extra perk slot.
+  const maxPerkChoices = level + traitChoiceBonusPerkSlots;
   const currentPerkChoices = perks.reduce((sum, p) => sum + p.rank, 0);
   const canAddMorePerks = currentPerkChoices < maxPerkChoices;
 
@@ -410,8 +434,8 @@ export function CharacterForm({
       steps.push({
         id: 'traits',
         labelKey: 'characters.survivorTraits',
-        badge: `${survivorTraits.length}/2`,
-        badgeColor: survivorTraits.length === 2 ? 'success' : survivorTraits.length > 0 ? 'default' : 'warning',
+        badge: `${survivorTraits.length}/${maxSurvivorTraits}`,
+        badgeColor: survivorTraits.length === maxSurvivorTraits ? 'success' : survivorTraits.length > 0 ? 'default' : 'warning',
       });
     }
 
@@ -487,7 +511,7 @@ export function CharacterForm({
     });
 
     return steps;
-  }, [name, type, origin, survivorTraits.length, specialPointsRemaining, skillPointsRemaining, perks.length, currentPerkChoices, maxPerkChoices, isCreateMode, selectedPack, formDr.length, formTraits.length, isCreature]);
+  }, [name, type, origin, survivorTraits.length, maxSurvivorTraits, specialPointsRemaining, skillPointsRemaining, perks.length, currentPerkChoices, maxPerkChoices, isCreateMode, selectedPack, formDr.length, formTraits.length, isCreature]);
 
   // Clamp currentStep when steps change
   useEffect(() => {
@@ -507,6 +531,10 @@ export function CharacterForm({
         setLevelInput(String(character.level));
         setOrigin(character.origin ?? 'survivor');
         setSurvivorTraits(character.survivorTraits ?? []);
+        // Detect trait choice mode: 1 trait saved on a survivor/nca character → alt "1 trait + 1 perk" mode
+        const charSupportsTraits = character.origin === 'survivor' || character.origin === 'nca';
+        const savedTraits = character.survivorTraits ?? [];
+        setTraitChoiceMode(charSupportsTraits && savedTraits.length === 1 ? 'one-trait-one-perk' : 'two-traits');
         // Restore gifted and exercise bonuses from character
         const savedGiftedBonuses = character.giftedBonusAttributes ?? [];
         const savedExerciseBonuses = character.exerciseBonuses ?? [];
@@ -545,6 +573,14 @@ export function CharacterForm({
         const charOriginOptions = (charOrigin?.bonusTagSkillOptions ?? []) as SkillName[];
         const detectedOption = character.tagSkills?.find(s => charOriginOptions.includes(s as SkillName)) as SkillName | null;
         setOriginOptionTagSkill(detectedOption ?? null);
+        // Detect Bonne humeur picks: among the saved tag skills, the first 2 in the allowed list
+        const hasGoodMoodSaved = (character.survivorTraits ?? []).includes('goodMood');
+        const detectedGoodMood = hasGoodMoodSaved
+          ? (character.tagSkills ?? [])
+              .filter((s): s is SkillName => GOOD_MOOD_ALLOWED_SKILLS.includes(s as SkillName))
+              .slice(0, GOOD_MOOD_TAG_SKILLS_COUNT)
+          : [];
+        setGoodMoodTagSkills(detectedGoodMood);
         setPerks(character.perks);
         setNotes(character.notes);
         setStatBlockType(character.statBlockType ?? 'normal');
@@ -578,6 +614,8 @@ export function CharacterForm({
         setExerciseBonuses([]);
         setPendingExercisePerk(null);
         setOriginOptionTagSkill(null);
+        setGoodMoodTagSkills([]);
+        setTraitChoiceMode('two-traits');
         setSelectedPackId(null);
         setEquipmentChoices({});
         setTagSkillBonusChoices({});
@@ -616,13 +654,43 @@ export function CharacterForm({
     }
   }, [isOpen, character, defaultType]);
 
-  // Reset survivor traits when origin changes to non-survivor
+  // Reset survivor traits when origin changes to an origin that doesn't support them
   useEffect(() => {
-    if (origin !== 'survivor') {
+    if (origin !== 'survivor' && origin !== 'nca') {
       setSurvivorTraits([]);
       setGiftedBonusAttributes([]);
+      setGoodMoodTagSkills([]);
+      setTraitChoiceMode('two-traits');
     }
   }, [origin]);
+
+  // When switching to "1 trait + 1 perk" mode while 2 traits are selected, drop the last one
+  useEffect(() => {
+    if (traitChoiceMode === 'one-trait-one-perk' && survivorTraits.length > 1) {
+      setSurvivorTraits(prev => prev.slice(0, 1));
+    }
+  }, [traitChoiceMode, survivorTraits.length]);
+
+  // Clear Bonne humeur picks when the trait is removed
+  useEffect(() => {
+    if (!hasGoodMood && goodMoodTagSkills.length > 0) {
+      const removed = goodMoodTagSkills;
+      setGoodMoodTagSkills([]);
+      // Strip the locked Bonne humeur picks from tagSkills (unless still in origin bonus / option)
+      setTagSkills(prev => prev.filter(s =>
+        !removed.includes(s) ||
+        (currentOrigin?.bonusTagSkills ?? []).includes(s) ||
+        s === originOptionTagSkill
+      ));
+      setSkills(prev => {
+        const updated = { ...prev };
+        removed.forEach(s => {
+          if (updated[s] === TAG_SKILL_STARTING_RANK) updated[s] = 0;
+        });
+        return updated;
+      });
+    }
+  }, [hasGoodMood, goodMoodTagSkills, currentOrigin, originOptionTagSkill]);
 
   // Reset selected pack and choices when origin changes
   useEffect(() => {
@@ -677,20 +745,22 @@ export function CharacterForm({
     });
   }, [tagSkills]);
 
-  // Clamp skills when maxSkillRank changes (e.g., switching to Super Mutant)
+  // Clamp skills when the per-skill cap changes (origin switch, Bonne humeur toggle, tag set change)
   useEffect(() => {
     setSkills((prev) => {
       const updated = { ...prev };
       let changed = false;
       SKILL_NAMES.forEach((skill) => {
-        if (updated[skill] > maxSkillRank) {
-          updated[skill] = maxSkillRank;
+        const cap = getMaxRankForSkill(skill);
+        if (updated[skill] > cap) {
+          updated[skill] = cap;
           changed = true;
         }
       });
       return changed ? updated : prev;
     });
-  }, [maxSkillRank]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxSkillRank, hasGoodMood, tagSkills]);
 
   // Handle Escape key
   useEffect(() => {
@@ -712,7 +782,7 @@ export function CharacterForm({
 
   const handleSkillChange = (skill: SkillName, value: number) => {
     const minValue = tagSkills.includes(skill) ? TAG_SKILL_STARTING_RANK : 0;
-    const clampedValue = Math.max(minValue, Math.min(value, maxSkillRank));
+    const clampedValue = Math.max(minValue, Math.min(value, getMaxRankForSkill(skill)));
     setSkills((prev) => ({ ...prev, [skill]: clampedValue }));
   };
 
@@ -756,7 +826,7 @@ export function CharacterForm({
     setSurvivorTraits((prev) => {
       if (prev.includes(traitId)) {
         return prev.filter((t) => t !== traitId);
-      } else if (prev.length < 2) {
+      } else if (prev.length < maxSurvivorTraits) {
         return [...prev, traitId];
       }
       return prev;
@@ -823,6 +893,35 @@ export function CharacterForm({
 
   const handleCancelTag = () => {
     setPendingTagPerk(false);
+  };
+
+  const handleGoodMoodToggle = (skill: SkillName) => {
+    if (!GOOD_MOOD_ALLOWED_SKILLS.includes(skill)) return;
+    // Skills that should remain tagged even after removing from Bonne humeur picker
+    // (those that are auto-applied by origin or chosen via the origin option picker).
+    const stickyTagged: SkillName[] = [
+      ...((currentOrigin?.bonusTagSkills ?? []) as SkillName[]),
+      ...(originOptionTagSkill ? [originOptionTagSkill] : []),
+    ];
+    setGoodMoodTagSkills(prev => {
+      if (prev.includes(skill)) {
+        // Deselect: remove from goodMood and from tagSkills (unless still origin-locked)
+        setTagSkills(tags => tags.filter(s => s !== skill || stickyTagged.includes(s)));
+        setSkills(prevSkills => ({
+          ...prevSkills,
+          [skill]: prevSkills[skill] === TAG_SKILL_STARTING_RANK ? 0 : prevSkills[skill],
+        }));
+        return prev.filter(s => s !== skill);
+      }
+      if (prev.length >= GOOD_MOOD_TAG_SKILLS_COUNT) return prev;
+      // Select: add to goodMood and to tagSkills if not already there
+      setTagSkills(tags => tags.includes(skill) ? tags : [...tags, skill]);
+      setSkills(prevSkills => ({
+        ...prevSkills,
+        [skill]: Math.max(prevSkills[skill], TAG_SKILL_STARTING_RANK),
+      }));
+      return [...prev, skill];
+    });
   };
 
   const handleOriginOptionSelect = (skill: SkillName) => {
@@ -1083,9 +1182,48 @@ export function CharacterForm({
       panels.push(
         <div key="traits" className="space-y-4">
           <StepValidation
-            warnings={survivorTraits.length < 2 ? [t('characters.validation.traitsRemaining', { count: 2 - survivorTraits.length })] : []}
+            warnings={survivorTraits.length < maxSurvivorTraits ? [t('characters.validation.traitsRemaining', { count: maxSurvivorTraits - survivorTraits.length })] : []}
           />
           <p className="text-xs text-gray-400">{t('characters.survivorTraitsDesc')}</p>
+
+          {/* Trait choice mode toggle: 2 traits vs 1 trait + 1 extra perk */}
+          <div className="p-3 bg-vault-blue rounded border border-vault-yellow-dark space-y-2">
+            <p className="text-xs text-gray-300">
+              {t('characters.traitChoiceMode', { defaultValue: 'Option d\'origine : combien de traits voulez-vous prendre ?' })}
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setTraitChoiceMode('two-traits')}
+                className={`px-3 py-1.5 rounded text-sm border transition-colors ${
+                  traitChoiceMode === 'two-traits'
+                    ? 'bg-vault-yellow text-vault-blue font-bold border-vault-yellow'
+                    : 'border-vault-yellow-dark text-vault-yellow hover:border-vault-yellow'
+                }`}
+              >
+                {t('characters.traitChoiceTwoTraits', { defaultValue: '2 traits' })}
+                {traitChoiceMode === 'two-traits' && <Check size={12} className="inline ml-1" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setTraitChoiceMode('one-trait-one-perk')}
+                className={`px-3 py-1.5 rounded text-sm border transition-colors ${
+                  traitChoiceMode === 'one-trait-one-perk'
+                    ? 'bg-vault-yellow text-vault-blue font-bold border-vault-yellow'
+                    : 'border-vault-yellow-dark text-vault-yellow hover:border-vault-yellow'
+                }`}
+              >
+                {t('characters.traitChoiceOneTraitOnePerk', { defaultValue: '1 trait + 1 aptitude supplémentaire' })}
+                {traitChoiceMode === 'one-trait-one-perk' && <Check size={12} className="inline ml-1" />}
+              </button>
+            </div>
+            {traitChoiceMode === 'one-trait-one-perk' && (
+              <p className="text-xs text-green-400">
+                {t('characters.traitChoiceOnePerkNote', { defaultValue: '+1 aptitude disponible dans l\'étape Aptitudes.' })}
+              </p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 gap-3">
             {SURVIVOR_TRAITS.map((trait) => (
               <label
@@ -1100,7 +1238,7 @@ export function CharacterForm({
                   type="checkbox"
                   checked={survivorTraits.includes(trait.id)}
                   onChange={() => handleSurvivorTraitToggle(trait.id)}
-                  disabled={!survivorTraits.includes(trait.id) && survivorTraits.length >= 2}
+                  disabled={!survivorTraits.includes(trait.id) && survivorTraits.length >= maxSurvivorTraits}
                   className="mt-1 w-5 h-5"
                 />
                 <div className="flex-1">
@@ -1607,6 +1745,7 @@ export function CharacterForm({
             {originBonusTagSkills.length > 0 && <span className="text-xs text-vault-yellow-dark ml-1">(+{originBonusTagSkills.length} <Lock size={10} className="inline" />)</span>}
             {originBonusTagSlots > 0 && <span className="text-xs text-vault-yellow ml-1">(+{originBonusTagSlots} {t('characters.originBonus')})</span>}
             {hasEducated && <span className="text-xs text-green-400 ml-1">(+1 Educated)</span>}
+            {hasGoodMood && <span className="text-xs text-green-400 ml-1">(+{GOOD_MOOD_TAG_SKILLS_COUNT} Bonne humeur)</span>}
             {hasTagPerk && <span className="text-xs text-vault-yellow ml-1">(+1 Tag!)</span>}
           </span>
           <span className={`text-sm font-mono ${skillPointsRemaining === 0 ? 'text-green-400' : skillPointsRemaining > 0 ? 'text-vault-yellow' : 'text-red-400'}`}>
@@ -1621,9 +1760,47 @@ export function CharacterForm({
             ...(type === 'PC' && currentOrigin?.bonusTagSkillOptions && !originOptionTagSkill
               ? [t('characters.validation.originBonusSkillRequired')]
               : []),
+            ...(hasGoodMood && goodMoodTagSkills.length < GOOD_MOOD_TAG_SKILLS_COUNT
+              ? [t('characters.validation.goodMoodSkillsRemaining', { count: GOOD_MOOD_TAG_SKILLS_COUNT - goodMoodTagSkills.length, defaultValue: `Bonne humeur : choisissez encore ${GOOD_MOOD_TAG_SKILLS_COUNT - goodMoodTagSkills.length} atout(s) personnel(s).` })]
+              : []),
           ]}
           errors={skillPointsRemaining < 0 ? [`${Math.abs(skillPointsRemaining)} ${t('characters.validation.skillsOver')}`] : []}
         />
+
+        {/* Bonne humeur (NCA): 2 picks from speech/medicine/repair/science/barter */}
+        {hasGoodMood && (
+          <div className="p-3 bg-vault-blue rounded border border-vault-yellow-dark">
+            <p className="text-xs text-gray-300 mb-2">
+              <Lock size={11} className="inline mr-1 text-vault-yellow" />
+              {t('characters.goodMoodTagSkillChoice', { defaultValue: `Bonne humeur : choisissez ${GOOD_MOOD_TAG_SKILLS_COUNT} compétences qui deviennent des atouts personnels (les autres sont plafonnées à ${GOOD_MOOD_OTHER_SKILL_CAP}).` })}
+              <span className="text-vault-yellow ml-2">{goodMoodTagSkills.length}/{GOOD_MOOD_TAG_SKILLS_COUNT}</span>
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              {GOOD_MOOD_ALLOWED_SKILLS.map(skill => {
+                const isSelected = goodMoodTagSkills.includes(skill);
+                const atCap = goodMoodTagSkills.length >= GOOD_MOOD_TAG_SKILLS_COUNT && !isSelected;
+                return (
+                  <button
+                    key={skill}
+                    type="button"
+                    onClick={() => handleGoodMoodToggle(skill)}
+                    disabled={atCap}
+                    className={`px-3 py-1.5 rounded text-sm border transition-colors ${
+                      isSelected
+                        ? 'bg-vault-yellow text-vault-blue font-bold border-vault-yellow'
+                        : atCap
+                        ? 'border-gray-600 text-gray-600 cursor-not-allowed'
+                        : 'border-vault-yellow-dark text-vault-yellow hover:border-vault-yellow'
+                    }`}
+                  >
+                    {t(`skills.${skill}`)}
+                    {isSelected && <Check size={12} className="inline ml-1" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Origin constrained bonus tag skill selector (e.g. Brotherhood) */}
         {type === 'PC' && currentOrigin?.bonusTagSkillOptions && (
@@ -1662,6 +1839,11 @@ export function CharacterForm({
 
         <p className="text-xs text-gray-400">
           {t('characters.skillsDesc', { points: baseSkillPoints, maxRank: maxSkillRank })}
+          {hasGoodMood && (
+            <span className="text-yellow-400 ml-1">
+              {t('characters.goodMoodCapNote', { cap: GOOD_MOOD_OTHER_SKILL_CAP, defaultValue: ` — autres compétences plafonnées à ${GOOD_MOOD_OTHER_SKILL_CAP} (Bonne humeur).` })}
+            </span>
+          )}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -1724,7 +1906,7 @@ export function CharacterForm({
                   onChange={(e) => handleSkillChange(skill, parseInt(e.target.value))}
                   className="w-14 px-1 py-2 bg-gray-700 border border-gray-600 rounded text-white text-sm text-center min-h-[44px]"
                 >
-                  {Array.from({ length: maxSkillRank + 1 }, (_, i) => i)
+                  {Array.from({ length: getMaxRankForSkill(skill) + 1 }, (_, i) => i)
                     .filter((rank) => !isTag || rank >= TAG_SKILL_STARTING_RANK)
                     .map((rank) => (
                       <option key={rank} value={rank}>
